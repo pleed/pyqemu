@@ -27,6 +27,7 @@
 #include "exec-all.h"
 #include "qemu-common.h"
 #include "kvm.h"
+#include "flx_instrument.h"
 
 //#define DEBUG_MMU
 
@@ -472,18 +473,58 @@ void cpu_x86_update_cr0(CPUX86State *env, uint32_t new_cr0)
         ((new_cr0 << (HF_MP_SHIFT - 1)) & (HF_MP_MASK | HF_EM_MASK | HF_TS_MASK));
 }
 
+int flx_get_vmem_dword(uint32_t address, uint32_t *result);
+
+typedef struct _instrument_data {
+  uint32_t cr3;
+  uint32_t eprocess;
+  uint32_t peb; //0x1b0
+  char ImageFileName[16];
+  uint32_t img_base; // peb + 8
+  uint32_t ldr; //peb + 0x0c
+  uint32_t InMemModList; //ldr + 0x14
+
+} INSTRUMENT_DATA, * PINSTRUMENT_DATA;
+
+int flx_instr_ready = 0;
+INSTRUMENT_DATA flx_instr_data;
+
 /* XXX: in legacy PAE mode, generate a GPF if reserved bits are set in
    the PDPT */
 void cpu_x86_update_cr3(CPUX86State *env, target_ulong new_cr3)
 {
+#define FLXTEST 0
+
+#if FLXTEST
+  uint32_t addr;
+  uint32_t KPRCB_addr = 0;
+  uint32_t ETHREAD_addr = 0;
+  uint32_t EPROCESS_addr = 0;
+  char filename[16];
+  uint8_t buffer[64];
+#endif
+  target_ulong old_cr3;
+
+  old_cr3 = env->cr[3];
+
     env->cr[3] = new_cr3;
     if (env->cr[0] & CR0_PG_MASK) {
 #if defined(DEBUG_MMU)
         printf("CR3 update: CR3=" TARGET_FMT_lx "\n", new_cr3);
 #endif
         tlb_flush(env, 0);
+
+#if 0
+  		if (python_active){
+    		current_environment = env;
+      		flxinstrument_update_cr3(old_cr3, new_cr3);
+    		current_environment = NULL;
+    	}
+#endif
+
     }
 }
+
 
 void cpu_x86_update_cr4(CPUX86State *env, uint32_t new_cr4)
 {
@@ -1140,6 +1181,8 @@ CPUX86State *cpu_x86_init(const char *cpu_model)
     mce_init(env);
 
     qemu_init_vcpu(env);
+	printf("cpu init\n");
+	flxinstrument_init();
 
     return env;
 }

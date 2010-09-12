@@ -137,6 +137,7 @@ int main(int argc, char **argv)
 #include "console.h"
 #include "sysemu.h"
 #include "gdbstub.h"
+#include "flx_events.h"
 #include "qemu-timer.h"
 #include "qemu-char.h"
 #include "cache-utils.h"
@@ -1319,7 +1320,9 @@ static void main_loop(void)
 {
     int r;
 
+	printf("starting main loop\n");
     qemu_main_loop_start();
+	printf("main loop started\n");
 
     for (;;) {
         do {

@@ -22,6 +22,11 @@
 #include "host-utils.h"
 #include "ioport.h"
 
+#include "disas.h"
+#include "flx_instrument.h"
+
+extern struct FILE *stdout;
+
 //#define DEBUG_PCALL
 
 
@@ -2506,6 +2511,39 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     }
 }
 
+/* regular calls in protected mode */
+void helper_call_protected(target_ulong src_eip,
+               target_ulong new_eip)
+{
+  // We are not interested in kernel mode stuff
+  if (!(new_eip & 0x80000000) ){
+    flxinstrument_call_event(src_eip, new_eip);
+  }
+}
+
+
+void helper_mark_syscall(void) {
+  printf("Syscall happened\n");
+
+}
+
+void helper_post_call_protected(target_ulong sub_eip,
+                target_ulong ret_eip)
+{
+  //printf("Return from %08x -> %08x\n", sub_eip, ret_eip);
+}
+
+
+void helper_call_protected0(void)
+{
+  printf("Call at %08x\n", (unsigned int)env->eip);
+}
+
+void helper_call_protected1(target_ulong new_eip)
+{
+  printf("Call from %08x -> %08x\n", (unsigned int)env->eip, (unsigned int)new_eip);
+}
+
 /* real and vm86 mode iret */
 void helper_iret_real(int shift)
 {
@@ -2791,6 +2829,83 @@ void helper_lret_protected(int shift, int addend)
     helper_ret_protected(shift, 0, addend);
 }
 
+uint32_t flx_vmem_to_phys(uint32_t address);
+
+int flx_get_vmem_word(uint32_t address, uint16_t *result);
+int flx_get_vmem_word(uint32_t address, uint16_t *result)
+{
+  uint32_t phys_addr = flx_vmem_to_phys(address);
+  if (!phys_addr)
+    return 0; //failure
+
+  *result = (uint16_t) lduw_phys(phys_addr);
+  return 1; //success
+}
+
+
+int flx_get_vmem_dword(uint32_t address, uint32_t *result);
+int flx_get_vmem_dword(uint32_t address, uint32_t *result)
+{
+  uint32_t phys_addr;
+
+  //printf("Getting mem for address %x\n", address);
+
+  phys_addr = cpu_get_phys_page_debug(env, address);
+  if(phys_addr == 0)    return 0; //fail
+  *result = ldl_phys((phys_addr & TARGET_PAGE_MASK) | (address & ~TARGET_PAGE_MASK));
+    //ldl_phys(phys_addr);
+    //ldl_phys((phys_addr & TARGET_PAGE_MASK) | (address & ~TARGET_PAGE_MASK));
+
+  return 1; // success
+}
+
+uint32_t flx_vmem_to_phys(uint32_t address)
+{
+  uint32_t phys_addr;
+
+  phys_addr = cpu_get_phys_page_debug(env, address);
+  if(phys_addr == 0)
+    return 0; //fail
+  return (phys_addr & TARGET_PAGE_MASK) | (address & ~TARGET_PAGE_MASK);
+
+}
+void flx_hex_dump(uint32_t address, uint32_t len);
+void flx_hex_dump(uint32_t address, uint32_t len)
+{
+  uint32_t phys_addr = 0;
+  uint32_t memlen;
+  int line;
+  int col;
+  unsigned char* mymem;
+
+  //printf("dump for address %08x\n", address);
+  phys_addr = flx_vmem_to_phys(address);
+
+  memlen = len;
+  mymem = (unsigned char*) cpu_physical_memory_map(phys_addr, (target_phys_addr_t*)&memlen, 0);
+  if (!mymem || (memlen != len)) {
+    printf("Error getting physical memory mapping\n");
+    return;
+  }
+
+  printf("---------\n");
+  for (line=0; line < len; line+= 16) {
+    printf("%08x:  ", address + line);    for (col=0; (col<16) && (line+col < len); col++)
+      printf(" %02x", (unsigned char) mymem[line+col]);
+    for (col=0; (col<16) && (line+col < len); col++) {
+      if (mymem[line+col] < 0x20)
+    printf(" .");
+      else
+    printf(" %c", (unsigned char) mymem[line+col]);
+    }
+   
+    printf("\n");
+  }
+ 
+  cpu_physical_memory_unmap(mymem, memlen, 0, 0);
+
+}
+
 void helper_sysenter(void)
 {
     if (env->sysenter_cs == 0) {
@@ -2798,6 +2913,72 @@ void helper_sysenter(void)
     }
     env->eflags &= ~(VM_MASK | IF_MASK | RF_MASK);
     cpu_x86_set_cpl(env, 0);
+
+    uint32_t syscall_number;
+    uint32_t value;
+
+    uint32_t obj_attrs;
+    uint32_t fileinfo_ptr;
+    uint16_t filename_len;
+    uint32_t filename_ptr;
+
+    uint32_t myeip;
+
+
+
+    myeip = env->eip;
+    syscall_number = env->regs[R_EAX];
+
+    //printf("Handling system call %x at %x\n", syscall_number, myeip);
+    switch(syscall_number) {    case 0x2b: //NtCreateFile      
+      break;
+      printf("Handling system call %x at %x\n", syscall_number, myeip);
+      if (!flx_get_vmem_dword(env->eip, &value))
+    break;
+      myeip = env->eip;
+      printf("Got a NtCreateFile system call (sysenter) at %x --- %08x\n", myeip, value);
+
+      /*
+      myesp = env->regs[R_ESP];
+      phys_addr = cpu_get_phys_page_debug(env, myeip);
+      phys_addr = (phys_addr & TARGET_PAGE_MASK) | (myeip & ~TARGET_PAGE_MASK);
+      printf("Phys: %08x\n", phys_addr);
+      */
+
+      //flx_hex_dump(env->eip, 0x20);
+
+      //flx_hex_dump(env->regs[R_ESP], 0x20);
+      if ( (!flx_get_vmem_dword(env->regs[R_ESP]+ 4*4, &obj_attrs))
+       || (obj_attrs == 0)) {
+    printf("Failed to get obj. attributes\n");
+    break;
+      }
+
+      //flx_hex_dump(obj_attrs, 0x20);      
+      if (!flx_get_vmem_dword(obj_attrs + 2*4, &fileinfo_ptr) ||
+      (fileinfo_ptr == 0)) {
+    printf("ERR: Cannot get unicode buffer\n");
+    break;
+      }     
+
+      //flx_hex_dump(fileinfo_ptr, 0x20);      
+      if (!flx_get_vmem_word(fileinfo_ptr, &filename_len)
+      || (filename_len == 0))
+    break;
+
+
+      if (!flx_get_vmem_dword(fileinfo_ptr + 1*4, &filename_ptr) ) {
+    printf("ERR: Cannot get filename buffer\n");
+    break;
+      }
+
+      flx_hex_dump(filename_ptr, filename_len);
+
+      break;
+    default:
+      break;
+    }
+
 
 #ifdef TARGET_X86_64
     if (env->hflags & HF_LMA_MASK) {
@@ -5521,6 +5702,22 @@ static int compute_c_eflags(void)
 {
     return CC_SRC & CC_C;
 }
+
+int qebek_read_ulong(CPUX86State *env, target_ulong address, uint32_t *value);
+
+int qebek_read_ulong(CPUX86State *env, target_ulong address, uint32_t *value)
+{
+  target_phys_addr_t phys_addr;
+
+    phys_addr = cpu_get_phys_page_debug(env, address);
+    if(phys_addr == -1)
+      return 0;
+
+    *value = ldl_phys((phys_addr & TARGET_PAGE_MASK) | (address & ~TARGET_PAGE_MASK));
+    return 1;
+}
+
+
 
 uint32_t helper_cc_compute_all(int op)
 {

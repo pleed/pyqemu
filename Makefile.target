@@ -13,7 +13,7 @@ endif
 
 TARGET_PATH=$(SRC_PATH)/target-$(TARGET_BASE_ARCH)
 $(call set-vpath, $(SRC_PATH):$(TARGET_PATH):$(SRC_PATH)/hw)
-QEMU_CFLAGS+= -I.. -I$(TARGET_PATH) -DNEED_CPU_H
+QEMU_CFLAGS+= -I.. -I$(TARGET_PATH) -DNEED_CPU_H -I/usr/include/python2.6
 
 include $(SRC_PATH)/Makefile.objs
 
@@ -31,7 +31,7 @@ endif
 
 PROGS=$(QEMU_PROG)
 
-LIBS+=-lm
+LIBS+=-lm -lpython2.6
 
 kvm.o kvm-all.o vhost.o vhost_net.o: QEMU_CFLAGS+=$(KVM_CFLAGS)
 
@@ -45,7 +45,7 @@ all: $(PROGS)
 
 #########################################################
 # cpu emulator library
-libobj-y = exec.o translate-all.o cpu-exec.o translate.o
+libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o
 libobj-y += tcg/tcg.o
 libobj-$(CONFIG_SOFTFLOAT) += fpu/softfloat.o
 libobj-$(CONFIG_NOSOFTFLOAT) += fpu/softfloat-native.o
@@ -65,6 +65,8 @@ $(libobj-y): $(GENERATED_HEADERS)
 translate.o: translate.c cpu.h
 
 translate-all.o: translate-all.c cpu.h
+
+flx_instrument.o: flx_instrument.c
 
 tcg/tcg.o: cpu.h
 
@@ -162,7 +164,7 @@ endif #CONFIG_BSD_USER
 # System emulator target
 ifdef CONFIG_SOFTMMU
 
-obj-y = arch_init.o cpus.o monitor.o machine.o gdbstub.o balloon.o
+obj-y = arch_init.o cpus.o monitor.o machine.o gdbstub.o balloon.o 
 # virtio has to be here due to weird dependency between PCI and virtio-net.
 # need to fix this properly
 obj-y += virtio-blk.o virtio-balloon.o virtio-net.o virtio-serial-bus.o

@@ -793,6 +793,7 @@ bool cpu_exec_all(void)
             break;
         if (cpu_can_run(env)) {
             if (qemu_cpu_exec(env) == EXCP_DEBUG) {
+				gdb_set_stop_cpu(env);
                 break;
             }
         } else if (env->stop) {

@@ -4495,6 +4495,7 @@ static void monitor_control_event(void *opaque, int event)
 static void monitor_event(void *opaque, int event)
 {
     Monitor *mon = opaque;
+	printf("monitor event\n");
 
     switch (event) {
     case CHR_EVENT_MUX_IN:

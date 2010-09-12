@@ -44,6 +44,7 @@ static void *softmmu_lock_user(CPUState *env, uint32_t addr, uint32_t len,
         cpu_memory_rw_debug(env, addr, p, len, 0);
     return p;
 }
+#error "here"
 #define lock_user(type, p, len, copy) softmmu_lock_user(env, p, len, copy)
 static char *softmmu_lock_user_string(CPUState *env, uint32_t addr)
 {

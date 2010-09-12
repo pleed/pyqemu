@@ -34,6 +34,7 @@
 #include "tcg.h"
 #include "qemu-timer.h"
 #include "envlist.h"
+#include "flx_events.h"
 
 #define DEBUG_LOGFILE "/tmp/qemu.log"
 

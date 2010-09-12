@@ -29,6 +29,7 @@
 #include "tcg-op.h"
 
 #include "helper.h"
+#include "flx_instrument.h"
 #define GEN_HELPER 1
 #include "helper.h"
 
@@ -4080,6 +4081,7 @@ static void gen_sse(DisasContext *s, int b, target_ulong pc_start, int rex_r)
     }
 }
 
+
 /* convert one instruction. s->is_jmp is set if the translation must
    be stopped. Return the next pc value */
 static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
@@ -4632,6 +4634,12 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             if (s->dflag == 0)
                 gen_op_andl_T0_ffff();
             next_eip = s->pc - s->cs_base;
+
+        if (instrumentation_active && instrumentation_call_active) {
+          gen_helper_call_protected(tcg_const_i32(pc_start),
+                    tcg_const_i32(next_eip));
+        }
+
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
             gen_op_jmp_T0();
@@ -4647,6 +4655,15 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_op_set_cc_op(s->cc_op);
                 gen_jmp_im(pc_start - s->cs_base);
                 tcg_gen_trunc_tl_i32(cpu_tmp2_i32, cpu_T[0]);
+
+        if (instrumentation_active && instrumentation_call_active)
+          {
+            gen_helper_call_protected(tcg_const_i32(pc_start),
+                          tcg_const_i32(cpu_T[1]));
+            printf("lcall protected\n");
+          }
+
+
                 gen_helper_lcall_protected(cpu_tmp2_i32, cpu_T[1],
                                            tcg_const_i32(dflag), 
                                            tcg_const_i32(s->pc - pc_start));
@@ -6265,9 +6282,15 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 tval &= 0xffff;
             else if(!CODE64(s))
                 tval &= 0xffffffff;
+
+        if (instrumentation_active && instrumentation_call_active)
+          gen_helper_call_protected(tcg_const_i32(pc_start),
+                    tcg_const_i32(tval));
+
             gen_movtl_T0_im(next_eip);
             gen_push_T0(s);
             gen_jmp(s, tval);
+
         }
         break;
     case 0x9a: /* lcall im */
