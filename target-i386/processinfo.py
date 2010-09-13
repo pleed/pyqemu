@@ -115,9 +115,11 @@ class Image( object):
 
         if valid and self.process.watched and not hasattr( self, "pe"):
             try:
+                #self.pe = PE( VMemBackend( self.DllBase,
+                 #                          self.DllBase + self.SizeOfImage, 
+                  #                         self.process.pdb), 
                 self.pe = PE( VMemBackend( self.DllBase,
-                                           self.DllBase + self.SizeOfImage, 
-                                           self.process.pdb), 
+                                           self.DllBase + self.SizeOfImage ),
                               self.BaseDllName, 
                               True)
                 print "PE image parsed for %s" % self.FullDllName

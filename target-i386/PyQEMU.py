@@ -30,13 +30,12 @@ MONITOR_NAME = "notepad.exe"
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
-	print "type(new_cr3) = "+str(type(new_cr3))
-	print "new_cr3 = "+str(new_cr3)
+	#print "type(new_cr3) = "+str(type(new_cr3))
+	#print "new_cr3 = "+str(new_cr3)
 
 	#return 1
 
 	kpcr_addr = PyFlxInstrument.creg(R_FS)
-	
 	if KNOWN_Processes.has_key(new_cr3):
 		#print "Task switch: %08x: " % new_cr3, KNOWN_Processes[new_cr3]
 		
@@ -105,12 +104,16 @@ def event_update_cr3(old_cr3, new_cr3):
 
 def call_info(fromaddr, toaddr, process):
 	"""returns image,function on calls from main executable into dll/itself"""
-	process.update()
-	from_image = process.get_image_by_addres(fromaddr)
+	#process.update()
+	print " %s -> %s " % (hex(fromaddr),hex(toaddr))
+	return None, None
+	from_image = process.get_image_by_address(fromaddr)
+	import code
+	code.interact("welcome to py shell", local=locals())
 
 	# calls from main executables are interesting
 	if from_image.DllBase == process.eprocess.Peb.deref().ImageBaseAddress:
-		to_image = process.get_image_by_addres(toaddr)
+		to_image = process.get_image_by_address(toaddr)
 		try:
 			fname = process.symbols[toaddr][2]
 		except KeyError:
@@ -120,20 +123,28 @@ def call_info(fromaddr, toaddr, process):
 	else:
 		return None, None
 
-#def call_event_callback(origin_eip, dest_eip):
-#	try:
-#		process = KNOWN_Processes[cr3]
-#	except KeyError:
-#		pass
-#	if userspace(origin_eip) and userspace(dest_eip):
-#		image,function = call_info(origin_eip, dest_eip, process)
-#		if image is not None:
-#			if function is None:
-#				function = "Unknown"
-#			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
+def deactivated_call_event_callback(origin_eip, dest_eip):
+	regs = PyFlxInstrument.registers()
+	cr3 = regs["cr3"]
+	import code
+	try:
+		process = KNOWN_Processes[cr3]
+	except KeyError:
+		pass
+	code.interact("pysh",local=locals())
+	if userspace(origin_eip) and userspace(dest_eip):
+		image,function = call_info(origin_eip, dest_eip, process)
+		if image is not None:
+			if function is None:
+				function = "Unknown"
+			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
+
+def call_event_callback(src_eip, dst_eip):
+	print "call %s -> %s"%(hex(src_eip),hex(dst_eip))
 
 #last_tid = 0
 #def call_event_callback(origin_eip, dest_eip):
+#	global last_tid
 #	if dest_eip < 0x80000000 and origin_eip < 0x70000000:
 #		print "PyCall: %08x -> %08x" % (origin_eip, dest_eip)
 #		regs = PyFlxInstrument.registers()
@@ -147,11 +158,11 @@ def call_info(fromaddr, toaddr, process):
 #			if new_tid > 0 and new_tid != last_tid:				
 #				print "Thread switch: %x -> %x" % (last_tid, new_tid)
 #				last_tid = new_tid
-
+#
 #	return 0
 
-def call_event_callback(src_eip, dst_eip):
-	print "call: %x -> %x"%(src_eip,dst_eip)
+#def call_event_callback(src_eip, dst_eip):
+#	print "call: %x -> %x"%(src_eip,dst_eip)
 
 
 def init(sval):	
