@@ -137,7 +137,6 @@ int main(int argc, char **argv)
 #include "console.h"
 #include "sysemu.h"
 #include "gdbstub.h"
-#include "flx_events.h"
 #include "qemu-timer.h"
 #include "qemu-char.h"
 #include "cache-utils.h"
