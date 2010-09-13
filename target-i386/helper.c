@@ -514,13 +514,11 @@ void cpu_x86_update_cr3(CPUX86State *env, target_ulong new_cr3)
 #endif
         tlb_flush(env, 0);
 
-#if 0
   		if (python_active){
     		current_environment = env;
       		flxinstrument_update_cr3(old_cr3, new_cr3);
     		current_environment = NULL;
     	}
-#endif
 
     }
 }

@@ -30,6 +30,8 @@ MONITOR_NAME = "notepad.exe"
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
+	print "type(new_cr3) = "+str(type(new_cr3))
+	print "new_cr3 = "+str(new_cr3)
 
 	#return 1
 
@@ -118,17 +120,17 @@ def call_info(fromaddr, toaddr, process):
 	else:
 		return None, None
 
-def call_event_callback(origin_eip, dest_eip):
-	try:
-		process = KNOWN_Processes[cr3]
-	except KeyError:
-		pass
-	if userspace(origin_eip) and userspace(dest_eip):
-		image,function = call_info(origin_eip, dest_eip, process)
-		if image is not None:
-			if function is None:
-				function = "Unknown"
-			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
+#def call_event_callback(origin_eip, dest_eip):
+#	try:
+#		process = KNOWN_Processes[cr3]
+#	except KeyError:
+#		pass
+#	if userspace(origin_eip) and userspace(dest_eip):
+#		image,function = call_info(origin_eip, dest_eip, process)
+#		if image is not None:
+#			if function is None:
+#				function = "Unknown"
+#			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
 
 #last_tid = 0
 #def call_event_callback(origin_eip, dest_eip):
@@ -147,6 +149,9 @@ def call_event_callback(origin_eip, dest_eip):
 #				last_tid = new_tid
 
 #	return 0
+
+def call_event_callback(src_eip, dst_eip):
+	print "call: %x -> %x"%(src_eip,dst_eip)
 
 
 def init(sval):	

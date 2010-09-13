@@ -80,13 +80,13 @@ CPUState *current_environment = NULL;
 
 
 static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
-   PyObject *retval = NULL;
+   PyObject *retval = Py_None;
    if(!PyArg_ParseTuple(args, "")) {
       // raise exception, too?
-      return NULL;
+      return Py_None;
    }
 
-   if (current_environment)
+   if (current_environment){
      retval = Py_BuildValue(
 			    "{s:I,s:I,s:I,s:I,s:I,s:I,s:I,s:I"
 			    ",s:h,s:h,s:h,s:h,s:h,s:h"
@@ -116,8 +116,7 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 			    "cr4", current_environment->cr[4],
 			    "eip", current_environment->eip
 			    );
-   else
-     retval = NULL; //Py_None;
+	}
    
    Py_XINCREF(retval);
    return retval;
@@ -318,6 +317,7 @@ void flxinstrument_init(void) {
 
    Py_XINCREF(Py_Python_Module);
 
+   python_active = 1;
    instrumentation_active = 0;
    instrumentation_call_active = 0;
    

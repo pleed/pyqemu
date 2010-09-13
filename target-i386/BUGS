@@ -1,0 +1,8 @@
+type(new_cr3) = <type 'int'>
+Traceback (most recent call last):
+  File "/usr/lib/python2.6/PyQEMU.py", line 39, in event_update_cr3
+    if KNOWN_Processes.has_key(new_cr3):
+TypeError: an integer is required
+type(new_cr3) = <type 'int'>
+
+Exception raised in event_update_cr3, new_cr3 is set to int as in all other cases
