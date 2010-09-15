@@ -369,7 +369,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 				 old_cr3, 
 				 new_cr3);
 
-  if (result) {
+  if (result != Py_None) {
     retval = PyInt_AsLong(result);
     Py_XDECREF(result);
   }
@@ -395,7 +395,7 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination) {
 				 call_origin,
 				 call_destination);
 
-  if (result) {
+  if (result != Py_None) {
     retval = PyInt_AsLong(result);
     Py_XDECREF(result);
   }
