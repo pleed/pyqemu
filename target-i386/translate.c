@@ -4650,6 +4650,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_add_A0_im(s, 1 << (ot - OT_WORD + 1));
             gen_op_ldu_T0_A0(OT_WORD + s->mem_index);
         do_lcall:
+			fprintf(stderr, "lcall!!!!!\n");
             if (s->pe && !s->vm86) {
                 if (s->cc_op != CC_OP_DYNAMIC)
                     gen_op_set_cc_op(s->cc_op);
@@ -4658,9 +4659,9 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
         if (instrumentation_active && instrumentation_call_active)
           {
+			fprintf(stderr, "generating lcall!\n");
             gen_helper_call_protected(tcg_const_i32(pc_start),
                           tcg_const_i32(cpu_T[1]));
-            printf("lcall protected\n");
           }
 
 

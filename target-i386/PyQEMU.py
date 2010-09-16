@@ -7,6 +7,7 @@ import PyFlxInstrument
 import processinfo
 from Structures import *
 
+MONITOR_ACTIVE = True
 
 R_EAX = 0
 R_ECX = 1
@@ -76,7 +77,7 @@ def event_update_cr3(old_cr3, new_cr3):
 				#code.interact("Welcome to PyQEMU shell", local=locals())
 
 
-			if active == MONITOR_NAME:
+			if active == MONITOR_NAME and MONITOR_ACTIVE == True:
 				PyFlxInstrument.set_instrumentation_active(1)
 			#elif last == MONITOR_NAME:
 			#	print "inactive"
@@ -116,8 +117,15 @@ def call_info(fromaddr, toaddr, process):
 				process.update()
 			except:
 				pass
-	print "images loaded!"
 	from_image = process.get_image_by_address(fromaddr)
+	to_image   = process.get_image_by_address(toaddr)
+	if from_image is not None and to_image is not None:
+		print "%s -> %s"%(from_image.get_basedllname(),to_image.get_basedllname())
+		if process.symbols.has_key(toaddr):
+			print "Function: %s"%(str(process.symbols[toaddr]))
+		else:
+			print "Unknown Function"
+	return None, None
 	# calls from main executables are interesting
 	if from_image.DllBase == process.eprocess.Peb.deref().ImageBaseAddress:
 		to_image = process.get_image_by_address(toaddr)
@@ -131,6 +139,7 @@ def call_info(fromaddr, toaddr, process):
 		return None, None
 
 def call_event_callback(origin_eip, dest_eip):
+	return 0
 	regs = PyFlxInstrument.registers()
 	cr3 = regs["cr3"]
 	process = KNOWN_Processes[cr3]
@@ -141,14 +150,6 @@ def call_event_callback(origin_eip, dest_eip):
 				function = "Unknown"
 			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
 	return 0
-
-#def call_event_callback(src_eip, dst_eip):
-#	import code
-#	regs = PyFlxInstrument.registers()
-#	cr3 = regs["cr3"]
-#	p = KNOWN_Processes[cr3]
-##	code.interact("haha",local=locals())
-#	print "call %s -> %s"%(hex(src_eip),hex(dst_eip))
 
 #last_tid = 0
 #def call_event_callback(origin_eip, dest_eip):
@@ -176,14 +177,6 @@ def call_event_callback(origin_eip, dest_eip):
 def init(sval):	
 	print "Python instrument started"
 	return 1
-
-def debug_helper(exception):
-	print "DEBUG_HELPER"
-	t = sys.last_traceback
-	traceback.print_tb(t)
-	print str(t)
-	import code
-	code.interact("DBG:",local=locals())
 
 # Exceptions are not properly handled in flx_instrument.c wrapper helps detecting them
 def error_dummy(func, *args):
