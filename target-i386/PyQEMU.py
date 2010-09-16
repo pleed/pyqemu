@@ -1,5 +1,7 @@
 #!/usr/include/python
 
+import traceback
+import sys
 
 import PyFlxInstrument
 import processinfo
@@ -104,13 +106,18 @@ def event_update_cr3(old_cr3, new_cr3):
 
 def call_info(fromaddr, toaddr, process):
 	"""returns image,function on calls from main executable into dll/itself"""
-	#process.update()
-	print " %s -> %s " % (hex(fromaddr),hex(toaddr))
-	return None, None
+	try:
+		process.update()
+	except:
+		try: 
+			process.update()
+		except:
+			try:
+				process.update()
+			except:
+				pass
+	print "images loaded!"
 	from_image = process.get_image_by_address(fromaddr)
-	import code
-	code.interact("welcome to py shell", local=locals())
-
 	# calls from main executables are interesting
 	if from_image.DllBase == process.eprocess.Peb.deref().ImageBaseAddress:
 		to_image = process.get_image_by_address(toaddr)
@@ -123,24 +130,25 @@ def call_info(fromaddr, toaddr, process):
 	else:
 		return None, None
 
-def deactivated_call_event_callback(origin_eip, dest_eip):
+def call_event_callback(origin_eip, dest_eip):
 	regs = PyFlxInstrument.registers()
 	cr3 = regs["cr3"]
-	import code
-	try:
-		process = KNOWN_Processes[cr3]
-	except KeyError:
-		pass
-	code.interact("pysh",local=locals())
+	process = KNOWN_Processes[cr3]
 	if userspace(origin_eip) and userspace(dest_eip):
 		image,function = call_info(origin_eip, dest_eip, process)
 		if image is not None:
 			if function is None:
 				function = "Unknown"
 			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
+	return 0
 
-def call_event_callback(src_eip, dst_eip):
-	print "call %s -> %s"%(hex(src_eip),hex(dst_eip))
+#def call_event_callback(src_eip, dst_eip):
+#	import code
+#	regs = PyFlxInstrument.registers()
+#	cr3 = regs["cr3"]
+#	p = KNOWN_Processes[cr3]
+##	code.interact("haha",local=locals())
+#	print "call %s -> %s"%(hex(src_eip),hex(dst_eip))
 
 #last_tid = 0
 #def call_event_callback(origin_eip, dest_eip):
@@ -169,6 +177,29 @@ def init(sval):
 	print "Python instrument started"
 	return 1
 
+def debug_helper(exception):
+	print "DEBUG_HELPER"
+	t = sys.last_traceback
+	traceback.print_tb(t)
+	print str(t)
+	import code
+	code.interact("DBG:",local=locals())
 
-ev_call = call_event_callback
-ev_update_cr3 = event_update_cr3
+# Exceptions are not properly handled in flx_instrument.c wrapper helps detecting them
+def error_dummy(func, *args):
+	try:
+		ret =  func(*args)
+		if ret is None:
+			return 0
+		return ret
+	except:
+		traceback.print_exception(*sys.exc_info())
+		import code
+		code.interact("DBG",local = locals())
+		sys.exit(-1)
+
+def ensure_error_handling_helper(func):
+	return lambda *args: error_dummy(func,*args)
+
+ev_call = ensure_error_handling_helper(call_event_callback)
+ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)

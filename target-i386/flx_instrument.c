@@ -36,7 +36,10 @@
 #include "cpu.h"
 #include "flx_instrument.h"
 
-
+//#ifndef DEBUG
+//#define DEBUG
+//#define DEBUG_SWITCHED_ON
+//#endif
 unsigned startup_time = 0;
 
 #define dbg_cpu 0
@@ -80,6 +83,13 @@ CPUState *current_environment = NULL;
 
 
 static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "registers");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
    PyObject *retval = Py_None;
    if(!PyArg_ParseTuple(args, "")) {
       // raise exception, too?
@@ -124,6 +134,13 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 
 
 static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "eip");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
   PyObject *retval = Py_None;
   if (current_environment)
     retval = Py_BuildValue("I", current_environment->eip);
@@ -135,6 +152,13 @@ static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
 
 
 static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "genreg");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
    unsigned index;
    PyObject *retval;
 
@@ -159,6 +183,13 @@ static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
 
 
 static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "creg");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
    unsigned index;
    PyObject *retval;
 
@@ -179,6 +210,13 @@ static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
 
 
 static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_vmem_read");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
    uint32_t addr, len;
    PyObject *retval = Py_None;
    char *buf;
@@ -219,6 +257,13 @@ static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
 
 
 static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_active");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
   int active_flag;
   
   if(!PyArg_ParseTuple(args, "I", &active_flag)) {
@@ -265,6 +310,13 @@ PyMODINIT_FUNC
 initpyflxinstrument(void)
 {
 
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
   printf("Starting up\n");
     // Py_InitModule3 takes 3 arguments. Other versions of this function are deprecated
   PyFlx_C_Module = Py_InitModule3("PyFlxInstrument", PyFlxC_methods,
@@ -301,7 +353,6 @@ initpyflxinstrument(void)
 
 
 void flxinstrument_init(void) { 
-
   PyObject* enable_python;
 
   printf("initialize\n");
@@ -329,7 +380,8 @@ void flxinstrument_init(void) {
        instrumentation_call_active = 1;
      }   
    
-
+   if(PyErr_Occurred())
+      fprintf(stderr, "EXCEPTION THROWN");
    PyFlx_ev_update_cr3 = PyObject_GetAttrString(Py_Python_Module, "ev_update_cr3");
    Py_XINCREF(PyFlx_ev_update_cr3);   
 
@@ -354,7 +406,14 @@ void flxinstrument_init(void) {
 
 
 int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
-  
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_update_cr3");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
   PyObject *result;
   int retval = 0;
   
@@ -368,6 +427,9 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 				 (char*)"(II)", 
 				 old_cr3, 
 				 new_cr3);
+#ifdef DEBUG
+  fprintf(stderr, "ev_update_cr3 returned!\n");
+#endif
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
@@ -382,6 +444,13 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 
 
 int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_call_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
   PyObject *result;
   int retval = 0;
 
@@ -406,3 +475,7 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination) {
   return retval;
 }
 
+#ifdef DEBUG_SWITCHED_ON
+#undef DEBUG
+#undef DEBUG_SWITCHED_ON
+#endif

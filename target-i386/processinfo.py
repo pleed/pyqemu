@@ -94,10 +94,10 @@ class Image( object):
         if not self.valid and valid:
             # this image was previously not valid, but is now, so it must be new
 
-            if self.BaseDllName.startswith( self.process.eprocess.ImageFileName.strip( "\0")):
-                print "Entrypoint is 0x%08x" % self.EntryPoint
-                watchpoint = EntryPointWatchpoint( self.process, self.EntryPoint)
-                self.process.watchpoints.add_function_call_watchpoint( watchpoint)
+            #if self.BaseDllName.startswith( self.process.eprocess.ImageFileName.strip( "\0")):
+            #    print "Entrypoint is 0x%08x" % self.EntryPoint
+            #    watchpoint = EntryPointWatchpoint( self.process, self.EntryPoint)
+            #    self.process.watchpoints.add_function_call_watchpoint( watchpoint)
 
             if self.BaseDllName.lower().endswith( '.dll'):
                 self.image_type = IMAGE_TYPE_DLL
@@ -345,7 +345,7 @@ class Process( object):
         # Convention: This is only called if the process is watched
         if target < USER_KERNEL_SPLIT:
 
-            self.watchpoints.visit_location( target)
+            #self.watchpoints.visit_location( target)
             self.shortterm_branches.add( target/256)
             func = None
 
