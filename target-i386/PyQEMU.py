@@ -29,7 +29,13 @@ R_GS = 5
 KNOWN_Processes = {}
 
 
-MONITOR_NAME = "notepad.exe"
+MONITOR_NAME = "cmd.exe"
+
+def get_current_process():
+	regs = PyFlxInstrument.registers()
+	cr3 = regs["cr3"]
+	process = KNOWN_Processes[cr3]
+	return process
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
@@ -139,17 +145,25 @@ def call_info(fromaddr, toaddr, process):
 		return None, None
 
 def call_event_callback(origin_eip, dest_eip):
+	process = get_current_process()
+	opcode = process.backend.read(origin_eip,100)
+	print "%x -> %x"%(origin_eip, dest_eip)
+	if opcode[0] == "\xff":
+		import time
+		f = open("/tmp/"+str(time.time()),"w")
+		f.write(opcode)
+		f.close()
 	return 0
-	regs = PyFlxInstrument.registers()
-	cr3 = regs["cr3"]
-	process = KNOWN_Processes[cr3]
-	if userspace(origin_eip) and userspace(dest_eip):
-		image,function = call_info(origin_eip, dest_eip, process)
-		if image is not None:
-			if function is None:
-				function = "Unknown"
-			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
-	return 0
+
+def jmp_event_callback
+
+#	if userspace(origin_eip) and userspace(dest_eip):
+#		image,function = call_info(origin_eip, dest_eip, process)
+#		if image is not None:
+#			if function is None:
+#				function = "Unknown"
+#			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
+#	return 0
 
 #last_tid = 0
 #def call_event_callback(origin_eip, dest_eip):
