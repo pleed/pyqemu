@@ -29,13 +29,19 @@ R_GS = 5
 KNOWN_Processes = {}
 
 
-MONITOR_NAME = "cmd.exe"
+MONITOR_NAME = "notepad.exe"
 
 def get_current_process():
 	regs = PyFlxInstrument.registers()
 	cr3 = regs["cr3"]
 	process = KNOWN_Processes[cr3]
 	return process
+
+def dump_memory(process, address, len, filename):
+	file = open(filename,"a")
+	buf = process.backend.read(address, len)+"\x90"*23
+	file.write(buf)
+	file.close()
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
@@ -101,7 +107,7 @@ def event_update_cr3(old_cr3, new_cr3):
 				
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
-			print "New process: 0x%08x => %s" % (new_cr3, filename)
+			#print "New process: 0x%08x => %s" % (new_cr3, filename)
 			p = processinfo.Process()
 			#print p.get_pid()
 				
@@ -126,11 +132,11 @@ def call_info(fromaddr, toaddr, process):
 	from_image = process.get_image_by_address(fromaddr)
 	to_image   = process.get_image_by_address(toaddr)
 	if from_image is not None and to_image is not None:
-		print "%s -> %s"%(from_image.get_basedllname(),to_image.get_basedllname())
-		if process.symbols.has_key(toaddr):
-			print "Function: %s"%(str(process.symbols[toaddr]))
-		else:
-			print "Unknown Function"
+		if from_image.get_basedllname() != to_image.get_basedllname():
+			if process.symbols.has_key(toaddr):
+				print "Process: %s Function: %s()"%(process.get_imagefilename(), str(process.symbols[toaddr][2]))
+			else:
+				print "Process: %s Function: unknown symbol"%(process.get_imagefilename())
 	return None, None
 	# calls from main executables are interesting
 	if from_image.DllBase == process.eprocess.Peb.deref().ImageBaseAddress:
@@ -146,16 +152,8 @@ def call_info(fromaddr, toaddr, process):
 
 def call_event_callback(origin_eip, dest_eip):
 	process = get_current_process()
-	opcode = process.backend.read(origin_eip,100)
-	print "%x -> %x"%(origin_eip, dest_eip)
-	if opcode[0] == "\xff":
-		import time
-		f = open("/tmp/"+str(time.time()),"w")
-		f.write(opcode)
-		f.close()
+	call_info(origin_eip, dest_eip, process)
 	return 0
-
-def jmp_event_callback
 
 #	if userspace(origin_eip) and userspace(dest_eip):
 #		image,function = call_info(origin_eip, dest_eip, process)

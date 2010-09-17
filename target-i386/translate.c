@@ -4635,10 +4635,10 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 gen_op_andl_T0_ffff();
             next_eip = s->pc - s->cs_base;
 
-        if (instrumentation_active && instrumentation_call_active) {
-          gen_helper_call_protected(tcg_const_i32(pc_start),
-                    tcg_const_i32(next_eip));
-        }
+        	if (instrumentation_active && instrumentation_call_active) {
+        		gen_helper_call_ev_protected(tcg_const_i32(pc_start),
+        	    							 cpu_T[0]);
+        	}
 
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
@@ -4659,7 +4659,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         if (instrumentation_active && instrumentation_call_active)
           {
             gen_helper_call_protected(tcg_const_i32(pc_start),
-                          tcg_const_i32(cpu_T[1]));
+            						  tcg_const_i32(cpu_T[1]));
           }
 
 
@@ -4677,7 +4677,6 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         case 4: /* jmp Ev */
             if (s->dflag == 0)
                 gen_op_andl_T0_ffff();
-			gen_flx_jmp_handler(tcg_const_i32(pc_start), tcg_const_i32(cpu_T[0]));
             gen_op_jmp_T0();
             gen_eob(s);
             break;
@@ -6284,7 +6283,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 tval &= 0xffffffff;
 
         if (instrumentation_active && instrumentation_call_active)
-          gen_helper_call_protected(tcg_const_i32(pc_start),
+          gen_helper_call_im_protected(tcg_const_i32(pc_start),
                     tcg_const_i32(tval));
 
             gen_movtl_T0_im(next_eip);

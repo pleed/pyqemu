@@ -26,6 +26,7 @@
 #include "flx_instrument.h"
 
 extern struct FILE *stdout;
+extern struct FILE *stderr;
 
 //#define DEBUG_PCALL
 
@@ -2509,6 +2510,22 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
         SET_ESP(sp, sp_mask);
         EIP = offset;
     }
+}
+
+void helper_call_im_protected(target_ulong src_eip,
+							  target_ulong new_eip){
+  if (!(new_eip & 0x80000000) ){
+	//fprintf(stderr, "call_im:\n");
+	helper_call_protected(src_eip,new_eip);
+  }
+
+}
+void helper_call_ev_protected(target_ulong src_eip,
+							  target_ulong new_eip){
+  if (!(new_eip & 0x80000000) ){
+	//fprintf(stderr, "call_ev:\n");
+	helper_call_protected(src_eip,new_eip);
+  }
 }
 
 /* regular calls in protected mode */
