@@ -117,42 +117,39 @@ def event_update_cr3(old_cr3, new_cr3):
 	
 	return 0
 
+update_done = False
 def call_info(fromaddr, toaddr, process):
 	"""returns image,function on calls from main executable into dll/itself"""
-	try:
-		process.update()
-	except:
-		try: 
+	global update_done
+	if not update_done:
+		try:
 			process.update()
 		except:
-			try:
+			try: 
 				process.update()
 			except:
-				pass
+				try:
+					process.update()
+				except:
+					pass
+	update_done = True
 	from_image = process.get_image_by_address(fromaddr)
 	to_image   = process.get_image_by_address(toaddr)
 	if from_image is not None and to_image is not None:
-		if from_image.get_basedllname() != to_image.get_basedllname():
-			if process.symbols.has_key(toaddr):
-				print "Process: %s Function: %s()"%(process.get_imagefilename(), str(process.symbols[toaddr][2]))
-			else:
-				print "Process: %s Function: unknown symbol"%(process.get_imagefilename())
-	return None, None
-	# calls from main executables are interesting
-	if from_image.DllBase == process.eprocess.Peb.deref().ImageBaseAddress:
-		to_image = process.get_image_by_address(toaddr)
-		try:
-			fname = process.symbols[toaddr][2]
-		except KeyError:
-			fname = None
-		return to_image, fname
-	# uninteresting
-	else:
-		return None, None
+		from_image_name = from_image.get_basedllname()
+		to_image_name = to_image.get_basedllname()
+		procname = process.get_imagefilename().strip("\x00")
+		if from_image_name == procname and to_image_name != procname:
+			return to_image, process.symbols[toaddr][2]
+	return None,None
 
 def call_event_callback(origin_eip, dest_eip):
 	process = get_current_process()
-	call_info(origin_eip, dest_eip, process)
+	image,function = call_info(origin_eip, dest_eip, process)
+	if image is not None:
+		if function is None:
+			function = "unknown function"
+		print "Process: %s\t\t%s::%s()"%(process.get_imagefilename().strip("\x00"), image.get_basedllname(), function)
 	return 0
 
 #	if userspace(origin_eip) and userspace(dest_eip):

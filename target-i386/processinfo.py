@@ -122,7 +122,7 @@ class Image( object):
                                            self.DllBase + self.SizeOfImage ),
                               self.BaseDllName, 
                               True)
-                print "PE image parsed for %s" % self.FullDllName
+                #print "PE image parsed for %s" % self.FullDllName
             except PageFaultException, pagefault:
                 self.pending_pages.add( pagefault.value[ 0] / PAGESIZE)
                 #PyBochsC.pending_page( True)
