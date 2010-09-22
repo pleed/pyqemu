@@ -117,22 +117,15 @@ def event_update_cr3(old_cr3, new_cr3):
 	
 	return 0
 
-update_done = False
+def update_workaround(process):
+	try:
+		process.update()
+	except:
+		pass
+			
+
 def call_info(fromaddr, toaddr, process):
 	"""returns image,function on calls from main executable into dll/itself"""
-	global update_done
-	if not update_done:
-		try:
-			process.update()
-		except:
-			try: 
-				process.update()
-			except:
-				try:
-					process.update()
-				except:
-					pass
-	update_done = True
 	from_image = process.get_image_by_address(fromaddr)
 	to_image   = process.get_image_by_address(toaddr)
 	if from_image is not None and to_image is not None:
@@ -140,7 +133,12 @@ def call_info(fromaddr, toaddr, process):
 		to_image_name = to_image.get_basedllname()
 		procname = process.get_imagefilename().strip("\x00")
 		if from_image_name == procname and to_image_name != procname:
-			return to_image, process.symbols[toaddr][2]
+			if not process.symbols.has_key(toaddr):
+				update_workaround(process)
+			try:
+				return to_image, process.symbols[toaddr][2]
+			except:
+				return to_image, None
 	return None,None
 
 def call_event_callback(origin_eip, dest_eip):
