@@ -118,14 +118,39 @@ def event_update_cr3(old_cr3, new_cr3):
 	return 0
 
 def update_workaround(process):
+	print "updating"
 	try:
 		process.update()
 	except:
 		pass
-			
 
-def call_info(fromaddr, toaddr, process):
+call_list = []
+call_counter = 1
+def call_info_prerun(fromaddr, toaddr, process):
 	"""returns image,function on calls from main executable into dll/itself"""
+	global call_list
+	global call_counter
+	call_list.append((fromaddr,toaddr))
+	if call_counter%10000 != 0:
+		call_counter += 1
+	else:
+		call_counter += 1
+		functioncalls = []
+		update_workaround(process)
+		for fromaddr,toaddr in call_list:
+			from_image = process.get_image_by_address(fromaddr)
+			to_image   = process.get_image_by_address(toaddr)
+			if from_image is not None and to_image is not None:
+				from_image_name = from_image.get_basedllname()
+				to_image_name = to_image.get_basedllname()
+				procname = process.get_imagefilename().strip("\x00")
+				if from_image_name == procname and to_image_name != procname:
+					functioncalls.append((to_image, process.symbols[toaddr][2]))
+		if not len(functioncalls) == 0:
+			return functioncalls
+	return None
+
+def call_info_run(fromaddr, toaddr, process):
 	from_image = process.get_image_by_address(fromaddr)
 	to_image   = process.get_image_by_address(toaddr)
 	if from_image is not None and to_image is not None:
@@ -133,21 +158,23 @@ def call_info(fromaddr, toaddr, process):
 		to_image_name = to_image.get_basedllname()
 		procname = process.get_imagefilename().strip("\x00")
 		if from_image_name == procname and to_image_name != procname:
-			if not process.symbols.has_key(toaddr):
-				update_workaround(process)
 			try:
-				return to_image, process.symbols[toaddr][2]
+				return [(to_image, process.symbols[toaddr][2])]
 			except:
-				return to_image, None
-	return None,None
+				return [(to_image, None)]
+	return None
 
+call_info = call_info_prerun
 def call_event_callback(origin_eip, dest_eip):
+	global call_info
 	process = get_current_process()
-	image,function = call_info(origin_eip, dest_eip, process)
-	if image is not None:
-		if function is None:
-			function = "unknown function"
-		print "Process: %s\t\t%s::%s()"%(process.get_imagefilename().strip("\x00"), image.get_basedllname(), function)
+	functioncalls = call_info(origin_eip, dest_eip, process)
+	if functioncalls is not None:
+		call_info = call_info_run
+		for image,function in functioncalls:
+			if function is None:
+				function = "unknown function"
+			print "Process: %s\t\t%s::%s()"%(process.get_imagefilename().strip("\x00"), image.get_basedllname(), function)
 	return 0
 
 #	if userspace(origin_eip) and userspace(dest_eip):
