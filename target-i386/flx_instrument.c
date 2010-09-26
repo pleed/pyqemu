@@ -61,12 +61,14 @@ unsigned startup_time = 0;
 int python_active;
 int instrumentation_active;
 int instrumentation_call_active;
+int instrumentation_syscall_active;
 
 static PyObject *Py_Python_Module;
 static PyObject *PyFlx_C_Module;
 
 //todo: register and unregister routines
 PyObject *PyFlx_ev_call = NULL;
+PyObject *PyFlx_ev_syscall = NULL;
 PyObject *PyFlx_ev_update_cr3 = NULL;
 
 static PyObject *PyFlx_REG_EAX;
@@ -370,6 +372,7 @@ void flxinstrument_init(void) {
 
    python_active = 1;
    instrumentation_active = 0;
+   instrumentation_syscall_active= 0;
    instrumentation_call_active = 0;
    
    PyFlx_ev_call = PyObject_GetAttrString(Py_Python_Module, "ev_call");
@@ -379,6 +382,15 @@ void flxinstrument_init(void) {
        printf("Call event active\n");
        instrumentation_call_active = 1;
      }   
+
+   PyFlx_ev_syscall = PyObject_GetAttrString(Py_Python_Module, "ev_syscall");
+   Py_XINCREF(PyFlx_ev_syscall);
+   if (PyFlx_ev_syscall && PyCallable_Check(PyFlx_ev_syscall))
+     {
+       printf("Syscall event active\n");
+       instrumentation_syscall_active = 1;
+     }   
+
    
    if(PyErr_Occurred())
       fprintf(stderr, "EXCEPTION THROWN");
@@ -389,6 +401,7 @@ void flxinstrument_init(void) {
    if (!PyInt_Check(enable_python) || (PyInt_AS_LONG(enable_python) == 0)) {
      printf("Python instrumentation disabled. Init returned None or 0\n");
      instrumentation_call_active = 0;
+     instrumentation_syscall_active = 0;
      instrumentation_active = 0;
      python_active = 0;
 
@@ -398,6 +411,8 @@ void flxinstrument_init(void) {
      Py_XDECREF(PyFlx_ev_call);
      PyFlx_ev_call = NULL;
      
+     Py_XDECREF(PyFlx_ev_syscall);
+     PyFlx_ev_syscall = NULL;
    }
 }
 
@@ -442,6 +457,36 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
   return retval;
 }
 
+int flxinstrument_syscall_event(uint32_t eax) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_syscall_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_syscall)) {
+    fprintf(stderr, "No registered call event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_syscall,
+				 (char*) "(I)",
+				 eax);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
 
 int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination) {
 #ifdef DEBUG

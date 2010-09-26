@@ -6717,6 +6717,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xcd: /* int N */
         val = ldub_code(s->pc++);
+		if (val == 0x80 && instrumentation_active && instrumentation_syscall_active)
+			gen_helper_syscall_event();
         if (s->vm86 && s->iopl != 3) {
             gen_exception(s, EXCP0D_GPF, pc_start - s->cs_base);
         } else {
@@ -6920,6 +6922,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_update_cc_op(s);
             gen_jmp_im(pc_start - s->cs_base);
             gen_helper_sysenter();
+        	if (instrumentation_active && instrumentation_syscall_active)
+				gen_helper_syscall_event();
             gen_eob(s);
         }
         break;
@@ -6943,6 +6947,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_jmp_im(pc_start - s->cs_base);
         gen_helper_syscall(tcg_const_i32(s->pc - pc_start));
         gen_eob(s);
+        if (instrumentation_active && instrumentation_syscall_active)
+			gen_helper_syscall_event();
         break;
     case 0x107: /* sysret */
         if (!s->pe) {

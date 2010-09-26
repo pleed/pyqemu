@@ -2538,6 +2538,9 @@ void helper_call_protected(target_ulong src_eip,
   }
 }
 
+void helper_syscall_event(void){
+	flxinstrument_syscall_event(env->regs[R_EAX]);
+}
 
 void helper_mark_syscall(void) {
   printf("Syscall happened\n");

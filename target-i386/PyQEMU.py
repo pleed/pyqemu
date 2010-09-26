@@ -8,6 +8,7 @@ import processinfo
 from Structures import *
 
 MONITOR_ACTIVE = True
+DEBUG = True
 
 R_EAX = 0
 R_ECX = 1
@@ -42,6 +43,11 @@ def dump_memory(process, address, len, filename):
 	buf = process.backend.read(address, len)+"\x90"*23
 	file.write(buf)
 	file.close()
+
+def debug(msg):
+	global DEBUG
+	if DEBUG:
+		print msg
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
@@ -108,7 +114,7 @@ def event_update_cr3(old_cr3, new_cr3):
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
 			#print "New process: 0x%08x => %s" % (new_cr3, filename)
-			p = processinfo.Process()
+			p = TracedProcess(proc_event_callbacks)
 			#print p.get_pid()
 				
 			#print map(hex, map(ord, filename))
@@ -117,96 +123,113 @@ def event_update_cr3(old_cr3, new_cr3):
 	
 	return 0
 
-def update_workaround(process):
-	print "updating"
-	try:
-		process.update()
-	except:
-		pass
+class TracedProcess(processinfo.Process):
+	""" A traced process with functionality to register callbacks for vm call handling. """
+	PROCSTATE_PRERUN = 0
+	PROCSTATE_RUN = 1
+	CALL_CACHE_SIZE = 10000
 
-call_list = []
-call_counter = 1
-def call_info_prerun(fromaddr, toaddr, process):
-	"""returns image,function on calls from main executable into dll/itself"""
-	global call_list
-	global call_counter
-	call_list.append((fromaddr,toaddr))
-	if call_counter%10000 != 0:
-		call_counter += 1
-	else:
-		call_counter += 1
-		functioncalls = []
-		update_workaround(process)
-		for fromaddr,toaddr in call_list:
-			from_image = process.get_image_by_address(fromaddr)
-			to_image   = process.get_image_by_address(toaddr)
-			if from_image is not None and to_image is not None:
-				from_image_name = from_image.get_basedllname()
-				to_image_name = to_image.get_basedllname()
-				procname = process.get_imagefilename().strip("\x00")
-				if from_image_name == procname and to_image_name != procname:
-					functioncalls.append((to_image, process.symbols[toaddr][2]))
-		if not len(functioncalls) == 0:
-			return functioncalls
-	return None
+	def __init__(self, callbacklist):
+		self.callbacklist = callbacklist
+		self.callbacklist_loaded = False
+		self.callcache = []
+		self.callonfunction = {}
+		self.execution_state = self.PROCSTATE_PRERUN
+		self.callcounter = 0
+		processinfo.Process.__init__(self)
 
-def call_info_run(fromaddr, toaddr, process):
-	from_image = process.get_image_by_address(fromaddr)
-	to_image   = process.get_image_by_address(toaddr)
-	if from_image is not None and to_image is not None:
-		from_image_name = from_image.get_basedllname()
-		to_image_name = to_image.get_basedllname()
-		procname = process.get_imagefilename().strip("\x00")
-		if from_image_name == procname and to_image_name != procname:
+	def handle_syscall(self, eax):
+		print "syscall :), eax is %i"%eax
+
+	def handle_call(self, *args):
+		if not self.callbacklist_loaded:
+			self.loadCallbacks(self.callbacklist)
+		if self.execution_state == self.PROCSTATE_PRERUN:
+			self._handle_call_prerun(*args)
+		elif self.execution_state == self.PROCSTATE_RUN:
+			self._handle_call_run(*args)
+		else:
+			raise Exception("Unknown process execution state")
+
+	def _handle_call_prerun(self, fromaddr, toaddr):
+		""" Will be called for every 'call' opcode executed by the vm process. """
+		self.callcache.append((fromaddr, toaddr))
+		self.callcounter += 1
+		if self.callcounter%self.CALL_CACHE_SIZE == 0:
+			self.update()
+			functioncalls = []
+			for src,dst in self.callcache:
+				from_image = self.get_image_by_address(src)
+				to_image   = self.get_image_by_address(dst)
+				if from_image is not None and to_image is not None:
+					from_image_name = from_image.get_basedllname()
+					to_image_name   = to_image.get_basedllname()
+					pname = self.get_imagefilename().strip("\x00")
+					if from_image_name == pname and to_image_name != pname:
+						if self.symbols.has_key(toaddr):
+							functioncalls.append((to_image, self.symbols[toaddr][2]))
+			self.callcache = []
+			if not len(functioncalls) == 0:
+				for image,func in functioncalls:
+					self.runCallbacks(image.get_basedllname(), func)
+				self.execution_state = self.PROCSTATE_RUN
+
+	def _handle_call_run(self, fromaddr, toaddr):
+		if self.execution_state != self.PROCSTATE_RUN:
+			raise Exception("called _handle_call_run but process is not ready yet.")
+		from_image = self.get_image_by_address(fromaddr)
+		to_image   = self.get_image_by_address(toaddr)
+		if from_image is not None and to_image is not None:
+			from_image_name = from_image.get_basedllname()
+			to_image_name   = to_image.get_basedllname()
+			pname = self.get_imagefilename().strip("\x00")
+			if from_image_name == pname and to_image_name != pname:
+				if not self.symbols.has_key(toaddr):
+					self.update_images()
+				try:
+					self.runCallbacks(to_image.get_basedllname(), self.symbols[toaddr][2])
+				except:
+					pass
+					
+	def runCallbacks(self, dllname, funcname):
+		print "dll: %s, function: %s"%(dllname, funcname)
+		print "callbacks: %s"%str(self.callonfunction)
+		if self.callonfunction.has_key(dllname+funcname):
+			for callback in self.callonfunction[dllname+funcname]:
+				callback()
+
+	def registerFunctionHandler(self, dllname, function, callback):
+		""" Registers a function that will be called when vm process calls dllname::funcname(). """
+		if self.callonfunction.has_key(dllname+function):
+			self.callonfunction[dllname+function].append(callback)
+		else:
+			self.callonfunction[dllname+function] = [callback]
+		return None
+
+	def loadCallbacks(self, callbacklist):
+		print "loading callbacks: "+str(callbacklist)
+		debug("loadCallbacks %s"%self.get_imagefilename().strip("\x00").lower())
+		if callbacklist.has_key(self.get_imagefilename().strip("\x00").lower()):
+			for callback in callbacklist[self.get_imagefilename().strip("\x00").lower()]:
+				self.registerFunctionHandler(*callback)
+			self.callbacklist_loaded = True
+
+	def update(self):
+		debug("updating")
+		self._ensure_run(lambda: processinfo.Process.update(self))
+
+	def update_images(self):
+		self._ensure_run(lambda: processinfo.Process.update_images(self))
+
+	def _ensure_run(self, function):
+		counter = 0
+		finished = False
+		while not finished and counter < 5:
 			try:
-				return [(to_image, process.symbols[toaddr][2])]
+				function()
+				finished = True
 			except:
-				return [(to_image, None)]
-	return None
-
-call_info = call_info_prerun
-def call_event_callback(origin_eip, dest_eip):
-	global call_info
-	process = get_current_process()
-	functioncalls = call_info(origin_eip, dest_eip, process)
-	if functioncalls is not None:
-		call_info = call_info_run
-		for image,function in functioncalls:
-			if function is None:
-				function = "unknown function"
-			print "Process: %s\t\t%s::%s()"%(process.get_imagefilename().strip("\x00"), image.get_basedllname(), function)
-	return 0
-
-#	if userspace(origin_eip) and userspace(dest_eip):
-#		image,function = call_info(origin_eip, dest_eip, process)
-#		if image is not None:
-#			if function is None:
-#				function = "Unknown"
-#			print "Call into Image: %s\nFunction: %s\nPID: %s\n"%(image.getbasedllname(), function, process.pid)
-#	return 0
-
-#last_tid = 0
-#def call_event_callback(origin_eip, dest_eip):
-#	global last_tid
-#	if dest_eip < 0x80000000 and origin_eip < 0x70000000:
-#		print "PyCall: %08x -> %08x" % (origin_eip, dest_eip)
-#		regs = PyFlxInstrument.registers()
-#		cr3 = regs["cr3"]
-#		if KNOWN_Processes.has_key(cr3):
-#			process = KNOWN_Processes[cr3]
-#			dllimage = call_into_image(dest_eip, origin_eip, process)
-#			if dllimage is not None:
-#				print "call into %s in process: "%(dllimage.getbasedllname(), process.get_imagefilename().strip("\x00").lower())
-#			new_tid = process.get_cur_tid()
-#			if new_tid > 0 and new_tid != last_tid:				
-#				print "Thread switch: %x -> %x" % (last_tid, new_tid)
-#				last_tid = new_tid
-#
-#	return 0
-
-#def call_event_callback(src_eip, dst_eip):
-#	print "call: %x -> %x"%(src_eip,dst_eip)
-
+				continue
 
 def init(sval):	
 	print "Python instrument started"
@@ -228,5 +251,27 @@ def error_dummy(func, *args):
 def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
-ev_call = ensure_error_handling_helper(call_event_callback)
+# Implement Process event Callbacks here
+
+def notepad_msvcrt_exit():
+	print "NOTEPAD CALLED EXIT!"
+
+def notepad_user32_getmessagew():
+	print "NOTEPAD CALLED GETMESSAGEW"
+
+# Register Process event Callbacks
+proc_event_callbacks = {
+	"notepad.exe": [
+					("msvcrt.dll","exit", notepad_msvcrt_exit),
+					("USER32.dll","GetMessageW",notepad_user32_getmessagew)
+				   ]
+}
+
+def call_info(origin_eip, dest_eip):
+	p = get_current_process()
+	return p.handle_call(origin_eip, dest_eip)
+
+# Register FLX Callbacks 
+ev_syscall = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
+ev_call = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
