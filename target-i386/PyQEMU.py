@@ -76,6 +76,7 @@ def event_update_cr3(old_cr3, new_cr3):
 
 			if active.lower() != MONITOR_NAME:
 				process.watched = False
+				process.disable_non_monitor_workaround()
 				PyFlxInstrument.set_instrumentation_active(0)
 				return 1
 
@@ -138,6 +139,13 @@ class TracedProcess(processinfo.Process):
 		self.callcounter = 0
 		processinfo.Process.__init__(self)
 
+	def disable_non_monitor_workaround(self):
+		global MONITOR_NAME
+		if self.get_imagefilename().strip("\x00").lower() != MONITOR_NAME:
+			members = filter(lambda x: callable(getattr(self, x)), list(set(dir(self))-set(dir(processinfo.Process))))
+			for member in members:
+				setattr(self, member, lambda *args: None)
+
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
 
@@ -192,8 +200,6 @@ class TracedProcess(processinfo.Process):
 					pass
 					
 	def runCallbacks(self, dllname, funcname):
-		print "dll: %s, function: %s"%(dllname, funcname)
-		print "callbacks: %s"%str(self.callonfunction)
 		if self.callonfunction.has_key(dllname+funcname):
 			for callback in self.callonfunction[dllname+funcname]:
 				callback()
@@ -207,21 +213,23 @@ class TracedProcess(processinfo.Process):
 		return None
 
 	def loadCallbacks(self, callbacklist):
-		print "loading callbacks: "+str(callbacklist)
 		debug("loadCallbacks %s"%self.get_imagefilename().strip("\x00").lower())
 		if callbacklist.has_key(self.get_imagefilename().strip("\x00").lower()):
 			for callback in callbacklist[self.get_imagefilename().strip("\x00").lower()]:
 				self.registerFunctionHandler(*callback)
-			self.callbacklist_loaded = True
+		self.callbacklist_loaded = True
 
 	def update(self):
-		debug("updating")
 		self._ensure_run(lambda: processinfo.Process.update(self))
 
 	def update_images(self):
 		self._ensure_run(lambda: processinfo.Process.update_images(self))
 
 	def _ensure_run(self, function):
+		try:
+			debug("updating process: %s"%self.get_imagefilename().strip("\x00").lower())
+		except:
+			pass
 		counter = 0
 		finished = False
 		while not finished and counter < 5:
