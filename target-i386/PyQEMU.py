@@ -2,6 +2,9 @@
 
 import traceback
 import sys
+import os
+import dislib
+import glob
 
 import PyFlxInstrument
 import processinfo
@@ -76,7 +79,6 @@ def event_update_cr3(old_cr3, new_cr3):
 
 			if active.lower() != MONITOR_NAME:
 				process.watched = False
-				process.disable_non_monitor_workaround()
 				PyFlxInstrument.set_instrumentation_active(0)
 				return 1
 
@@ -115,7 +117,12 @@ def event_update_cr3(old_cr3, new_cr3):
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
 			#print "New process: 0x%08x => %s" % (new_cr3, filename)
-			p = TracedProcess(proc_event_callbacks)
+			if filename == MONITOR_NAME:
+				print "New TracedProcess %s"%filename
+				p = TracedProcess(proc_event_callbacks)
+			else:
+				print "New DummyProcess %s"%filename
+				p = DummyProcess()
 			#print p.get_pid()
 				
 			#print map(hex, map(ord, filename))
@@ -137,14 +144,8 @@ class TracedProcess(processinfo.Process):
 		self.callonfunction = {}
 		self.execution_state = self.PROCSTATE_PRERUN
 		self.callcounter = 0
+		self.dllhandler = None
 		processinfo.Process.__init__(self)
-
-	def disable_non_monitor_workaround(self):
-		global MONITOR_NAME
-		if self.get_imagefilename().strip("\x00").lower() != MONITOR_NAME:
-			members = filter(lambda x: callable(getattr(self, x)), list(set(dir(self))-set(dir(processinfo.Process))))
-			for member in members:
-				setattr(self, member, lambda *args: None)
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -239,6 +240,41 @@ class TracedProcess(processinfo.Process):
 			except:
 				continue
 
+class DummyProcess(processinfo.Process):
+	def handle_call(self, *args):
+		pass
+	def handle_syscall(self, *args):
+		pass
+
+class DLLHandler(dict):
+	def __init__(self, dlldir, images):
+		print "initializing DLLHandler"
+		self.symbols = {}
+		dict.__init__(self)
+		self._loadDllFiles(dlldir, images)
+
+	def _loadDllFiles(self,dlldir, images):
+		files = glob.glob(dlldir+"/*.dll")
+		for image in images:
+			try:
+				self[image.BaseDllName] = DLLFile(dlldir+"/"+image.BaseDllName, image.DllBase)
+				debug("%s loaded"%image.BaseDllName)
+			except:
+				pass
+
+class DLLFile(dislib.PEFile, dict):
+	def __init__(self, FileName, NewImageBase=None):
+		print "initializing DLLFile"
+		print "filename "+FileName
+		dict.__init__(self)
+		dislib.PEFile.__init__(self, FileName, NewImageBase)
+		self._loadSymbols()
+		self.filename = os.path.basename(FileName)
+
+	def _loadSymbols(self):
+		for function in self.Exports:
+			self[function.VA+function.Ordinal] = function.Name
+
 def init(sval):	
 	print "Python instrument started"
 	return 1
@@ -283,3 +319,5 @@ def call_info(origin_eip, dest_eip):
 ev_syscall = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
+
+

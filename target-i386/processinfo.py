@@ -552,7 +552,7 @@ class Process( object):
 
         if not self.valid and valid:
             # new process
-            print "New process '%s', PID %u, PPID %u" % (eprocess.ImageFileName, eprocess.UniqueProcessId, eprocess.InheritedFromUniqueProcessId)
+            # print "New process '%s', PID %u, PPID %u" % (eprocess.ImageFileName, eprocess.UniqueProcessId, eprocess.InheritedFromUniqueProcessId)
             # Cache eprocess - FIXME does doing this once suffice? is this even real caching( it's a StructuredData() after all)
             self.eprocess = eprocess
 
