@@ -247,42 +247,30 @@ class DLLHandler(dict):
 		dict.__init__(self)
 
 	def newDLL(self, image):
-		try:
-			if not self.has_key(image.BaseDllName):
-				self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
-				if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
-					Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
-		except dislib.PEException:
-			print "! ! !   PE EXCEPTION   ! ! !"
+		if not self.has_key(image.BaseDllName):
+			self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
+			if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
+				Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
 
 	def getFunctionName(self, addr):
-		print "getFunctionName"
-		if self.values() is None:
-			print "NONE VALUES!!!!!!!"
 		for dllname,dll in self.items():
 			if dll.ImageBase <= addr <= dll.ImageBase+dll.SizeOfImage:
-				print "dllname: %s"%dllname
-				print "address: %i"%addr
-				print "base: %i"%dll.ImageBase
-				image = dll
 				if dll.has_key(addr):
 					f = dll[addr]
 				else:
 					f = None
-				return image, f
+				return dll, f
+		return None, None
 
-class DLLFile(dislib.PEFile, dict):
-	def __init__(self, FileName, NewImageBase=None):
+class DLLFile(dict):
+	def __init__(self, FileName, ImageBase):
 		print "initializing DLLFile %s"%FileName
 		dict.__init__(self)
-		dislib.PEFile.__init__(self, FileName, NewImageBase)
-
-		self._loadSymbols()
 		self.filename = os.path.basename(FileName)
-
-	def _loadSymbols(self):
-		for function in self.Exports:
-			self[function.VA+self.ImageBase] = function.Name
+		lib = pefile.PE(FileName)
+		for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
+			self[ImageBase+function.address] = function.name
+		del(lib)
 
 def init(sval):	
 	print "Python instrument started"
