@@ -138,13 +138,14 @@ class TracedProcess(processinfo.Process):
 	CALL_CACHE_SIZE = 10000
 
 	def __init__(self, callbacklist):
+		self.last_image_num = 0
 		self.callbacklist = callbacklist
 		self.callbacklist_loaded = False
 		self.callcache = []
 		self.callonfunction = {}
 		self.execution_state = self.PROCSTATE_PRERUN
 		self.callcounter = 0
-		self.dllhandler = None
+		self.dllhandler = DLLHandler()
 		processinfo.Process.__init__(self)
 
 	def handle_syscall(self, eax):
@@ -168,39 +169,33 @@ class TracedProcess(processinfo.Process):
 			self.update()
 			functioncalls = []
 			for src,dst in self.callcache:
-				from_image = self.get_image_by_address(src)
-				to_image   = self.get_image_by_address(dst)
-				if from_image is not None and to_image is not None:
-					from_image_name = from_image.get_basedllname()
-					to_image_name   = to_image.get_basedllname()
-					pname = self.get_imagefilename().strip("\x00")
-					if from_image_name == pname and to_image_name != pname:
-						if self.symbols.has_key(toaddr):
-							functioncalls.append((to_image, self.symbols[toaddr][2]))
+				if self.addrInExe(src) and not self.addrInExe(dst):
+					if toaddr is None:
+						print "TOADDR IS NONE"
+					image, function = self.dllhandler.getFunctionName(toaddr)
+					if image is None or function is None:
+						continue
+					self.runCallbacks(image.FileName, function)
+					self.execution_state = self.PROCSTATE_RUN
 			self.callcache = []
-			if not len(functioncalls) == 0:
-				for image,func in functioncalls:
-					self.runCallbacks(image.get_basedllname(), func)
-				self.execution_state = self.PROCSTATE_RUN
+
+	def addrInExe(self, addr):
+		image = self.get_image_by_address(addr)
+		return image.get_basedllname() == self.get_imagefilename().strip("\x00")
 
 	def _handle_call_run(self, fromaddr, toaddr):
 		if self.execution_state != self.PROCSTATE_RUN:
 			raise Exception("called _handle_call_run but process is not ready yet.")
-		from_image = self.get_image_by_address(fromaddr)
-		to_image   = self.get_image_by_address(toaddr)
-		if from_image is not None and to_image is not None:
-			from_image_name = from_image.get_basedllname()
-			to_image_name   = to_image.get_basedllname()
-			pname = self.get_imagefilename().strip("\x00")
-			if from_image_name == pname and to_image_name != pname:
-				if not self.symbols.has_key(toaddr):
-					self.update_images()
-				try:
-					self.runCallbacks(to_image.get_basedllname(), self.symbols[toaddr][2])
-				except:
-					pass
-					
+		if self.addrInExe(fromaddr) and not self.addrInExe(toaddr):
+			image, function = self.dllhandler.getFunctionName(toaddr)
+			if image is None or function is None:
+				self.update()
+				image, function = self.dllhandler.getFunctionName(toaddr)
+			if image is not None and function is not None:
+				self.runCallbacks(image.FileName, function)
+
 	def runCallbacks(self, dllname, funcname):
+		debug("Call on %s::%s()"%(dllname,funcname))
 		if self.callonfunction.has_key(dllname+funcname):
 			for callback in self.callonfunction[dllname+funcname]:
 				callback()
@@ -225,6 +220,10 @@ class TracedProcess(processinfo.Process):
 
 	def update_images(self):
 		self._ensure_run(lambda: processinfo.Process.update_images(self))
+		if len(self.images) > self.last_image_num:
+			for image in self.images.values():
+				self.dllhandler.newDLL(image)
+		self.last_image_um = len(self.images)
 
 	def _ensure_run(self, function):
 		try:
@@ -233,12 +232,7 @@ class TracedProcess(processinfo.Process):
 			pass
 		counter = 0
 		finished = False
-		while not finished and counter < 5:
-			try:
-				function()
-				finished = True
-			except:
-				continue
+		function()
 
 class DummyProcess(processinfo.Process):
 	def handle_call(self, *args):
@@ -247,33 +241,48 @@ class DummyProcess(processinfo.Process):
 		pass
 
 class DLLHandler(dict):
-	def __init__(self, dlldir, images):
+	def __init__(self):
 		print "initializing DLLHandler"
-		self.symbols = {}
+		self.dlldir = "/mnt/shared/dlls"
 		dict.__init__(self)
-		self._loadDllFiles(dlldir, images)
 
-	def _loadDllFiles(self,dlldir, images):
-		files = glob.glob(dlldir+"/*.dll")
-		for image in images:
-			try:
-				self[image.BaseDllName] = DLLFile(dlldir+"/"+image.BaseDllName, image.DllBase)
-				debug("%s loaded"%image.BaseDllName)
-			except:
-				pass
+	def newDLL(self, image):
+		try:
+			if not self.has_key(image.BaseDllName):
+				self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
+				if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
+					Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
+		except dislib.PEException:
+			print "! ! !   PE EXCEPTION   ! ! !"
+
+	def getFunctionName(self, addr):
+		print "getFunctionName"
+		if self.values() is None:
+			print "NONE VALUES!!!!!!!"
+		for dllname,dll in self.items():
+			if dll.ImageBase <= addr <= dll.ImageBase+dll.SizeOfImage:
+				print "dllname: %s"%dllname
+				print "address: %i"%addr
+				print "base: %i"%dll.ImageBase
+				image = dll
+				if dll.has_key(addr):
+					f = dll[addr]
+				else:
+					f = None
+				return image, f
 
 class DLLFile(dislib.PEFile, dict):
 	def __init__(self, FileName, NewImageBase=None):
-		print "initializing DLLFile"
-		print "filename "+FileName
+		print "initializing DLLFile %s"%FileName
 		dict.__init__(self)
 		dislib.PEFile.__init__(self, FileName, NewImageBase)
+
 		self._loadSymbols()
 		self.filename = os.path.basename(FileName)
 
 	def _loadSymbols(self):
 		for function in self.Exports:
-			self[function.VA+function.Ordinal] = function.Name
+			self[function.VA+self.ImageBase] = function.Name
 
 def init(sval):	
 	print "Python instrument started"

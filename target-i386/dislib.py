@@ -98,6 +98,7 @@ class PEFile(object):
         # Holds the delta between the original ImageBase and the new one.
         self.Delta = 0
         if isinstance(FileName, basestring):
+            self.FileName = FileName
             try:
                 f = open(FileName, "rb")
             except IOError:
@@ -451,7 +452,10 @@ class PEFile(object):
         # This is a bit tricky, that's why we had a flag indicating whether the function was already ready to go...
         for i in [i for i in enumerate(Addrs) if i[1][1] != 1]:
             j = i[0] + OrdinalBase
-            FuncNames.append(Export("", j, Addrs[j][0]))
+            try:
+                FuncNames.append(Export("", j, Addrs[j][0]))
+            except:
+                print "dislib could not figure out funcname"
         return FuncNames
 
     def GetRelocations(self):

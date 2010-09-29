@@ -113,42 +113,42 @@ class Image( object):
             self.cached.basedllname = self.ldr_data_table_entry.BaseDllName.str()
 
 
-        if valid and self.process.watched and not hasattr( self, "pe"):
-            try:
-                #self.pe = PE( VMemBackend( self.DllBase,
-                 #                          self.DllBase + self.SizeOfImage, 
-                  #                         self.process.pdb), 
-                self.pe = PE( VMemBackend( self.DllBase,
-                                           self.DllBase + self.SizeOfImage ),
-                              self.BaseDllName, 
-                              True)
-                #print "PE image parsed for %s" % self.FullDllName
-            except PageFaultException, pagefault:
-                self.pending_pages.add( pagefault.value[ 0] / PAGESIZE)
-                #PyBochsC.pending_page( True)
+        #if valid and self.process.watched and not hasattr( self, "pe"):
+        #    try:
+        #        #self.pe = PE( VMemBackend( self.DllBase,
+        #         #                          self.DllBase + self.SizeOfImage, 
+        #          #                         self.process.pdb), 
+        #        self.pe = PE( VMemBackend( self.DllBase,
+        #                                   self.DllBase + self.SizeOfImage ),
+        #                      self.BaseDllName, 
+        #                      True)
+        #        #print "PE image parsed for %s" % self.FullDllName
+        #    except PageFaultException, pagefault:
+        #        self.pending_pages.add( pagefault.value[ 0] / PAGESIZE)
+        #        #PyBochsC.pending_page( True)
+#
+        #if valid and not self.exports_done and hasattr( self, "pe") and hasattr( self.pe.Exports, "ExportAddressTable"):
+        #    try:
+        #        self.exports.update(self.pe.Exports.all_exports())
+        #        self.process.symbols.update(self.exports)
+        #        self.exports_done = True
+        #    except PageFaultException, pagefault:
+        #        self.pending_pages.add( pagefault.value[ 0] / PAGESIZE)
+        #        #PyBochsC.pending_page( True)
 
-        if valid and not self.exports_done and hasattr( self, "pe") and hasattr( self.pe.Exports, "ExportAddressTable"):
-            try:
-                self.exports.update(self.pe.Exports.all_exports())
-                self.process.symbols.update(self.exports)
-                self.exports_done = True
-            except PageFaultException, pagefault:
-                self.pending_pages.add( pagefault.value[ 0] / PAGESIZE)
-                #PyBochsC.pending_page( True)
-
-        if not self.valid and valid and self.process.watched:
-            self.dump_pending = True
-            pending = False
-            for page in xrange( self.DllBase, self.DllBase + self.SizeOfImage, PAGESIZE):
-                try:
-                    dummy = self.process.backend.read( page, 1)
-                except:
-                    self.pending_pages.add( page / PAGESIZE)
-                    pending = True
-            if pending:
-                #PyBochsC.pending_page( True)
-                pass
-            self.valid = valid
+        #if not self.valid and valid and self.process.watched:
+        #    self.dump_pending = True
+        #    pending = False
+        #    for page in xrange( self.DllBase, self.DllBase + self.SizeOfImage, PAGESIZE):
+        #        try:
+        #            dummy = self.process.backend.read( page, 1)
+        #        except:
+        #            self.pending_pages.add( page / PAGESIZE)
+        #            pending = True
+        #    if pending:
+        #        #PyBochsC.pending_page( True)
+        #        pass
+        #    self.valid = valid
 
     def dump( self):
         start = self.DllBase
