@@ -143,9 +143,7 @@ class TracedProcess(processinfo.Process):
 		self.callbacklist_loaded = False
 		self.callcache = []
 		self.callonfunction = {}
-		self.execution_state = self.PROCSTATE_PRERUN
 		self.callcounter = 0
-		self.dllhandler = DLLHandler()
 		processinfo.Process.__init__(self)
 
 	def handle_syscall(self, eax):
@@ -154,28 +152,7 @@ class TracedProcess(processinfo.Process):
 	def handle_call(self, *args):
 		if not self.callbacklist_loaded:
 			self.loadCallbacks(self.callbacklist)
-		if self.execution_state == self.PROCSTATE_PRERUN:
-			self._handle_call_prerun(*args)
-		elif self.execution_state == self.PROCSTATE_RUN:
-			self._handle_call_run(*args)
-		else:
-			raise Exception("Unknown process execution state")
-
-	def _handle_call_prerun(self, fromaddr, toaddr):
-		""" Will be called for every 'call' opcode executed by the vm process. """
-		self.callcache.append((fromaddr, toaddr))
-		self.callcounter += 1
-		if self.callcounter%self.CALL_CACHE_SIZE == 0:
-			self.update()
-			functioncalls = []
-			for src,dst in self.callcache:
-				if self.addrInExe(src) and not self.addrInExe(dst):
-					image, function = self.dllhandler.getFunctionName(toaddr)
-					if image is None or function is None:
-						continue
-					self.runCallbacks(image.FileName, function)
-					self.execution_state = self.PROCSTATE_RUN
-			self.callcache = []
+		self._handle_call_run(*args)
 
 	def addrInExe(self, addr):
 		image = self.get_image_by_address(addr)
@@ -185,17 +162,19 @@ class TracedProcess(processinfo.Process):
 			return False
 
 	def _handle_call_run(self, fromaddr, toaddr):
-		if self.execution_state != self.PROCSTATE_RUN:
-			raise Exception("called _handle_call_run but process is not ready yet.")
-		if self.addrInExe(fromaddr) and not self.addrInExe(toaddr):
-			image, function = self.dllhandler.getFunctionName(toaddr)
-			if image is None or function is None:
-				self.update()
-				image, function = self.dllhandler.getFunctionName(toaddr)
-			if image is not None and function is not None:
-				self.runCallbacks(image.FileName, function)
+		from_image = self.get_image_by_address(fromaddr)
+		to_image   = self.get_image_by_address(toaddr)
+		if from_image is None or to_image is None:
+			self.update_images()
+		if from_image is not None and to_image is not None and  \
+		   self.addrInExe(fromaddr) and not self.addrInExe(toaddr):
+			try:
+				self.runCallbacks(to_image.get_basedllname(), self.symbols[toaddr][2])
+			except:
+				to_image.update()
 
 	def runCallbacks(self, dllname, funcname):
+		dllname = dllname.lower()
 		debug("Call on %s::%s()"%(dllname,funcname))
 		if self.callonfunction.has_key(dllname+funcname):
 			for callback in self.callonfunction[dllname+funcname]:
@@ -203,6 +182,7 @@ class TracedProcess(processinfo.Process):
 
 	def registerFunctionHandler(self, dllname, function, callback):
 		""" Registers a function that will be called when vm process calls dllname::funcname(). """
+		dllname = dllname.lower()
 		if self.callonfunction.has_key(dllname+function):
 			self.callonfunction[dllname+function].append(callback)
 		else:
@@ -215,25 +195,6 @@ class TracedProcess(processinfo.Process):
 			for callback in callbacklist[self.get_imagefilename().strip("\x00").lower()]:
 				self.registerFunctionHandler(*callback)
 		self.callbacklist_loaded = True
-
-	def update(self):
-		self._ensure_run(lambda: processinfo.Process.update(self))
-
-	def update_images(self):
-		self._ensure_run(lambda: processinfo.Process.update_images(self))
-		if len(self.images) > self.last_image_num:
-			for image in self.images.values():
-				self.dllhandler.newDLL(image)
-		self.last_image_um = len(self.images)
-
-	def _ensure_run(self, function):
-		try:
-			debug("updating process: %s"%self.get_imagefilename().strip("\x00").lower())
-		except:
-			pass
-		counter = 0
-		finished = False
-		function()
 
 class DummyProcess(processinfo.Process):
 	def handle_call(self, *args):
@@ -313,7 +274,7 @@ def notepad_user32_getmessagew():
 proc_event_callbacks = {
 	"notepad.exe": [
 					("msvcrt.dll","exit", notepad_msvcrt_exit),
-					("user32.dll","GetMessageW",notepad_user32_getmessagew)
+					("USER32.dll","GetMessageW",notepad_user32_getmessagew)
 				   ]
 }
 

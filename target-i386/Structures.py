@@ -99,7 +99,10 @@ class VMemBackend( Backend):
         self.limit = limit
 
     def read( self, offset, length):
-        return PyFlxInstrument.vmem_read( self.base + offset, length)
+        try:
+            return PyFlxInstrument.vmem_read( self.base + offset, length)
+        except:
+            raise PageFaultException(self.base+offset)
 
     def write( self, offset, replacement):
         raise Exception( "write() not implemented in Virtual Memory Backend")
