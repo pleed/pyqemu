@@ -135,7 +135,7 @@ class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 	PROCSTATE_PRERUN = 0
 	PROCSTATE_RUN = 1
-	CALL_CACHE_SIZE = 1
+	CALL_CACHE_SIZE = 100
 
 	def __init__(self, callbacklist):
 		self.last_image_num = 0
@@ -254,7 +254,7 @@ class DLLHandler(dict):
 				if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
 					Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
 		except:
-			print "Could not load %s"image.BaseDllName.strip("\x00").lower()
+			print "Could not load %s"%image.BaseDllName.strip("\x00").lower()
 
 	def getFunctionName(self, addr):
 		for dllname,dll in self.items():
@@ -313,7 +313,7 @@ def notepad_user32_getmessagew():
 proc_event_callbacks = {
 	"notepad.exe": [
 					("msvcrt.dll","exit", notepad_msvcrt_exit),
-					("USER32.dll","GetMessageW",notepad_user32_getmessagew)
+					("user32.dll","GetMessageW",notepad_user32_getmessagew)
 				   ]
 }
 
