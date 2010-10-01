@@ -3,7 +3,7 @@
 import traceback
 import sys
 import os
-import dislib
+import pefile
 import glob
 
 import PyFlxInstrument
@@ -135,7 +135,7 @@ class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 	PROCSTATE_PRERUN = 0
 	PROCSTATE_RUN = 1
-	CALL_CACHE_SIZE = 10000
+	CALL_CACHE_SIZE = 1
 
 	def __init__(self, callbacklist):
 		self.last_image_num = 0
@@ -170,8 +170,6 @@ class TracedProcess(processinfo.Process):
 			functioncalls = []
 			for src,dst in self.callcache:
 				if self.addrInExe(src) and not self.addrInExe(dst):
-					if toaddr is None:
-						print "TOADDR IS NONE"
 					image, function = self.dllhandler.getFunctionName(toaddr)
 					if image is None or function is None:
 						continue
@@ -181,7 +179,10 @@ class TracedProcess(processinfo.Process):
 
 	def addrInExe(self, addr):
 		image = self.get_image_by_address(addr)
-		return image.get_basedllname() == self.get_imagefilename().strip("\x00")
+		if image is not None:
+			return image.get_basedllname() == self.get_imagefilename().strip("\x00")
+		else:
+			return False
 
 	def _handle_call_run(self, fromaddr, toaddr):
 		if self.execution_state != self.PROCSTATE_RUN:
@@ -247,19 +248,24 @@ class DLLHandler(dict):
 		dict.__init__(self)
 
 	def newDLL(self, image):
-		if not self.has_key(image.BaseDllName):
-			self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
-			if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
-				Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
+		try:
+			if not self.has_key(image.BaseDllName):
+				self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
+				if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
+					Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
+		except:
+			print "Could not load %s"image.BaseDllName.strip("\x00").lower()
 
 	def getFunctionName(self, addr):
 		for dllname,dll in self.items():
-			if dll.ImageBase <= addr <= dll.ImageBase+dll.SizeOfImage:
+			if dll.ImageBase <= addr and addr <= dll.ImageBase+dll.SizeOfImage:
 				if dll.has_key(addr):
 					f = dll[addr]
 				else:
 					f = None
 				return dll, f
+				if dll is None or f is None:
+					print "Could not resolve 0x%x"%addr
 		return None, None
 
 class DLLFile(dict):
@@ -267,7 +273,10 @@ class DLLFile(dict):
 		print "initializing DLLFile %s"%FileName
 		dict.__init__(self)
 		self.filename = os.path.basename(FileName)
+		self.FileName = self.filename
+		self.ImageBase = ImageBase
 		lib = pefile.PE(FileName)
+		self.SizeOfImage = lib.OPTIONAL_HEADER.SizeOfImage
 		for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
 			self[ImageBase+function.address] = function.name
 		del(lib)
