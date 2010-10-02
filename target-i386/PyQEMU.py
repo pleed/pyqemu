@@ -10,7 +10,6 @@ import PyFlxInstrument
 import processinfo
 from Structures import *
 
-MONITOR_ACTIVE = True
 DEBUG = True
 
 R_EAX = 0
@@ -32,9 +31,7 @@ R_GS = 5
 
 KNOWN_Processes = {}
 
-
-MONITOR_NAME = "notepad.exe"
-
+# Helper functions
 def get_current_process():
 	regs = PyFlxInstrument.registers()
 	cr3 = regs["cr3"]
@@ -42,8 +39,9 @@ def get_current_process():
 	return process
 
 def dump_memory(process, address, len, filename):
+	delimeter = "\x90"*23
 	file = open(filename,"a")
-	buf = process.backend.read(address, len)+"\x90"*23
+	buf = process.backend.read(address, len)+delimeter
 	file.write(buf)
 	file.close()
 
@@ -54,15 +52,9 @@ def debug(msg):
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
-	#print "type(new_cr3) = "+str(type(new_cr3))
-	#print "new_cr3 = "+str(new_cr3)
-
-	#return 1
 
 	kpcr_addr = PyFlxInstrument.creg(R_FS)
 	if KNOWN_Processes.has_key(new_cr3):
-		#print "Task switch: %08x: " % new_cr3, KNOWN_Processes[new_cr3]
-		
 		process = KNOWN_Processes[new_cr3]		
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
@@ -71,38 +63,16 @@ def event_update_cr3(old_cr3, new_cr3):
 		is_new = False
 
 		if not process.valid:
-			#print process.valid
 			process.update()
 
 		if process.valid:
-			active = process.get_imagefilename().strip("\x00")
-
-			if active.lower() != MONITOR_NAME:
+			if not isinstance(process, TracedProcess):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
 				return 1
 
-			try:
-				#print "%x -%s-" % (process.get_cur_tid(), active)
-				pass				
-			except:
-				# ignore if we can't get the thread id
-				return 1
-
-				#start interactive python shell
-				import traceback
-				traceback.print_exc()
-
-				import code
-				import sys
-				#code.interact("Welcome to PyQEMU shell", local=locals())
-
-
-			if active == MONITOR_NAME and MONITOR_ACTIVE == True:
+			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
-			#elif last == MONITOR_NAME:
-			#	print "inactive"
-				
 
 		return 1
 	elif kpcr_addr > 0xf0000000: #otherwise something breaks :(			   
@@ -116,16 +86,12 @@ def event_update_cr3(old_cr3, new_cr3):
 				
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
-			#print "New process: 0x%08x => %s" % (new_cr3, filename)
-			if filename == MONITOR_NAME:
+			if filename.lower() in map(lambda x: x.lower(), proc_event_callbacks.keys()):
 				print "New TracedProcess %s"%filename
 				p = TracedProcess(proc_event_callbacks)
 			else:
-				print "New DummyProcess %s"%filename
-				p = DummyProcess()
-			#print p.get_pid()
-				
-			#print map(hex, map(ord, filename))
+				print "New UntracedProcess %s"%filename
+				p = UntracedProcess()
 			KNOWN_Processes[new_cr3] = p
 			p.watched = True
 	
@@ -133,28 +99,24 @@ def event_update_cr3(old_cr3, new_cr3):
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
-	PROCSTATE_PRERUN = 0
-	PROCSTATE_RUN = 1
-	CALL_CACHE_SIZE = 100
 
 	def __init__(self, callbacklist):
-		self.last_image_num = 0
 		self.callbacklist = callbacklist
 		self.callbacklist_loaded = False
-		self.callcache = []
 		self.callonfunction = {}
-		self.callcounter = 0
 		processinfo.Process.__init__(self)
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
 
 	def handle_call(self, *args):
+		""" Call Opcode handler. """
 		if not self.callbacklist_loaded:
 			self.loadCallbacks(self.callbacklist)
 		self._handle_call_run(*args)
 
 	def addrInExe(self, addr):
+		""" Returns true if address is in main executable mapping. """
 		image = self.get_image_by_address(addr)
 		if image is not None:
 			return image.get_basedllname() == self.get_imagefilename().strip("\x00")
@@ -162,6 +124,7 @@ class TracedProcess(processinfo.Process):
 			return False
 
 	def _handle_call_run(self, fromaddr, toaddr):
+		""" Resolve interesting call and trigger callbacks. """
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
@@ -174,6 +137,7 @@ class TracedProcess(processinfo.Process):
 				to_image.update()
 
 	def runCallbacks(self, dllname, funcname):
+		""" Run registered Callbacks for (dll, function) tuple. """
 		dllname = dllname.lower()
 		debug("Call on %s::%s()"%(dllname,funcname))
 		if self.callonfunction.has_key(dllname+funcname):
@@ -190,57 +154,18 @@ class TracedProcess(processinfo.Process):
 		return None
 
 	def loadCallbacks(self, callbacklist):
+		""" Callbacks are stored in a dictionary with dll+fname as key, containing lists. """
 		debug("loadCallbacks %s"%self.get_imagefilename().strip("\x00").lower())
 		if callbacklist.has_key(self.get_imagefilename().strip("\x00").lower()):
 			for callback in callbacklist[self.get_imagefilename().strip("\x00").lower()]:
 				self.registerFunctionHandler(*callback)
 		self.callbacklist_loaded = True
 
-class DummyProcess(processinfo.Process):
+class UntracedProcess(processinfo.Process):
 	def handle_call(self, *args):
 		pass
 	def handle_syscall(self, *args):
 		pass
-
-class DLLHandler(dict):
-	def __init__(self):
-		print "initializing DLLHandler"
-		self.dlldir = "/mnt/shared/dlls"
-		dict.__init__(self)
-
-	def newDLL(self, image):
-		try:
-			if not self.has_key(image.BaseDllName):
-				self[image.BaseDllName] = DLLFile(self.dlldir+"/"+image.BaseDllName.lower(), image.DllBase)
-				if self[image.BaseDllName].SizeOfImage != image.SizeOfImage:
-					Exception("Local and Guest DLL %s differ!!!!!"%(image.BaseDllName))
-		except:
-			print "Could not load %s"%image.BaseDllName.strip("\x00").lower()
-
-	def getFunctionName(self, addr):
-		for dllname,dll in self.items():
-			if dll.ImageBase <= addr and addr <= dll.ImageBase+dll.SizeOfImage:
-				if dll.has_key(addr):
-					f = dll[addr]
-				else:
-					f = None
-				return dll, f
-				if dll is None or f is None:
-					print "Could not resolve 0x%x"%addr
-		return None, None
-
-class DLLFile(dict):
-	def __init__(self, FileName, ImageBase):
-		print "initializing DLLFile %s"%FileName
-		dict.__init__(self)
-		self.filename = os.path.basename(FileName)
-		self.FileName = self.filename
-		self.ImageBase = ImageBase
-		lib = pefile.PE(FileName)
-		self.SizeOfImage = lib.OPTIONAL_HEADER.SizeOfImage
-		for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
-			self[ImageBase+function.address] = function.name
-		del(lib)
 
 def init(sval):	
 	print "Python instrument started"
@@ -278,13 +203,9 @@ proc_event_callbacks = {
 				   ]
 }
 
-def call_info(origin_eip, dest_eip):
-	p = get_current_process()
-	return p.handle_call(origin_eip, dest_eip)
-
 # Register FLX Callbacks 
-ev_syscall = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
-ev_call = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
+ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
+ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
 
 
