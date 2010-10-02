@@ -119,7 +119,7 @@ class TracedProcess(processinfo.Process):
 		""" Returns true if address is in main executable mapping. """
 		image = self.get_image_by_address(addr)
 		if image is not None:
-			return image.get_basedllname() == self.get_imagefilename().strip("\x00")
+			return image.get_basedllname().lower() == self.imagefilename()
 		else:
 			return False
 
@@ -144,6 +144,9 @@ class TracedProcess(processinfo.Process):
 			for callback in self.callonfunction[dllname+funcname]:
 				callback()
 
+	def imagefilename(self):
+		return self.get_imagefilename().strip("\x00").lower()
+
 	def registerFunctionHandler(self, dllname, function, callback):
 		""" Registers a function that will be called when vm process calls dllname::funcname(). """
 		dllname = dllname.lower()
@@ -155,9 +158,9 @@ class TracedProcess(processinfo.Process):
 
 	def loadCallbacks(self, callbacklist):
 		""" Callbacks are stored in a dictionary with dll+fname as key, containing lists. """
-		debug("loadCallbacks %s"%self.get_imagefilename().strip("\x00").lower())
-		if callbacklist.has_key(self.get_imagefilename().strip("\x00").lower()):
-			for callback in callbacklist[self.get_imagefilename().strip("\x00").lower()]:
+		debug("loadCallbacks %s"%self.imagefilename())
+		if callbacklist.has_key(self.imagefilename()):
+			for callback in callbacklist[self.imagefilename()]:
 				self.registerFunctionHandler(*callback)
 		self.callbacklist_loaded = True
 
