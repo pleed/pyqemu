@@ -52,6 +52,7 @@ def debug(msg):
 
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
+	global R_FS
 
 	kpcr_addr = PyFlxInstrument.creg(R_FS)
 	if KNOWN_Processes.has_key(new_cr3):
@@ -106,6 +107,18 @@ class TracedProcess(processinfo.Process):
 		self.callonfunction = {}
 		processinfo.Process.__init__(self)
 
+	def readmem(self, address, length):
+		return self.backend.read(address, length)
+
+	def creg(self, register):
+		return PyFlxInstrument.creg(register)
+
+	def eip(self):
+		return PyFlxInstrument.eip()
+
+	def genreg(self, index):
+		return PyFlxInstrument.genreg(index)
+
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
 
@@ -133,7 +146,7 @@ class TracedProcess(processinfo.Process):
 		   self.addrInExe(fromaddr) and not self.addrInExe(toaddr):
 			try:
 				self.runCallbacks(to_image.get_basedllname(), self.symbols[toaddr][2])
-			except:
+			except KeyError:
 				to_image.update()
 
 	def runCallbacks(self, dllname, funcname):
@@ -142,7 +155,7 @@ class TracedProcess(processinfo.Process):
 		debug("Call on %s::%s()"%(dllname,funcname))
 		if self.callonfunction.has_key(dllname+funcname):
 			for callback in self.callonfunction[dllname+funcname]:
-				callback()
+				callback(self)
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
@@ -192,17 +205,55 @@ def ensure_error_handling_helper(func):
 
 # Implement Process event Callbacks here
 
-def notepad_msvcrt_exit():
+def notepad_msvcrt_exit(process):
 	print "NOTEPAD CALLED EXIT!"
 
-def notepad_user32_getmessagew():
+def notepad_user32_getmessagew(process):
 	print "NOTEPAD CALLED GETMESSAGEW"
+
+def notepad_kernel32_lstrcpynW(process):
+	print "lstrcpynW called"
+	printparams(process)
+
+def printparams(process):
+	process.print_stack
+
+def readparams(process):
+	#import code
+	#code.interact("lstrcpynW callback", local=locals())
+	global R_ESP
+	esp  = process.genreg(R_ESP)
+	args = process.readmem(esp, 32)
+	i = 0
+	words = []
+	while i<len(args):
+		if i%4 == 0:
+			words.append(args[i:i+4])
+		i+=4
+	output = []
+	for word in words:
+		i=0
+		l = 0
+		for byte in word:
+			l=l+(2**(8*i))*ord(byte)
+			i+=1
+		output.append(l)
+	for out in output:
+		out = hex(out)
+		if len(out)<10:
+			out = out[0:2]+"0"*(10-len(out))+out[2:]
+		print out
+	import code
+	code.interact("ESP:",local=locals())
 
 # Register Process event Callbacks
 proc_event_callbacks = {
 	"notepad.exe": [
 					("msvcrt.dll","exit", notepad_msvcrt_exit),
-					("USER32.dll","GetMessageW",notepad_user32_getmessagew)
+					("USER32.dll","GetMessageW",notepad_user32_getmessagew),
+					("kernel32.dll","lstrcpynW",notepad_kernel32_lstrcpynW),
+					("user32.dll","LoadStringW",notepad_user32_LoadStringW),
+					("user32.dll","CharNextW",notepad_user32_CharNextW),
 				   ]
 }
 

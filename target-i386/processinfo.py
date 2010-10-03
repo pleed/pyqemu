@@ -279,7 +279,6 @@ class Process( object):
                     return self.images[ base].pending_pages.pop() * PAGESIZE
                 elif self.images[ base].dump_pending:
                     self.images[ base].dump()
-        #PyBochsC.pending_page( False)
         return None
 
     def print_stack( self, function, source, offset = 0):
