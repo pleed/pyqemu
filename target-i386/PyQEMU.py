@@ -3,12 +3,13 @@
 import traceback
 import sys
 import os
-import pefile
 import glob
+import struct
 
 import PyFlxInstrument
 import processinfo
 from Structures import *
+from windecl import *
 
 DEBUG = True
 
@@ -39,7 +40,7 @@ def get_current_process():
 	return process
 
 def dump_memory(process, address, len, filename):
-	delimeter = "\x90"*23
+	delimeter = "\x90"*42
 	file = open(filename,"a")
 	buf = process.backend.read(address, len)+delimeter
 	file.write(buf)
@@ -98,14 +99,61 @@ def event_update_cr3(old_cr3, new_cr3):
 	
 	return 0
 
+class CalledFunction:
+	def __init__(self, dll, name, process):
+		self.dll  = dll
+		self.name = name
+		self.regsnapshot = PyFlxInstrument.registers()
+		self.process = process
+
+	def top(self):
+		""" Stack frame starts at stored EIP! In this definition, arguments belong to predecessor """
+		return self.regsnapshot["esp"]
+
+	def __str__(self):
+		return str(self.dll)+"::"+str(self.name)+"()"
+
+	def __eq__(self, other):
+		return self.dll == other.dll and self.name == other.name and self.top == other.top
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
+	def isActive(self):
+		return self == self.process.activeFunction()
+
+	def _checkActive(self):
+		if not self.isActive():
+			raise Exception("Function: %s , member would return invalid values since function is inactive!"%self)
+
+	def getIntArg(self, num):
+		self._checkActive()
+		return struct.unpack("I", self.getFunctionArg(num))
+
+	def getBufFromPtr(self, num, size):
+		self._checkActive()
+		address = self.getIntArg(num)
+		return struct.unpack(str(num)+"c", self.process.readmem(address, size))
+
+	def getFunctionArg(self, num):
+		self._checkActive()
+		global R_ESP
+		esp = self.genreg(R_ESP)
+		return self.process.readmem(esp+num*4, 4)
+
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 
 	def __init__(self, callbacklist):
-		self.callbacklist = callbacklist
+		self.callbacklist        = callbacklist
 		self.callbacklist_loaded = False
-		self.callonfunction = {}
+		self.callonfunction      = {}
+		self.callhistory         = []
+		self.callstack           = []
+		self.heapallocated       = {}
 		processinfo.Process.__init__(self)
+
+#		self._loadInternalCallbacks()
 
 	def readmem(self, address, length):
 		return self.backend.read(address, length)
@@ -119,14 +167,37 @@ class TracedProcess(processinfo.Process):
 	def genreg(self, index):
 		return PyFlxInstrument.genreg(index)
 
+	def activeFunction(self):
+		if not len(self.callstack) == 0:
+			return self.callstack[-1]
+		else:
+			raise Exception("Not active Function")
+
+	def _handle_function_send(self, me, function):
+		pass
+
+	def _loadInternalCallbacks(self):
+		internal_callbacks = [
+								("ws2_32.dll","send", self._handle_function_send),
+								("kernel32.dll","HeapAlloc",_self.handle_function_send),
+							 ]
+
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
+
+	def handle_ret(self, reip):
+		regs = PyFlxInstrument.registers()
+		eip = regs["eip"]
+		returnto = struct.unpack("I", self.backend.read(regs["esp"],4))
+		print "Return from %x to %x"%(eip,returnto[0])
+		print "Real eip is %x"%reip
+		dump_memory(self, reip, 10, "/tmp/dumptest")
 
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
 		if not self.callbacklist_loaded:
 			self.loadCallbacks(self.callbacklist)
-		self._handle_call_run(*args)
+		self._handle_call_filter(*args)
 
 	def addrInExe(self, addr):
 		""" Returns true if address is in main executable mapping. """
@@ -136,26 +207,46 @@ class TracedProcess(processinfo.Process):
 		else:
 			return False
 
-	def _handle_call_run(self, fromaddr, toaddr):
+	def _handle_call_filter(self, fromaddr, toaddr):
 		""" Resolve interesting call and trigger callbacks. """
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
 			self.update_images()
-		if from_image is not None and to_image is not None and  \
-		   self.addrInExe(fromaddr) and not self.addrInExe(toaddr):
-			try:
-				self.runCallbacks(to_image.get_basedllname(), self.symbols[toaddr][2])
-			except KeyError:
+		if from_image is not None and to_image is not None and self.addrInExe(fromaddr):
+			if not self.symbols.has_key(toaddr):
 				to_image.update()
+			try:
+				print "Call %x -> %s" % (fromaddr, toaddr)
+				# We got a valid call
+				self._handle_interesting_call(to_image.get_basedllname(), self.symbols[toaddr][2], resolved = True)
+			except KeyError:
+				self._handle_interesting_call(to_image.get_basedllname(), hex(toaddr))
 
-	def runCallbacks(self, dllname, funcname):
-		""" Run registered Callbacks for (dll, function) tuple. """
+	def _handle_interesting_call(self, dllname, function, resolved = False):
 		dllname = dllname.lower()
-		debug("Call on %s::%s()"%(dllname,funcname))
-		if self.callonfunction.has_key(dllname+funcname):
-			for callback in self.callonfunction[dllname+funcname]:
-				callback(self)
+		f = CalledFunction(dllname, function, self)
+		self.callhistory.append(f)
+		if not resolved:
+			self._handle_unresolved_call(f)
+		else:
+			self.runCallbacks(f)
+		regs = PyFlxInstrument.registers()
+		eip = regs["eip"]
+		dump_memory(self, eip, 10, "/tmp/dumptest")
+		try:
+			debug("call to -> %s"%self.callhistory[-1])
+		except:
+			pass
+
+	def _handle_unresolved_call(self, function):
+		pass
+
+	def runCallbacks(self, function):
+		""" Run registered Callbacks for (dll, function) tuple. """
+		if self.callonfunction.has_key(function.dll+function.name):
+			for callback in self.callonfunction[function.dll+function.name]:
+				callback(self, self.callhistory[-1])
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
@@ -182,6 +273,8 @@ class UntracedProcess(processinfo.Process):
 		pass
 	def handle_syscall(self, *args):
 		pass
+	def handle_ret(self, *args):
+		pass
 
 def init(sval):	
 	print "Python instrument started"
@@ -204,56 +297,18 @@ def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
 # Implement Process event Callbacks here
-
-def notepad_msvcrt_exit(process):
-	print "NOTEPAD CALLED EXIT!"
-
-def notepad_user32_getmessagew(process):
-	print "NOTEPAD CALLED GETMESSAGEW"
-
-def notepad_kernel32_lstrcpynW(process):
-	print "lstrcpynW called"
-	printparams(process)
-
-def printparams(process):
-	process.print_stack
-
-def readparams(process):
-	#import code
-	#code.interact("lstrcpynW callback", local=locals())
-	global R_ESP
-	esp  = process.genreg(R_ESP)
-	args = process.readmem(esp, 32)
-	i = 0
-	words = []
-	while i<len(args):
-		if i%4 == 0:
-			words.append(args[i:i+4])
-		i+=4
-	output = []
-	for word in words:
-		i=0
-		l = 0
-		for byte in word:
-			l=l+(2**(8*i))*ord(byte)
-			i+=1
-		output.append(l)
-	for out in output:
-		out = hex(out)
-		if len(out)<10:
-			out = out[0:2]+"0"*(10-len(out))+out[2:]
-		print out
-	import code
-	code.interact("ESP:",local=locals())
+def print_params(process, function):
+	print str(function)
+	return
 
 # Register Process event Callbacks
 proc_event_callbacks = {
 	"notepad.exe": [
-					("msvcrt.dll","exit", notepad_msvcrt_exit),
-					("USER32.dll","GetMessageW",notepad_user32_getmessagew),
-					("kernel32.dll","lstrcpynW",notepad_kernel32_lstrcpynW),
-					("user32.dll","LoadStringW",notepad_user32_LoadStringW),
-					("user32.dll","CharNextW",notepad_user32_CharNextW),
+					("msvcrt.dll","exit", print_params),
+					("USER32.dll","GetMessageW", print_params),
+					("kernel32.dll","lstrcpynW",print_params),
+					#("user32.dll","LoadStringW",notepad_user32_LoadStringW),
+					#("user32.dll","CharNextW",notepad_user32_CharNextW),
 				   ]
 }
 
@@ -261,5 +316,4 @@ proc_event_callbacks = {
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
-
-
+ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))

@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	print "this module cannot be executed standalone"
 
 class WindowsHeader:
-	def __init__(self, headerfiles = [], define_symbols = None, undefine_symbols = None, header_paths = [], namespace = "", gccxml_version = 'v09'):
+	def __init__(self, headerfiles = [], define_symbols = None, undefine_symbols = None, header_paths = ["/mnt/shared/headers/Include"], namespace = "win_sp2", gccxml_version = 'v09'):
 		this_module_dir_path = os.path.abspath ( os.path.dirname( sys.modules[__name__].__file__) )
 		gccxml_09_path = os.path.join( this_module_dir_path, '..', '..', '..', 'gccxml_bin', gccxml_version, sys.platform, 'bin' )
 		config = parser.config_t( gccxml_path=gccxml_09_path, include_paths=header_paths, define_symbols = define_symbols, undefine_symbols = undefine_symbols)

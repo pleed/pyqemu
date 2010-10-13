@@ -38,8 +38,7 @@ DEF_HELPER_2(load_seg, void, int, int)
 DEF_HELPER_3(ljmp_protected, void, int, tl, int)
 DEF_HELPER_4(lcall_real, void, int, tl, int, int)
 
-DEF_HELPER_0(mark_syscall, void)
-
+DEF_HELPER_0(ret_event, void)
 DEF_HELPER_0(syscall_event, void)
 DEF_HELPER_2(call_protected, void, tl, tl) 
 DEF_HELPER_2(call_ev_protected, void, tl, tl) 

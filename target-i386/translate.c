@@ -4656,11 +4656,11 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 gen_jmp_im(pc_start - s->cs_base);
                 tcg_gen_trunc_tl_i32(cpu_tmp2_i32, cpu_T[0]);
 
-        if (instrumentation_active && instrumentation_call_active)
-          {
-            gen_helper_call_protected(tcg_const_i32(pc_start),
+              if (instrumentation_active && instrumentation_call_active)
+              {
+                gen_helper_call_protected(tcg_const_i32(pc_start),
             						  tcg_const_i32(cpu_T[1]));
-          }
+              }
 
 
                 gen_helper_lcall_protected(cpu_tmp2_i32, cpu_T[1],
@@ -6204,6 +6204,9 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_stack_update(s, val + (2 << s->dflag));
         if (s->dflag == 0)
             gen_op_andl_T0_ffff();
+		// FIXME remove if done via watchpoints/breakpoints
+        /*if (instrumentation_active && instrumentation_ret_active)
+        	gen_helper_ret_event(cpu_T[0]);*/
         gen_op_jmp_T0();
         gen_eob(s);
         break;
@@ -6223,6 +6226,9 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             if (s->cc_op != CC_OP_DYNAMIC)
                 gen_op_set_cc_op(s->cc_op);
             gen_jmp_im(pc_start - s->cs_base);
+			// FIXME remove if done via watchpoints/breakpoints
+        	/*if (instrumentation_active && instrumentation_ret_active)
+        		gen_helper_ret_event();*/
             gen_helper_lret_protected(tcg_const_i32(s->dflag),
                                       tcg_const_i32(val));
         } else {

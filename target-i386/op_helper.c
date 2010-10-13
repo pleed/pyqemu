@@ -2512,6 +2512,12 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     }
 }
 
+void helper_ret_event(void){
+  if (!(env->eip & 0x80000000)){
+    flxinstrument_ret_event(env->eip);
+  }
+}
+
 void helper_call_im_protected(target_ulong src_eip,
 							  target_ulong new_eip){
   if (!(new_eip & 0x80000000) ){
@@ -2540,11 +2546,6 @@ void helper_call_protected(target_ulong src_eip,
 
 void helper_syscall_event(void){
 	flxinstrument_syscall_event(env->regs[R_EAX]);
-}
-
-void helper_mark_syscall(void) {
-  printf("Syscall happened\n");
-
 }
 
 void helper_post_call_protected(target_ulong sub_eip,
