@@ -99,22 +99,52 @@ def event_update_cr3(old_cr3, new_cr3):
 	
 	return 0
 
+class Stack(list):
+	def __init__(self, *args):
+		list.__init__(self, *args)
+		self.push = self.append
+
+	def top(self):
+		return self[-1]
+
 class CalledFunction:
-	def __init__(self, dll, name, process):
-		self.dll  = dll
-		self.name = name
-		self.regsnapshot = PyFlxInstrument.registers()
+	def __init__(self, fromaddr, toaddr, nextaddr, process):
+		self.fromaddr = fromaddr
+		self.toaddr   = toaddr
+		self.nextaddr = nextaddr
 		self.process = process
+
+		self.entrystate = PyFlxInstrument.registers()
+		self.exitstate = None
+
+	def isReturning(self, nextaddr):
+		self.exitstate = PyFlxInstrument.registers()
+		return nextaddr == self.nextaddr and self.exitstate["esp"] == self.entrystate["esp"]
+
+	def retval(self):
+		self.exitstate = PyFlxInstrument.registers()
+		return self.exitstate["eax"]
+
+	def resolveToName(self):
+		dll, addr = self.resolve()
+		try:
+			return dll.get_basedllname(), self.process.symbols[addr][2]
+		except KeyError:
+			return dll.get_basedllname(), hex(addr)
+
+	def resolve(self):
+		image = self.process.get_image_by_address(self.toaddr)
+		return image, self.toaddr
 
 	def top(self):
 		""" Stack frame starts at stored EIP! In this definition, arguments belong to predecessor """
-		return self.regsnapshot["esp"]
+		return self.entrystate["esp"]
 
 	def __str__(self):
-		return str(self.dll)+"::"+str(self.name)+"()"
+		return "%s::%s()"%(self.resolveToName())
 
 	def __eq__(self, other):
-		return self.dll == other.dll and self.name == other.name and self.top == other.top
+		return self.toaddr== other.toaddr and self.top() == other.top()
 
 	def __ne__(self, other):
 		return not self.__eq__(other)
@@ -149,11 +179,14 @@ class TracedProcess(processinfo.Process):
 		self.callbacklist_loaded = False
 		self.callonfunction      = {}
 		self.callhistory         = []
-		self.callstack           = []
-		self.heapallocated       = {}
+		self.callstack           = Stack()
 		processinfo.Process.__init__(self)
 
 #		self._loadInternalCallbacks()
+
+	def register(self, register):
+		regs = PyFlxInstrument.registers()
+		return regs[register]
 
 	def readmem(self, address, length):
 		return self.backend.read(address, length)
@@ -182,7 +215,15 @@ class TracedProcess(processinfo.Process):
 								("kernel32.dll","HeapAlloc",_self.handle_function_send),
 							 ]
 	def handle_ret(self, toaddr):
-		print "returning to %x"%toaddr
+		try:
+			function = self.callstack.top()
+		except IndexError:
+			return
+		#if function.nextaddr == toaddr:
+		if function.isReturning(toaddr):
+			print "Function %s returning, eax: %x"%(str(function), function.retval())
+			print "Callstack depth: %i"%(len(self.callstack))
+			self.callstack.pop()
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -203,31 +244,24 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
-		print "call from %x, to %x, next addr: %x"%(fromaddr,toaddr,nextaddr)
-		return
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
 			self.update_images()
 		if from_image is not None and to_image is not None and self.addrInExe(fromaddr):
-			return
 			if not self.symbols.has_key(toaddr):
 				to_image.update()
-			try:
-				print "Call %x -> %x, nextaddr is %x" % (fromaddr, toaddr, nextaddr)
-				# We got a valid call
-				self._handle_interesting_call(to_image.get_basedllname(), self.symbols[toaddr][2], resolved = True)
-			except KeyError:
-				self._handle_interesting_call(to_image.get_basedllname(), hex(toaddr))
+			self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+			#try:
+			#	# We got a valid call
+			#	self._handle_interesting_call(to_image.get_basedllname(), self.symbols[toaddr][2], resolved = True, nextaddr)
+			#except KeyError:
+			#	self._handle_interesting_call(to_image.get_basedllname(), hex(toaddr), nextaddr)
 
-	def _handle_interesting_call(self, dllname, function, resolved = False):
-		dllname = dllname.lower()
-		f = CalledFunction(dllname, function, self)
-		self.callhistory.append(f)
-		if not resolved:
-			self._handle_unresolved_call(f)
-		else:
-			self.runCallbacks(f)
+	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr):
+		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
+		self.callhistory.append(function)
+		self.callstack.push(function)
 
 	def _handle_unresolved_call(self, function):
 		pass
