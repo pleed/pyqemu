@@ -118,6 +118,8 @@
     DEF_HELPER_FLAGS_3(name, 0, ret, t1, t2, t3)
 #define DEF_HELPER_4(name, ret, t1, t2, t3, t4) \
     DEF_HELPER_FLAGS_4(name, 0, ret, t1, t2, t3, t4)
+#define DEF_HELPER_5(name, ret, t1, t2, t3, t4, t5) \
+    DEF_HELPER_FLAGS_5(name, 0, ret, t1, t2, t3, t4, t5)
 
 #endif /* DEF_HELPER_H */
 
@@ -139,6 +141,10 @@ dh_ctype(ret) HELPER(name) (dh_ctype(t1), dh_ctype(t2), dh_ctype(t3));
 #define DEF_HELPER_FLAGS_4(name, flags, ret, t1, t2, t3, t4) \
 dh_ctype(ret) HELPER(name) (dh_ctype(t1), dh_ctype(t2), dh_ctype(t3), \
                                    dh_ctype(t4));
+
+#define DEF_HELPER_FLAGS_5(name, flags, ret, t1, t2, t3, t4, t5) \
+dh_ctype(ret) HELPER(name) (dh_ctype(t1), dh_ctype(t2), dh_ctype(t3), \
+                                   dh_ctype(t4), dh_ctype(t5));
 
 #undef GEN_HELPER
 #define GEN_HELPER -1

@@ -2322,6 +2322,8 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     target_ulong ssp, old_ssp, next_eip;
 
     next_eip = env->eip + next_eip_addend;
+	//if (instrumentation_active && instrumentation_call_active)
+	//	gen_helper_call_protected(pc_start, new_eip, next_eip);
     LOG_PCALL("lcall %04x:%08x s=%d\n", new_cs, (uint32_t)new_eip, shift);
     LOG_PCALL_STATE(env);
     if ((new_cs & 0xfffc) == 0)
@@ -2512,35 +2514,29 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     }
 }
 
-void helper_ret_event(void){
-  if (!(env->eip & 0x80000000)){
-    flxinstrument_ret_event(env->eip);
-  }
-}
-
 void helper_call_im_protected(target_ulong src_eip,
-							  target_ulong new_eip){
+							  target_ulong new_eip, int next_eip){
   if (!(new_eip & 0x80000000) ){
 	//fprintf(stderr, "call_im:\n");
-	helper_call_protected(src_eip,new_eip);
+	helper_call_protected(src_eip,new_eip,next_eip);
   }
 
 }
 void helper_call_ev_protected(target_ulong src_eip,
-							  target_ulong new_eip){
+							  target_ulong new_eip, int next_eip){
   if (!(new_eip & 0x80000000) ){
 	//fprintf(stderr, "call_ev:\n");
-	helper_call_protected(src_eip,new_eip);
+	helper_call_protected(src_eip,new_eip,next_eip);
   }
 }
 
 /* regular calls in protected mode */
 void helper_call_protected(target_ulong src_eip,
-               target_ulong new_eip)
+               target_ulong new_eip, int next_eip )
 {
   // We are not interested in kernel mode stuff
   if (!(new_eip & 0x80000000) ){
-    flxinstrument_call_event(src_eip, new_eip);
+    flxinstrument_call_event(src_eip, new_eip, next_eip);
   }
 }
 

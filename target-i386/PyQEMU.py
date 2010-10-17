@@ -185,14 +185,6 @@ class TracedProcess(processinfo.Process):
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
 
-	def handle_ret(self, reip):
-		regs = PyFlxInstrument.registers()
-		eip = regs["eip"]
-		returnto = struct.unpack("I", self.backend.read(regs["esp"],4))
-		print "Return from %x to %x"%(eip,returnto[0])
-		print "Real eip is %x"%reip
-		dump_memory(self, reip, 10, "/tmp/dumptest")
-
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
 		if not self.callbacklist_loaded:
@@ -207,7 +199,7 @@ class TracedProcess(processinfo.Process):
 		else:
 			return False
 
-	def _handle_call_filter(self, fromaddr, toaddr):
+	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
@@ -217,7 +209,7 @@ class TracedProcess(processinfo.Process):
 			if not self.symbols.has_key(toaddr):
 				to_image.update()
 			try:
-				print "Call %x -> %s" % (fromaddr, toaddr)
+				print "Call %x -> %x, nextaddr is %x" % (fromaddr, toaddr, nextaddr)
 				# We got a valid call
 				self._handle_interesting_call(to_image.get_basedllname(), self.symbols[toaddr][2], resolved = True)
 			except KeyError:
@@ -316,4 +308,3 @@ proc_event_callbacks = {
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
-ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))

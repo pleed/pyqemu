@@ -2460,6 +2460,8 @@ gdb_handlesig (CPUState *env, int sig)
 /* Tell the remote gdb that the process has exited due to SIG.  */
 void gdb_signalled(CPUState *env, int sig)
 {
+  if(sig == SIGTRAP)
+	printf("GOT SIGTRAP :) on %x",env->eip)
   GDBState *s;
   char buf[4];
 
