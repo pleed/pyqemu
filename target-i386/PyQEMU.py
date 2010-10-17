@@ -181,6 +181,8 @@ class TracedProcess(processinfo.Process):
 								("ws2_32.dll","send", self._handle_function_send),
 								("kernel32.dll","HeapAlloc",_self.handle_function_send),
 							 ]
+	def handle_ret(self, toaddr):
+		print "returning to %x"%toaddr
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -201,11 +203,14 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
+		print "call from %x, to %x, next addr: %x"%(fromaddr,toaddr,nextaddr)
+		return
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
 			self.update_images()
 		if from_image is not None and to_image is not None and self.addrInExe(fromaddr):
+			return
 			if not self.symbols.has_key(toaddr):
 				to_image.update()
 			try:
@@ -223,13 +228,6 @@ class TracedProcess(processinfo.Process):
 			self._handle_unresolved_call(f)
 		else:
 			self.runCallbacks(f)
-		regs = PyFlxInstrument.registers()
-		eip = regs["eip"]
-		dump_memory(self, eip, 10, "/tmp/dumptest")
-		try:
-			debug("call to -> %s"%self.callhistory[-1])
-		except:
-			pass
 
 	def _handle_unresolved_call(self, function):
 		pass
@@ -307,4 +305,5 @@ proc_event_callbacks = {
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
+ev_ret       = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)

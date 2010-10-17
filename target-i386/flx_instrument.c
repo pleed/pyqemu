@@ -70,6 +70,7 @@ static PyObject *PyFlx_C_Module;
 PyObject *PyFlx_ev_call = NULL;
 PyObject *PyFlx_ev_syscall = NULL;
 PyObject *PyFlx_ev_update_cr3 = NULL;
+PyObject *PyFlx_ev_ret = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -382,7 +383,14 @@ void flxinstrument_init(void) {
        printf("Call event active\n");
        instrumentation_call_active = 1;
      }   
+   PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
+   Py_XINCREF(PyFlx_ev_ret);
+   if (PyFlx_ev_ret && PyCallable_Check(PyFlx_ev_ret) && instrumentation_call_active)
+     {
+       printf("Ret event active\n");
+     }   
  
+
    PyFlx_ev_syscall = PyObject_GetAttrString(Py_Python_Module, "ev_syscall");
    Py_XINCREF(PyFlx_ev_syscall);
    if (PyFlx_ev_syscall && PyCallable_Check(PyFlx_ev_syscall))
@@ -409,6 +417,8 @@ void flxinstrument_init(void) {
      PyFlx_ev_update_cr3 = NULL;
 
      Py_XDECREF(PyFlx_ev_call);
+     PyFlx_ev_call = NULL;
+     Py_XDECREF(PyFlx_ev_ret);
      PyFlx_ev_call = NULL;
      
      Py_XDECREF(PyFlx_ev_syscall);
@@ -469,7 +479,7 @@ int flxinstrument_syscall_event(uint32_t eax) {
   int retval = 0;
 
   if (!PyCallable_Check(PyFlx_ev_syscall)) {
-    fprintf(stderr, "No registered call event handler\n");
+    fprintf(stderr, "No registered syscall event handler\n");
     return retval;
   }
 
@@ -509,6 +519,37 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, ui
 				 call_origin,
 				 call_destination,
 				 next_eip);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_ret_event(uint32_t new_eip) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_ret_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_ret)) {
+    fprintf(stderr, "No registered ret event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_ret,
+				 (char*) "(I)",
+				 new_eip);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

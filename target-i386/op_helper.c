@@ -2195,6 +2195,12 @@ void helper_load_seg(int seg_reg, int selector)
     }
 }
 
+void helper_ret_event(target_ulong new_eip){
+	if(instrumentation_active && instrumentation_call_active)
+		if(!(0x80000000&new_eip))
+  	  		flxinstrument_ret_event(new_eip);
+}
+
 /* protected mode jump */
 void helper_ljmp_protected(int new_cs, target_ulong new_eip,
                            int next_eip_addend)
@@ -2524,19 +2530,21 @@ void helper_call_im_protected(target_ulong src_eip,
 }
 void helper_call_ev_protected(target_ulong src_eip,
 							  target_ulong new_eip, int next_eip){
-  if (!(new_eip & 0x80000000) ){
-	//fprintf(stderr, "call_ev:\n");
-	helper_call_protected(src_eip,new_eip,next_eip);
-  }
+    if (!(new_eip & 0x80000000) ){
+	  //fprintf(stderr, "call_ev:\n");
+  	  helper_call_protected(src_eip,new_eip,next_eip);
+    }
 }
 
 /* regular calls in protected mode */
 void helper_call_protected(target_ulong src_eip,
                target_ulong new_eip, int next_eip )
 {
-  // We are not interested in kernel mode stuff
-  if (!(new_eip & 0x80000000) ){
-    flxinstrument_call_event(src_eip, new_eip, next_eip);
+  if(instrumentation_active && instrumentation_call_active){
+  	// We are not interested in kernel mode stuff
+  	if (!(new_eip & 0x80000000) ){
+  	  flxinstrument_call_event(src_eip, new_eip, next_eip);
+  	}
   }
 }
 
