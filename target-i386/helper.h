@@ -40,6 +40,7 @@ DEF_HELPER_3(ljmp_protected, void, int, tl, int)
 DEF_HELPER_4(lcall_real, void, int, tl, int, int)
 
 DEF_HELPER_0(syscall_event, void)
+DEF_HELPER_1(jmp, void, tl)
 DEF_HELPER_3(call_protected, void, tl, tl, int) 
 DEF_HELPER_3(call_ev_protected, void, tl, tl, int) 
 DEF_HELPER_3(call_im_protected, void, tl, tl, int) 

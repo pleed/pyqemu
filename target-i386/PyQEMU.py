@@ -88,9 +88,9 @@ def event_update_cr3(old_cr3, new_cr3):
 				
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
-			if filename.lower() in map(lambda x: x.lower(), proc_event_callbacks.keys()):
+			if filename.lower() in trace_processes:
 				print "New TracedProcess %s"%filename
-				p = TracedProcess(proc_event_callbacks)
+				p = TracedProcess()
 			else:
 				print "New UntracedProcess %s"%filename
 				p = UntracedProcess()
@@ -119,7 +119,7 @@ class CalledFunction:
 
 	def isReturning(self, nextaddr):
 		self.exitstate = PyFlxInstrument.registers()
-		return nextaddr == self.nextaddr and self.exitstate["esp"] == self.entrystate["esp"]
+		return (nextaddr == self.nextaddr and self.exitstate["esp"] == self.entrystate["esp"]) or (self.exitstate["esp"] > self.entrystate["esp"])
 
 	def retval(self):
 		self.exitstate = PyFlxInstrument.registers()
@@ -127,6 +127,8 @@ class CalledFunction:
 
 	def resolveToName(self):
 		dll, addr = self.resolve()
+		if dll is None:
+			return "Unknown","Unknown"
 		try:
 			return dll.get_basedllname(), self.process.symbols[addr][2]
 		except KeyError:
@@ -158,7 +160,7 @@ class CalledFunction:
 
 	def getIntArg(self, num):
 		self._checkActive()
-		return struct.unpack("I", self.getFunctionArg(num))
+		return struct.unpack("I", self.getFunctionArg(num))[0]
 
 	def getBufFromPtr(self, num, size):
 		self._checkActive()
@@ -168,21 +170,20 @@ class CalledFunction:
 	def getFunctionArg(self, num):
 		self._checkActive()
 		global R_ESP
-		esp = self.genreg(R_ESP)
+		esp = self.process.genreg(R_ESP)
 		return self.process.readmem(esp+num*4, 4)
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 
-	def __init__(self, callbacklist):
-		self.callbacklist        = callbacklist
-		self.callbacklist_loaded = False
+	def __init__(self):
 		self.callonfunction      = {}
 		self.callhistory         = []
 		self.callstack           = Stack()
+		self.heapallocated       = {}
 		processinfo.Process.__init__(self)
 
-#		self._loadInternalCallbacks()
+		self._loadInternalCallbacks()
 
 	def register(self, register):
 		regs = PyFlxInstrument.registers()
@@ -206,23 +207,60 @@ class TracedProcess(processinfo.Process):
 		else:
 			raise Exception("Not active Function")
 
-	def _handle_function_send(self, me, function):
-		pass
+	def handle_function_heap_allocated(self, function, event):
+		print "heap allocate!"
+		if event == "leave":
+			addr = function.retval()
+			size = function.getIntArg(1)
+			self.heapallocated[addr] = size
+			print "allocated %d bytes on addr: 0x%x"%(size,addr)
+
+	def handle_function_heap_freed(self, function, event):
+		print "heap free!"
+		if event == "enter":
+			addr = function.getIntArg(1)
+			if self.heapallocated.has_key(addr):
+				del(self.heapallocated[addr])
+			print "freed mem on addr: 0x%x"%addr
+
+	def handle_function_recv(self, function, event):
+		print "recv!"
+		if event == "enter":
+			addr = function.getIntArg(2)
+			if self.heapallocated.has_key(addr):
+				print "Previously allocated buffer has been filled"
+			else:
+				print "receiving to unknown buffer 0x%x"%addr
+
+	def handle_function_send(self, function, event):
+		print "send!"
+		if event == "enter":
+			addr = function.getIntArg(2)
+			if self.heapallocated.has_key(addr):
+				print "Previously allocated buffer has been sent"
+			else:
+				print "sending unknown buffer 0x%x"%addr
 
 	def _loadInternalCallbacks(self):
 		internal_callbacks = [
-								("ws2_32.dll","send", self._handle_function_send),
-								("kernel32.dll","HeapAlloc",_self.handle_function_send),
-							 ]
+								("msvcrt.dll",  "malloc",  self.handle_function_heap_allocated),
+								("msvcrt.dll",  "free",    self.handle_function_heap_freed),
+								("wsock32.dll", "recv",    self.handle_function_recv),
+								("ws2_32.dll",  "WSARecv", self.handle_function_recv),
+								("wsock32.dll", "send",    self.handle_function_send),
+								("ws2_32.dll",  "send",    self.handle_function_send),
+						 	 ]
+		self.loadCallbacks(internal_callbacks)
+
 	def handle_ret(self, toaddr):
 		try:
 			function = self.callstack.top()
 		except IndexError:
 			return
-		#if function.nextaddr == toaddr:
-		if function.isReturning(toaddr):
-			print "Function %s returning, eax: %x"%(str(function), function.retval())
-			print "Callstack depth: %i"%(len(self.callstack))
+		#if function.isReturning(toaddr):
+		if self.addrInExe(toaddr):
+			print "Returning from %s"%function
+			self.runCallbacks(function,"leave")
 			self.callstack.pop()
 
 	def handle_syscall(self, eax):
@@ -230,8 +268,6 @@ class TracedProcess(processinfo.Process):
 
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
-		if not self.callbacklist_loaded:
-			self.loadCallbacks(self.callbacklist)
 		self._handle_call_filter(*args)
 
 	def addrInExe(self, addr):
@@ -244,6 +280,8 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
+		if fromaddr == 0 and nextaddr == 0:
+			return self._handle_interesting_call(fromaddr, toaddr, nextaddr)
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
@@ -252,25 +290,27 @@ class TracedProcess(processinfo.Process):
 			if not self.symbols.has_key(toaddr):
 				to_image.update()
 			self._handle_interesting_call(fromaddr, toaddr, nextaddr)
-			#try:
-			#	# We got a valid call
-			#	self._handle_interesting_call(to_image.get_basedllname(), self.symbols[toaddr][2], resolved = True, nextaddr)
-			#except KeyError:
-			#	self._handle_interesting_call(to_image.get_basedllname(), hex(toaddr), nextaddr)
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr):
+		if fromaddr == 0 and nextaddr == 0:
+			if self.symbols.has_key(toaddr):
+				try:
+					last = self.callstack.pop()
+				except IndexError:
+					return
+				fromaddr = last.fromaddr
+				nextaddr = last.nextaddr
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
-		self.callhistory.append(function)
 		self.callstack.push(function)
+		print "Called %s"%function
+		self.runCallbacks(function,"enter")
 
-	def _handle_unresolved_call(self, function):
-		pass
-
-	def runCallbacks(self, function):
+	def runCallbacks(self, function, *args):
 		""" Run registered Callbacks for (dll, function) tuple. """
-		if self.callonfunction.has_key(function.dll+function.name):
-			for callback in self.callonfunction[function.dll+function.name]:
-				callback(self, self.callhistory[-1])
+		dll,name = function.resolveToName()
+		if self.callonfunction.has_key(dll+name):
+			for callback in self.callonfunction[dll+name]:
+				callback(self.callstack.top(), *args)
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
@@ -286,10 +326,8 @@ class TracedProcess(processinfo.Process):
 
 	def loadCallbacks(self, callbacklist):
 		""" Callbacks are stored in a dictionary with dll+fname as key, containing lists. """
-		debug("loadCallbacks %s"%self.imagefilename())
-		if callbacklist.has_key(self.imagefilename()):
-			for callback in callbacklist[self.imagefilename()]:
-				self.registerFunctionHandler(*callback)
+		for callback in callbacklist:
+			self.registerFunctionHandler(*callback)
 		self.callbacklist_loaded = True
 
 class UntracedProcess(processinfo.Process):
@@ -320,21 +358,12 @@ def error_dummy(func, *args):
 def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
-# Implement Process event Callbacks here
-def print_params(process, function):
-	print str(function)
-	return
-
-# Register Process event Callbacks
-proc_event_callbacks = {
-	"notepad.exe": [
-					("msvcrt.dll","exit", print_params),
-					("USER32.dll","GetMessageW", print_params),
-					("kernel32.dll","lstrcpynW",print_params),
-					#("user32.dll","LoadStringW",notepad_user32_LoadStringW),
-					#("user32.dll","CharNextW",notepad_user32_CharNextW),
-				   ]
-}
+# Register Processes to trace
+trace_processes = [
+	"telnet.exe",
+	"notepad.exe",
+	"wget.exe"
+]
 
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))

@@ -103,6 +103,7 @@ class Image( object):
                 self.image_type = IMAGE_TYPE_DLL
             elif self.BaseDllName.lower().endswith( '.exe'):
                 self.image_type = IMAGE_TYPE_EXE
+            #print "DLL: %s"%(self.BaseDllName.lower())
 
 
         if self.valid or valid:

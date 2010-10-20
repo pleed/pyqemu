@@ -2195,6 +2195,12 @@ void helper_load_seg(int seg_reg, int selector)
     }
 }
 
+void helper_jmp(target_ulong new_eip){
+	if(instrumentation_active && instrumentation_call_active)
+		if(!(new_eip & 0x80000000))
+  	 		 helper_call_protected(0, new_eip, 0);
+}
+
 void helper_ret_event(target_ulong new_eip){
 	if(instrumentation_active && instrumentation_call_active)
 		if(!(0x80000000&new_eip))
