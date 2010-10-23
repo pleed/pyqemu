@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import struct
+import cPickle
 
 import PyFlxInstrument
 import processinfo
@@ -107,6 +108,9 @@ class Stack(list):
 	def top(self):
 		return self[-1]
 
+	def empty(self):
+		return len(self) == 0
+
 class CalledFunction:
 	def __init__(self, fromaddr, toaddr, nextaddr, process):
 		self.fromaddr = fromaddr
@@ -118,8 +122,10 @@ class CalledFunction:
 		self.exitstate = None
 
 	def isReturning(self, nextaddr):
-		self.exitstate = PyFlxInstrument.registers()
-		return (nextaddr == self.nextaddr and self.exitstate["esp"] == self.entrystate["esp"]) or (self.exitstate["esp"] > self.entrystate["esp"])
+		if nextaddr == self.nextaddr:
+			self.exitstate = PyFlxInstrument.registers()
+			return self.entrystate["esp"] == self.exitstate["esp"]
+		return False
 
 	def retval(self):
 		self.exitstate = PyFlxInstrument.registers()
@@ -130,7 +136,7 @@ class CalledFunction:
 		if dll is None:
 			return "Unknown","Unknown"
 		try:
-			return dll.get_basedllname(), self.process.symbols[addr][2]
+			return dll.get_basedllname().lower(), self.process.symbols[addr][2]
 		except KeyError:
 			return dll.get_basedllname(), hex(addr)
 
@@ -152,38 +158,69 @@ class CalledFunction:
 		return not self.__eq__(other)
 
 	def isActive(self):
-		return self == self.process.activeFunction()
-
-	def _checkActive(self):
-		if not self.isActive():
-			raise Exception("Function: %s , member would return invalid values since function is inactive!"%self)
+		return self == self.process.last_call
 
 	def getIntArg(self, num):
-		self._checkActive()
 		return struct.unpack("I", self.getFunctionArg(num))[0]
 
 	def getBufFromPtr(self, num, size):
-		self._checkActive()
 		address = self.getIntArg(num)
 		return struct.unpack(str(num)+"c", self.process.readmem(address, size))
 
 	def getFunctionArg(self, num):
-		self._checkActive()
 		global R_ESP
 		esp = self.process.genreg(R_ESP)
 		return self.process.readmem(esp+num*4, 4)
+
+class EventHandler:
+	def __init__(self, dumpfile):
+		self.dumpfile = dumpfile
+		self.dumper   = cPickle
+
+	def handle_event(self, obj):
+		self.dumper.dump(obj, self.dumpfile)
+		self.dumpfile.flush()
+
+	def __del__(self):
+		self.dumpfile.close()
+
+class MemoryTracer(dict):
+	def __init__(self):
+		dict.__init__(self)
+
+	def allocate(self, address, size):
+		self[address] = size
+		print "Memory on 0x%x allocated!"%address
+
+	def allocated(self, address):
+		return self.has_key(address)
+
+	def deallocate(self, address):
+		if self.allocated(address):
+			del(self[address])
+			print "Memory on 0x%x freed!"%address
+		else:
+			raise Exception("double free detected by MemoryTracer!")
+
+	def free(self, address):
+		self.deallocate(address)
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 
 	def __init__(self):
+		self.eventhandler        = EventHandler(open("/tmp/flx_dump_events","w"))
 		self.callonfunction      = {}
 		self.callhistory         = []
-		self.callstack           = Stack()
-		self.heapallocated       = {}
+		self.wait_for_return     = {}
+		self.heap                = MemoryTracer()
+		self.last_call           = None
 		processinfo.Process.__init__(self)
 
 		self._loadInternalCallbacks()
+
+	def event(self, obj):
+		self.eventhandler.handle_event(obj)
 
 	def register(self, register):
 		regs = PyFlxInstrument.registers()
@@ -201,67 +238,90 @@ class TracedProcess(processinfo.Process):
 	def genreg(self, index):
 		return PyFlxInstrument.genreg(index)
 
-	def activeFunction(self):
-		if not len(self.callstack) == 0:
-			return self.callstack[-1]
-		else:
-			raise Exception("Not active Function")
+	def add_pending_return(self, function):
+		self.wait_for_return[hash((function.nextaddr,function.top()))] = function
 
 	def handle_function_heap_allocated(self, function, event):
-		print "heap allocate!"
+		if event == "enter":
+			self.add_pending_return(function)
 		if event == "leave":
 			addr = function.retval()
 			size = function.getIntArg(1)
-			self.heapallocated[addr] = size
-			print "allocated %d bytes on addr: 0x%x"%(size,addr)
+			self.heap.allocate(addr, size)
 
 	def handle_function_heap_freed(self, function, event):
-		print "heap free!"
 		if event == "enter":
 			addr = function.getIntArg(1)
-			if self.heapallocated.has_key(addr):
-				del(self.heapallocated[addr])
-			print "freed mem on addr: 0x%x"%addr
+			if self.heap.allocated(addr):
+				self.heap.deallocate(addr)
 
 	def handle_function_recv(self, function, event):
-		print "recv!"
 		if event == "enter":
+			self.add_pending_return(function)
 			addr = function.getIntArg(2)
-			if self.heapallocated.has_key(addr):
+			if self.heap.allocated(addr):
 				print "Previously allocated buffer has been filled"
 			else:
 				print "receiving to unknown buffer 0x%x"%addr
+		if event == "leave":
+			eax = function.retval()
+			print "received 0x%x bytes"%eax
 
 	def handle_function_send(self, function, event):
 		print "send!"
 		if event == "enter":
 			addr = function.getIntArg(2)
-			if self.heapallocated.has_key(addr):
+			if self.heap.allocated(addr):
 				print "Previously allocated buffer has been sent"
 			else:
 				print "sending unknown buffer 0x%x"%addr
+
+	def handle_function_cpy(self, function, event):
+		if event == "enter":
+			dst = function.getIntArg(1)
+			src = function.getIntArg(2)
+			if self.heap.allocated(src):
+				print "Copying from heap: 0x%x"%src
+			else:
+				print "Copying from unknown: 0x%x"%src
+			if self.heap.allocated(dst):
+				print "Copying to heap: 0x%x"%dst
+			else:
+				print "Copying to unknown: 0x%x"%dst
+			print ""
 
 	def _loadInternalCallbacks(self):
 		internal_callbacks = [
 								("msvcrt.dll",  "malloc",  self.handle_function_heap_allocated),
 								("msvcrt.dll",  "free",    self.handle_function_heap_freed),
 								("wsock32.dll", "recv",    self.handle_function_recv),
-								("ws2_32.dll",  "WSARecv", self.handle_function_recv),
 								("wsock32.dll", "send",    self.handle_function_send),
+								("ws2_32.dll",  "WSARecv", self.handle_function_recv),
 								("ws2_32.dll",  "send",    self.handle_function_send),
+								("msvcrt.dll",  "strcpy",  self.handle_function_cpy),
+								("msvcrt.dll",  "strncpy", self.handle_function_cpy),
+								("msvcrt.dll",  "memcpy",  self.handle_function_cpy),
+								("msvcrt.dll",  "wcscpy",  self.handle_function_cpy),
 						 	 ]
 		self.loadCallbacks(internal_callbacks)
 
 	def handle_ret(self, toaddr):
-		try:
-			function = self.callstack.top()
-		except IndexError:
-			return
-		#if function.isReturning(toaddr):
-		if self.addrInExe(toaddr):
-			print "Returning from %s"%function
+		esp = self.register("esp")
+		index = hash((toaddr,esp))
+		if self.wait_for_return.has_key(index):
+			function = self.wait_for_return[index]
+			if not function.isReturning(toaddr):
+				raise Exception("FUNCTION NOT RETURNING!!!")
+			print "Returned %s"%function
 			self.runCallbacks(function,"leave")
-			self.callstack.pop()
+			del(self.wait_for_return[index])
+
+		#garbage collection
+		if len(self.wait_for_return) > 500:
+			for index,function in self.wait_for_return:
+				if function.top() < esp:
+					del(self.wait_for_return[hash(toaddr,function.top())])
+			print "wait_for_return size is now: %d"%len(self.wait_for_return)
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -280,37 +340,43 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
-		if fromaddr == 0 and nextaddr == 0:
-			return self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+		if self._is_jmp(fromaddr, toaddr, nextaddr):
+			if self.symbols.has_key(toaddr):
+				return self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+			else:
+				return
 		from_image = self.get_image_by_address(fromaddr)
 		to_image   = self.get_image_by_address(toaddr)
 		if from_image is None or to_image is None:
 			self.update_images()
-		if from_image is not None and to_image is not None and self.addrInExe(fromaddr):
-			if not self.symbols.has_key(toaddr):
+		if from_image is not None and to_image is not None:
+			if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.symbols.has_key(toaddr):
 				to_image.update()
-			self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+			if self.addrInExe(fromaddr) or self.addrInExe(toaddr) or self.symbols.has_key(toaddr):
+				self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+
+	def _is_jmp(self, fromaddr, toaddr, nextaddr):
+		return (fromaddr == 0) and (nextaddr == 0)
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr):
-		if fromaddr == 0 and nextaddr == 0:
-			if self.symbols.has_key(toaddr):
-				try:
-					last = self.callstack.pop()
-				except IndexError:
-					return
-				fromaddr = last.fromaddr
-				nextaddr = last.nextaddr
-		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
-		self.callstack.push(function)
-		print "Called %s"%function
+		if self._is_jmp(fromaddr, toaddr, nextaddr):
+			if self.last_call is not None:
+				self.last_call.toaddr = toaddr
+				function = self.last_call
+			else:
+				return
+		else:
+			function = CalledFunction(fromaddr, toaddr, nextaddr, self)
+		self.last_call = function
+		#print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
 		self.runCallbacks(function,"enter")
 
 	def runCallbacks(self, function, *args):
 		""" Run registered Callbacks for (dll, function) tuple. """
-		dll,name = function.resolveToName()
+		dll,name = function.resolveToName()	
 		if self.callonfunction.has_key(dll+name):
 			for callback in self.callonfunction[dll+name]:
-				callback(self.callstack.top(), *args)
+				callback(function, *args)
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
