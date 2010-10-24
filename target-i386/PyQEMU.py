@@ -212,6 +212,7 @@ class TracedProcess(processinfo.Process):
 		self.eventhandler        = EventHandler(open("/tmp/flx_dump_events","w"))
 		self.callonfunction      = {}
 		self.callhistory         = []
+		self.callstack			 = Stack()
 		self.wait_for_return     = {}
 		self.heap                = MemoryTracer()
 		self.last_call           = None
@@ -290,6 +291,9 @@ class TracedProcess(processinfo.Process):
 				print "Copying to unknown: 0x%x"%dst
 			print ""
 
+	def handle_function_raise(self, function, event):
+		print "EXCEPTION"
+
 	def _loadInternalCallbacks(self):
 		internal_callbacks = [
 								("msvcrt.dll",  "malloc",  self.handle_function_heap_allocated),
@@ -302,14 +306,39 @@ class TracedProcess(processinfo.Process):
 								("msvcrt.dll",  "strncpy", self.handle_function_cpy),
 								("msvcrt.dll",  "memcpy",  self.handle_function_cpy),
 								("msvcrt.dll",  "wcscpy",  self.handle_function_cpy),
+								("kernel32.dll", "RaiseException", self.handle_function_raise),
 						 	 ]
 		self.loadCallbacks(internal_callbacks)
 
 	def handle_ret(self, toaddr):
+		print "retit to %x"%toaddr
 		esp = self.register("esp")
 		index = hash((toaddr,esp))
+		try:
+			if self.callstack.top().isReturning(toaddr):
+				print "returning function %s"%self.callstack.top()
+				self.callstack.pop()
+		except:
+			pass
+		if toaddr == 0x60e41709:
+			f = self.callstack.top()
+			print "DEBUGGING"
+			print "f.top() = 0x%x"%f.top()
+			print "esp     = 0x%x"%esp
+			print "ret to  = 0x%x"%toaddr
+			print "f.nextaddr = 0x%x"%f.nextaddr
+		try:
+			f = self.callstack.top()
+			while f.top() < esp:
+				print "omitting %s"%str(self.callstack.top())
+				f = self.callstack.pop()
+			print "-------------"
+		except:
+			pass
 		if self.wait_for_return.has_key(index):
 			function = self.wait_for_return[index]
+			if function == self.callstack.top():
+				print "functions match!"
 			if not function.isReturning(toaddr):
 				raise Exception("FUNCTION NOT RETURNING!!!")
 			print "Returned %s"%function
@@ -322,6 +351,10 @@ class TracedProcess(processinfo.Process):
 				if function.top() < esp:
 					del(self.wait_for_return[hash(toaddr,function.top())])
 			print "wait_for_return size is now: %d"%len(self.wait_for_return)
+		try:
+			print "callstack size: %d"%len(self.callstack)
+		except:
+			pass
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -363,12 +396,17 @@ class TracedProcess(processinfo.Process):
 			if self.last_call is not None:
 				self.last_call.toaddr = toaddr
 				function = self.last_call
+				try:
+					self.callstack.top().toaddr = toaddr
+				except:
+					pass
 			else:
 				return
 		else:
 			function = CalledFunction(fromaddr, toaddr, nextaddr, self)
+			self.callstack.push(function)
 		self.last_call = function
-		#print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
+		print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
 		self.runCallbacks(function,"enter")
 
 	def runCallbacks(self, function, *args):
