@@ -6,6 +6,7 @@ import os
 import glob
 import struct
 import cPickle
+import avl
 
 import PyFlxInstrument
 import processinfo
@@ -181,26 +182,90 @@ class EventHandler:
 	def __del__(self):
 		self.dumpfile.close()
 
-class MemoryTracer(dict):
+class Buffer:
+	def __init__(self, startaddr, size):
+		self.startaddr = startaddr
+		self.size      = size
+		self.endaddr   = startaddr+size-1
+
+	def includes(self, address):
+		return self.startaddr <= address <= self.endaddr
+
+	def __eq__(self, other):
+		other = int(other)
+		return self.startaddr == other
+
+	def __lt__(self, other):
+		other = int(other)
+		return self.startaddr < other
+
+	def __le__(self, other):
+		other = int(other)
+		return self.startaddr <= other
+
+	def __ne__(self, other):
+		other = int(other)
+		return self.startaddr != other
+
+	def __ge__(self, other):
+		other = int(other)
+		return self.startaddr >= other
+
+	def __gt__(self, other):
+		other = int(other)
+		return self.startaddr > other
+
+	def __int__(self):
+		return self.startaddr
+
+class MemoryTracer:
 	def __init__(self):
-		dict.__init__(self)
+		self.tree = avl.new()
 
 	def allocate(self, address, size):
-		self[address] = size
+		self.tree.insert(Buffer(address, size))
 		print "Memory on 0x%x allocated!"%address
 
 	def allocated(self, address):
-		return self.has_key(address)
+		try:
+			buffer = self.tree.at_most(address)
+		except ValueError:
+			return False
+		if buffer.includes(address):
+			return True
+		return False
 
 	def deallocate(self, address):
 		if self.allocated(address):
-			del(self[address])
+			obj = self.tree.at_most(address)
+			self.tree.remove(obj)
 			print "Memory on 0x%x freed!"%address
 		else:
 			raise Exception("double free detected by MemoryTracer!")
 
 	def free(self, address):
 		self.deallocate(address)
+
+class Event:
+	def __init__(self, buffer):
+		self.buffer = buffer
+
+class CopyEvent(Event):
+	def __init__(self, dst_buffer, src_buffer):
+		self.dst_buffer = dst_buffer
+		self.src_buffer = src_buffer
+
+class SendEvent(Event):
+	pass
+
+class RecvEvent(Event):
+	pass
+
+class AllocateEvent(Event):
+	pass
+
+class DeallocateEvent(Event):
+	pass
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
@@ -306,6 +371,9 @@ class TracedProcess(processinfo.Process):
 								("msvcrt.dll",  "memcpy",  self.handle_function_cpy),
 								("msvcrt.dll",  "wcscpy",  self.handle_function_cpy),
 								("kernel32.dll", "RaiseException", self.handle_function_raise),
+								("kernel32.dll", "HeapAlloc" ,self.handle_function_heap_allocated),
+								("ole32.dll", "CoTaskMemAlloc", self.handle_function_heap_allocated),
+								
 						 	 ]
 		self.loadCallbacks(internal_callbacks)
 
