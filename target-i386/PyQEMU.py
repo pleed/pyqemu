@@ -157,9 +157,6 @@ class CalledFunction:
 	def __ne__(self, other):
 		return not self.__eq__(other)
 
-	def isActive(self):
-		return self == self.process.last_call
-
 	def getIntArg(self, num):
 		return struct.unpack("I", self.getFunctionArg(num))[0]
 
@@ -215,7 +212,7 @@ class TracedProcess(processinfo.Process):
 		self.callstack			 = Stack()
 		self.wait_for_return     = {}
 		self.heap                = MemoryTracer()
-		self.last_call           = None
+		self.previous_call       = None
 		processinfo.Process.__init__(self)
 
 		self._loadInternalCallbacks()
@@ -255,6 +252,8 @@ class TracedProcess(processinfo.Process):
 			addr = function.getIntArg(1)
 			if self.heap.allocated(addr):
 				self.heap.deallocate(addr)
+			else:
+				print "freed unknown!"
 
 	def handle_function_recv(self, function, event):
 		if event == "enter":
@@ -311,34 +310,26 @@ class TracedProcess(processinfo.Process):
 		self.loadCallbacks(internal_callbacks)
 
 	def handle_ret(self, toaddr):
-		print "retit to %x"%toaddr
 		esp = self.register("esp")
 		index = hash((toaddr,esp))
+
+		# keep callstack up to date
 		try:
 			if self.callstack.top().isReturning(toaddr):
-				print "returning function %s"%self.callstack.top()
-				self.callstack.pop()
-		except:
-			pass
-		if toaddr == 0x60e41709:
-			f = self.callstack.top()
-			print "DEBUGGING"
-			print "f.top() = 0x%x"%f.top()
-			print "esp     = 0x%x"%esp
-			print "ret to  = 0x%x"%toaddr
-			print "f.nextaddr = 0x%x"%f.nextaddr
-		try:
-			f = self.callstack.top()
-			while f.top() < esp:
-				print "omitting %s"%str(self.callstack.top())
 				f = self.callstack.pop()
-			print "-------------"
-		except:
+				del(f)
+			else:
+				f = self.callstack.top()
+				while f.top() < esp:
+					print "omitting %s"%str(self.callstack.top())
+					del(f)
+					f = self.callstack.pop()
+		except IndexError:
 			pass
+
+		# check for pending return callback
 		if self.wait_for_return.has_key(index):
 			function = self.wait_for_return[index]
-			if function == self.callstack.top():
-				print "functions match!"
 			if not function.isReturning(toaddr):
 				raise Exception("FUNCTION NOT RETURNING!!!")
 			print "Returned %s"%function
@@ -351,10 +342,6 @@ class TracedProcess(processinfo.Process):
 				if function.top() < esp:
 					del(self.wait_for_return[hash(toaddr,function.top())])
 			print "wait_for_return size is now: %d"%len(self.wait_for_return)
-		try:
-			print "callstack size: %d"%len(self.callstack)
-		except:
-			pass
 
 	def handle_syscall(self, eax):
 		print "syscall :), eax is %i"%eax
@@ -373,41 +360,50 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" Resolve interesting call and trigger callbacks. """
+		# handle jumps that could be jump pads
 		if self._is_jmp(fromaddr, toaddr, nextaddr):
-			if self.symbols.has_key(toaddr):
-				return self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+			if self._is_jmp_pad(fromaddr, toaddr, nextaddr):
+				f = self.callstack.top()
+				# did we push the previous call onto the callstack?
+				if (f.fromaddr, f.toaddr, f.nextaddr) == self.previous_call:
+					f = self.callstack.pop()
+					del(f)
+				self._handle_interesting_call(self.previous_call[0], toaddr, self.previous_call[2], False)
+				self.previous_call = None
 			else:
 				return
-		from_image = self.get_image_by_address(fromaddr)
-		to_image   = self.get_image_by_address(toaddr)
-		if from_image is None or to_image is None:
-			self.update_images()
-		if from_image is not None and to_image is not None:
-			if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.symbols.has_key(toaddr):
-				to_image.update()
-			if self.addrInExe(fromaddr) or self.addrInExe(toaddr) or self.symbols.has_key(toaddr):
-				self._handle_interesting_call(fromaddr, toaddr, nextaddr)
+		# handle normal calls
+		else:
+			self.previous_call = (fromaddr, toaddr, nextaddr)
+			from_image = self.get_image_by_address(fromaddr)
+			to_image   = self.get_image_by_address(toaddr)
+			if from_image is None or to_image is None:
+				self.update_images()
+			if from_image is not None and to_image is not None:
+				if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.symbols.has_key(toaddr):
+					to_image.update()
+				# just known functions or call from/to main exe are interesting right now
+				if self.addrInExe(toaddr) or self.addrInExe(fromaddr) or self.symbols.has_key(toaddr):
+					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+
+	def _is_jmp_pad(self, fromaddr, toaddr, nextaddr):
+		# if target is a known function, check if address pushed by previous call is still on $esp
+		if self.symbols.has_key(toaddr) and \
+		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.previous_call[2]:
+			return True
+		return False
 
 	def _is_jmp(self, fromaddr, toaddr, nextaddr):
 		return (fromaddr == 0) and (nextaddr == 0)
 
-	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr):
-		if self._is_jmp(fromaddr, toaddr, nextaddr):
-			if self.last_call is not None:
-				self.last_call.toaddr = toaddr
-				function = self.last_call
-				try:
-					self.callstack.top().toaddr = toaddr
-				except:
-					pass
-			else:
-				return
-		else:
-			function = CalledFunction(fromaddr, toaddr, nextaddr, self)
-			self.callstack.push(function)
-		self.last_call = function
-		print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
+	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
+		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
+		self.callstack.push(function)
 		self.runCallbacks(function,"enter")
+		if iscall:
+			print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
+		else:
+			print "JMP %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
 
 	def runCallbacks(self, function, *args):
 		""" Run registered Callbacks for (dll, function) tuple. """
