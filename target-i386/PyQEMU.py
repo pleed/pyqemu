@@ -109,6 +109,9 @@ class Stack(list):
 	def top(self):
 		return self[-1]
 
+	def bottom(self):
+		return self[0]
+
 	def empty(self):
 		return len(self) == 0
 
@@ -170,7 +173,7 @@ class CalledFunction:
 		esp = self.process.genreg(R_ESP)
 		return self.process.readmem(esp+num*4, 4)
 
-class EventHandler:
+class EventLogger:
 	def __init__(self, dumpfile):
 		self.dumpfile = dumpfile
 		self.dumper   = cPickle
@@ -181,6 +184,10 @@ class EventHandler:
 
 	def __del__(self):
 		self.dumpfile.close()
+
+class StdoutEventLogger(EventLogger):
+	def handle_event(self, obj):
+		self.dumpfile.write("%s\n"%str(obj))
 
 class Buffer:
 	def __init__(self, startaddr, size):
@@ -218,72 +225,178 @@ class Buffer:
 	def __int__(self):
 		return self.startaddr
 
-class MemoryTracer:
-	def __init__(self):
+	def __str__(self):
+		return "0x%x[%s]"%(self.startaddr,str(self.size))
+
+class HeapMemoryTracer:
+	def __init__(self, process):
 		self.tree = avl.new()
+		self.process = process
 
 	def allocate(self, address, size):
 		self.tree.insert(Buffer(address, size))
-		print "Memory on 0x%x allocated!"%address
 
-	def allocated(self, address):
+	def getBuffer(self, address):
 		try:
 			buffer = self.tree.at_most(address)
 		except ValueError:
+			self.process.log("Buffer not found!")
 			return False
 		if buffer.includes(address):
-			return True
-		return False
+			self.process.log("Buffer found: %s!!!"%buffer)
+			return buffer
+		self.process.log("Buffer found: %s, does not include 0x%x"%(buffer, address))
+		return None
 
 	def deallocate(self, address):
 		if self.allocated(address):
 			obj = self.tree.at_most(address)
 			self.tree.remove(obj)
-			print "Memory on 0x%x freed!"%address
 		else:
-			raise Exception("double free detected by MemoryTracer!")
+			raise Exception("double free detected by HeapMemoryTracer!")
 
 	def free(self, address):
 		self.deallocate(address)
 
+	def allocated(self, address):
+		return self.getBuffer(address) is not None
+
+class StackMemoryTracer:
+	def __init__(self, process):
+		self.process = process
+
+	def allocated(self, address):
+		esp = self.process.register("esp")
+		stack_top = self.process.callstack.bottom().top()
+		return esp <= address <= stack_top
+
+	def getBuffer(self, address):
+		return Buffer(address, -1)
+
+class DataMemoryTracer:
+	def __init__(self, process):
+		self.process = process
+
+	def allocated(self, address):
+		return self.process.get_image_by_address(address) != None
+
+	def getBuffer(self, address):
+		return Buffer(address, -2)
+
+class UnknownMemoryTracer:
+	def __init__(self, process):
+		self.process = process
+		self.addresses = {}
+
+	def allocated(self, address):
+		if not self.addresses.has_key(address):
+			self.addresses[address] = Buffer(address, -3)
+		return True
+
+	def getBuffer(self, address):
+		try:
+			return self.addresses[address]
+		except KeyError:
+			print "getBuffer on unknown address!!!"
+			return Buffer(address, -3)
+		
+		
+
+class MemoryManager:
+	def __init__(self, process):
+		self.heap    = HeapMemoryTracer(process)
+		self.stack   = StackMemoryTracer(process)
+		self.data    = DataMemoryTracer(process)
+		self.unknown = UnknownMemoryTracer(process)
+
+	def onStack(self, addr):
+		return self.stack.allocated(addr)
+
+	def onData(self, addr):
+		return self.data.allocated(addr)
+
+	def onHeap(self, addr):
+		return self.heap.allocated(addr)
+
+	def getMemoryTracer(self, addr):
+		if self.onStack(addr):
+			return self.stack
+		elif self.onHeap(addr):
+			return self.heap
+		elif self.onData(addr):
+			return self.data
+		else:
+			return self.unknown
+
 class Event:
-	def __init__(self, buffer):
-		self.buffer = buffer
+	def __init__(self, obj):
+		self.obj = obj
+
+	def __str__(self):
+		return "%s: %s"%(self.prefix, str(self.obj))
 
 class CopyEvent(Event):
-	def __init__(self, dst_buffer, src_buffer):
+	def __init__(self, dst_buffer, src_buffer, len):
 		self.dst_buffer = dst_buffer
 		self.src_buffer = src_buffer
+		self.len        = len
+		Event.__init__(self, (self.src_buffer,self.dst_buffer,self.len))
+
+	def __str__(self):
+		return "Copy from %s to %s, len %d"%(self.src_buffer, self.dst_buffer, self.len)
 
 class SendEvent(Event):
-	pass
+	def __init__(self, buffer):
+		self.prefix = "Send"
+		Event.__init__(self, buffer)
 
 class RecvEvent(Event):
-	pass
+	def __init__(self, buffer):
+		self.prefix = "Recv"
+		Event.__init__(self, buffer)
 
 class AllocateEvent(Event):
-	pass
+	def __init__(self, buffer):
+		self.prefix = "Alloc"
+		Event.__init__(self, buffer)
 
 class DeallocateEvent(Event):
-	pass
+	def __init__(self, buffer):
+		self.prefix = "Free"
+		Event.__init__(self, buffer)
+
+class CallEvent(Event):
+	def __init__(self, function):
+		self.prefix = "Call"
+		Event.__init__(self, function)
+
+class RetEvent(Event):
+	def __init__(self, function):
+		self.prefix = "Ret"
+		Event.__init__(self, function)
+
+class LateRetEvent(Event):
+	def __init__(self, function):
+		self.prefix = "LateRet"
+		Event.__init__(self, function)
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 
 	def __init__(self):
-		self.eventhandler        = EventHandler(open("/tmp/flx_dump_events","w"))
+		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
 		self.callonfunction      = {}
 		self.callhistory         = []
 		self.callstack			 = Stack()
 		self.wait_for_return     = {}
-		self.heap                = MemoryTracer()
+		self.memory              = MemoryManager(self)
 		self.previous_call       = None
 		processinfo.Process.__init__(self)
 
 		self._loadInternalCallbacks()
 
-	def event(self, obj):
-		self.eventhandler.handle_event(obj)
+	def log(self, obj):
+		self.logger.handle_event(obj)
 
 	def register(self, register):
 		regs = PyFlxInstrument.registers()
@@ -310,50 +423,49 @@ class TracedProcess(processinfo.Process):
 		if event == "leave":
 			addr = function.retval()
 			size = function.getIntArg(1)
-			self.heap.allocate(addr, size)
+			self.memory.heap.allocate(addr, size)
+			self.log(AllocateEvent(self.memory.heap.getBuffer(addr)))
+
 
 	def handle_function_heap_freed(self, function, event):
 		if event == "enter":
 			addr = function.getIntArg(1)
-			if self.heap.allocated(addr):
-				self.heap.deallocate(addr)
+			if self.memory.heap.allocated(addr):
+				buffer = self.memory.heap.getBuffer(addr)
+				self.log(DeallocateEvent(buffer))
+				self.memory.heap.deallocate(addr)
 			else:
-				print "freed unknown!"
+				self.log(DeallocateEvent("unknown: 0x%x"%addr))
 
 	def handle_function_recv(self, function, event):
 		if event == "enter":
 			self.add_pending_return(function)
 			addr = function.getIntArg(2)
-			if self.heap.allocated(addr):
-				print "Previously allocated buffer has been filled"
-			else:
-				print "receiving to unknown buffer 0x%x"%addr
+			tracer = self.memory.getMemoryTracer(addr)
+			buffer = tracer.getBuffer(addr)
+			self.log(RecvEvent(buffer))
 		if event == "leave":
 			eax = function.retval()
-			print "received 0x%x bytes"%eax
+			if eax != 0:
+				print "RECEIVE FAILED!"
 
 	def handle_function_send(self, function, event):
 		print "send!"
 		if event == "enter":
 			addr = function.getIntArg(2)
-			if self.heap.allocated(addr):
-				print "Previously allocated buffer has been sent"
-			else:
-				print "sending unknown buffer 0x%x"%addr
+			tracer = self.memory.getMemoryTracer(addr)
+			buffer = tracer.getBuffer(addr)
+			self.log(SendEvent(buffer))
 
 	def handle_function_cpy(self, function, event):
 		if event == "enter":
 			dst = function.getIntArg(1)
 			src = function.getIntArg(2)
-			if self.heap.allocated(src):
-				print "Copying from heap: 0x%x"%src
-			else:
-				print "Copying from unknown: 0x%x"%src
-			if self.heap.allocated(dst):
-				print "Copying to heap: 0x%x"%dst
-			else:
-				print "Copying to unknown: 0x%x"%dst
-			print ""
+			src_tracer = self.memory.getMemoryTracer(src)
+			dst_tracer = self.memory.getMemoryTracer(dst)
+			src_buffer = src_tracer.getBuffer(src)
+			dst_buffer = dst_tracer.getBuffer(dst)
+			self.log(CopyEvent(dst_buffer, src_buffer, -1))
 
 	def handle_function_raise(self, function, event):
 		print "EXCEPTION"
@@ -385,11 +497,13 @@ class TracedProcess(processinfo.Process):
 		try:
 			if self.callstack.top().isReturning(toaddr):
 				f = self.callstack.pop()
+				self.log(RetEvent(f))
 				del(f)
 			else:
 				f = self.callstack.top()
 				while f.top() < esp:
 					print "omitting %s"%str(self.callstack.top())
+					self.log(LateRetEvent(f))
 					del(f)
 					f = self.callstack.pop()
 		except IndexError:
@@ -400,7 +514,6 @@ class TracedProcess(processinfo.Process):
 			function = self.wait_for_return[index]
 			if not function.isReturning(toaddr):
 				raise Exception("FUNCTION NOT RETURNING!!!")
-			print "Returned %s"%function
 			self.runCallbacks(function,"leave")
 			del(self.wait_for_return[index])
 
@@ -468,10 +581,7 @@ class TracedProcess(processinfo.Process):
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
 		self.callstack.push(function)
 		self.runCallbacks(function,"enter")
-		if iscall:
-			print "Called %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
-		else:
-			print "JMP %s, nextaddr: %x, from: %x"%(function,function.nextaddr,function.fromaddr)
+		self.log(CallEvent(function))
 
 	def runCallbacks(self, function, *args):
 		""" Run registered Callbacks for (dll, function) tuple. """
