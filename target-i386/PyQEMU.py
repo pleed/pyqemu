@@ -14,6 +14,7 @@ from Structures import *
 from windecl import *
 
 DEBUG = True
+NULL = 0
 
 R_EAX = 0
 R_ECX = 1
@@ -90,12 +91,12 @@ def event_update_cr3(old_cr3, new_cr3):
 				
 		filename = filename.replace("\x00", "")
 		if (len(filename) > 0):
-			if filename.lower() in trace_processes:
+			if filename.lower() in trace_processes.keys():
 				print "New TracedProcess %s"%filename
-				p = TracedProcess()
+				p = TracedProcess(trace_processes[filename.lower()])
 			else:
 				print "New UntracedProcess %s"%filename
-				p = UntracedProcess()
+				p = UntracedProcess([])
 			KNOWN_Processes[new_cr3] = p
 			p.watched = True
 	
@@ -190,10 +191,12 @@ class StdoutEventLogger(EventLogger):
 		self.dumpfile.write("%s\n"%str(obj))
 
 class Buffer:
-	def __init__(self, startaddr, size):
+	def __init__(self, startaddr, size, origin = None, segment = None):
 		self.startaddr = startaddr
 		self.size      = size
 		self.endaddr   = startaddr+size-1
+		self.origin    = origin
+		self.segment   = segment
 
 	def includes(self, address):
 		return self.startaddr <= address <= self.endaddr
@@ -226,7 +229,15 @@ class Buffer:
 		return self.startaddr
 
 	def __str__(self):
-		return "0x%x[%s]"%(self.startaddr,str(self.size))
+		s = "0x%x[%s]"%(self.startaddr, str(self.size))
+		if self.origin is not None:
+			s += "[%s]"%self.origin
+		if self.segment is not None:
+			s += "[%s]"%self.segment
+		return s
+
+	def __len__(self):
+		return self.size
 
 class HeapMemoryTracer:
 	def __init__(self, process):
@@ -234,18 +245,21 @@ class HeapMemoryTracer:
 		self.process = process
 
 	def allocate(self, address, size):
-		self.tree.insert(Buffer(address, size))
+		try:
+			allocating_function = self.process.callstack.top()
+		except IndexError:
+			allocating_function = None
+		b = Buffer(address, size, allocating_function, "HEAP")
+		self.tree.insert(b)
+		return b
 
 	def getBuffer(self, address):
 		try:
 			buffer = self.tree.at_most(address)
 		except ValueError:
-			self.process.log("Buffer not found!")
-			return False
+			return None
 		if buffer.includes(address):
-			self.process.log("Buffer found: %s!!!"%buffer)
 			return buffer
-		self.process.log("Buffer found: %s, does not include 0x%x"%(buffer, address))
 		return None
 
 	def deallocate(self, address):
@@ -264,14 +278,28 @@ class HeapMemoryTracer:
 class StackMemoryTracer:
 	def __init__(self, process):
 		self.process = process
+		self.buffers = {}
 
 	def allocated(self, address):
 		esp = self.process.register("esp")
 		stack_top = self.process.callstack.bottom().top()
-		return esp <= address <= stack_top
+		if esp <= address <= stack_top:
+			function = self.process.getstackframe(address)
+			maxlen = function.top()-address-4
+			self.buffers[address] = Buffer(address, maxlen, function, "STACK")
+			return True
+		else:
+			return False
+
+	def update(self):
+		esp = self.process.register("esp")
+		keys = self.buffers.keys()
+		for key in keys:
+			if self.buffers[key].startaddr < esp:
+				del(self.buffers[key])
 
 	def getBuffer(self, address):
-		return Buffer(address, -1)
+		return self.buffers[address]
 
 class DataMemoryTracer:
 	def __init__(self, process):
@@ -281,7 +309,7 @@ class DataMemoryTracer:
 		return self.process.get_image_by_address(address) != None
 
 	def getBuffer(self, address):
-		return Buffer(address, -2)
+		return Buffer(address, -2, None, "DATA")
 
 class UnknownMemoryTracer:
 	def __init__(self, process):
@@ -328,6 +356,10 @@ class MemoryManager:
 		else:
 			return self.unknown
 
+	def getBuffer(self, addr):
+		tracer = self.getMemoryTracer(addr)
+		return tracer.getBuffer(addr)
+
 class Event:
 	def __init__(self, obj):
 		self.obj = obj
@@ -336,14 +368,23 @@ class Event:
 		return "%s: %s"%(self.prefix, str(self.obj))
 
 class CopyEvent(Event):
-	def __init__(self, dst_buffer, src_buffer, len):
+	def __init__(self, dst_buffer, src_buffer, len, dst_addr = 0, src_addr = 0):
 		self.dst_buffer = dst_buffer
 		self.src_buffer = src_buffer
 		self.len        = len
-		Event.__init__(self, (self.src_buffer,self.dst_buffer,self.len))
+		if dst_addr == 0:
+			self.dst_addr = self.dst_buffer.startaddr
+		else:
+			self.dst_addr = dst_addr
+
+		if src_addr == 0:
+			self.src_addr = self.src_buffer.startaddr
+		else:
+			self.src_addr = src_addr
+		Event.__init__(self, (self.src_buffer,self.dst_buffer,self.len, dst_addr, src_addr))
 
 	def __str__(self):
-		return "Copy from %s to %s, len %d"%(self.src_buffer, self.dst_buffer, self.len)
+		return "Copy from %s[offset:%d] to %s[offset:%d], len %d"%(self.src_buffer, self.src_addr-self.src_buffer.startaddr, self.dst_buffer, self.dst_addr-self.dst_buffer.startaddr, self.len)
 
 class SendEvent(Event):
 	def __init__(self, buffer):
@@ -380,10 +421,104 @@ class LateRetEvent(Event):
 		self.prefix = "LateRet"
 		Event.__init__(self, function)
 
+def TriggerFunctionHandlerHelper(handler, function, type):
+	print "TriggerFunctionHandler calling handler: %s"%str(handler)
+	if type == "enter":
+		handler.onEnter(function)
+	elif type == "leave":
+		handler.onLeave(function)
+	else:
+		raise Exception("Unknown Callback type: %s"%str(type))
+
+class FunctionHandler:
+	def __init__(self, process):
+		self.process = process
+
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+
+	def onLeave(self, function):
+		raise Exception("Implement in inherited class!")
+
+	def addPendingReturn(self, function):
+		self.process.add_pending_return(function)
+
+class HeapAllocationFunctionHandler(FunctionHandler):
+	def onLeave(self, function):
+		addr = function.retval()
+		size = function.getIntArg(1)
+		buffer = self.process.memory.heap.allocate(addr, size)
+		self.process.log(AllocateEvent(buffer))
+
+class HeapFreeFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		print "HeapFreeFunctionHandler.onEnter!!!"
+		addr = function.getIntArg(1)
+		if self.process.memory.heap.allocated(addr):
+			buffer = self.process.memory.heap.getBuffer(addr)
+			self.process.log(DeallocateEvent(buffer))
+			self.process.memory.heap.deallocate(addr)
+		else:
+			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+
+class RecvFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		addr = function.getIntArg(2)
+		self.buffer = self.process.memory.getBuffer(addr)
+
+	def onLeave(self, function):
+		eax = function.retval()
+		if eax == 0:
+			self.process.log(RecvEvent(self.buffer))
+
+class SendFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		addr = function.getIntArg(2)
+		buffer = self.process.memory.getBuffer(addr)
+		self.process.log(SendEvent(buffer))
+
+class ReallocFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		self.old_ptr  = function.getIntArg(1)
+		self.new_size = function.getIntArg(2)
+
+	def onLeave(self, function):
+		new_ptr = function.retval()
+		if new_ptr != NULL:
+			if self.old_ptr == new_ptr:
+				buffer = self.process.memory.getBuffer(self.old_ptr)
+				buffer.size = self.new_size
+			else:
+				old_buffer = self.process.memory.getBuffer(self.old_ptr)
+				new_buffer = self.process.memory.heap.allocate(new_ptr, self.new_size)
+				self.process.log(AllocateEvent(new_buffer))
+				self.process.log(CopyEvent(new_buffer, old_buffer, old_buffer.size))
+				self.process.log(DeallocateEvent(old_buffer))
+				self.process.memory.heap.deallocate(old_buffer)
+
+class CpyFunctionHandler(FunctionHandler):
+	def onEnter(self, function, len = -1):
+		dst = function.getIntArg(1)
+		src = function.getIntArg(2)
+		src_buffer = self.process.memory.getBuffer(src)
+		dst_buffer = self.process.memory.getBuffer(dst)
+		self.process.log(CopyEvent(dst_buffer, src_buffer, len, dst, src))
+
+class NCpyFunctionHandler(CpyFunctionHandler):
+	def onEnter(self, function):
+		len = function.getIntArg(3)
+		CpyFunctionHandler.onEnter(self, function, len)
+
+class RaiseFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		raise Exception("Program raised Exception via %s"%function)
+
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm call handling. """
 
-	def __init__(self):
+	def __init__(self, callhandler = []):
 		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
 		self.callonfunction      = {}
 		self.callhistory         = []
@@ -393,7 +528,25 @@ class TracedProcess(processinfo.Process):
 		self.previous_call       = None
 		processinfo.Process.__init__(self)
 
-		self._loadInternalCallbacks()
+		self._loadInternalCallbacks(callhandler)
+
+	def getstackframe(self, address):
+		esp = self.register("esp")
+		stack_top = self.callstack.bottom().top()
+		print "------------------"
+		for function in self.callstack:
+			print "%s , top: 0x%x"%(function,function.top())
+		print "------------------"
+		if esp <= address <= stack_top:
+			frameid = len(self.callstack)-1
+			while frameid >= 0 and self.callstack[frameid].top() < address:
+				frameid -= 1
+			if frameid > 0:
+				return self.callstack[frameid]
+			else:
+				return None
+		else:
+			return None
 
 	def log(self, obj):
 		self.logger.handle_event(obj)
@@ -417,77 +570,9 @@ class TracedProcess(processinfo.Process):
 	def add_pending_return(self, function):
 		self.wait_for_return[hash((function.nextaddr,function.top()))] = function
 
-	def handle_function_heap_allocated(self, function, event):
-		if event == "enter":
-			self.add_pending_return(function)
-		if event == "leave":
-			addr = function.retval()
-			size = function.getIntArg(1)
-			self.memory.heap.allocate(addr, size)
-			self.log(AllocateEvent(self.memory.heap.getBuffer(addr)))
-
-
-	def handle_function_heap_freed(self, function, event):
-		if event == "enter":
-			addr = function.getIntArg(1)
-			if self.memory.heap.allocated(addr):
-				buffer = self.memory.heap.getBuffer(addr)
-				self.log(DeallocateEvent(buffer))
-				self.memory.heap.deallocate(addr)
-			else:
-				self.log(DeallocateEvent("unknown: 0x%x"%addr))
-
-	def handle_function_recv(self, function, event):
-		if event == "enter":
-			self.add_pending_return(function)
-			addr = function.getIntArg(2)
-			tracer = self.memory.getMemoryTracer(addr)
-			buffer = tracer.getBuffer(addr)
-			self.log(RecvEvent(buffer))
-		if event == "leave":
-			eax = function.retval()
-			if eax != 0:
-				print "RECEIVE FAILED!"
-
-	def handle_function_send(self, function, event):
-		print "send!"
-		if event == "enter":
-			addr = function.getIntArg(2)
-			tracer = self.memory.getMemoryTracer(addr)
-			buffer = tracer.getBuffer(addr)
-			self.log(SendEvent(buffer))
-
-	def handle_function_cpy(self, function, event):
-		if event == "enter":
-			dst = function.getIntArg(1)
-			src = function.getIntArg(2)
-			src_tracer = self.memory.getMemoryTracer(src)
-			dst_tracer = self.memory.getMemoryTracer(dst)
-			src_buffer = src_tracer.getBuffer(src)
-			dst_buffer = dst_tracer.getBuffer(dst)
-			self.log(CopyEvent(dst_buffer, src_buffer, -1))
-
-	def handle_function_raise(self, function, event):
-		print "EXCEPTION"
-
-	def _loadInternalCallbacks(self):
-		internal_callbacks = [
-								("msvcrt.dll",  "malloc",  self.handle_function_heap_allocated),
-								("msvcrt.dll",  "free",    self.handle_function_heap_freed),
-								("wsock32.dll", "recv",    self.handle_function_recv),
-								("wsock32.dll", "send",    self.handle_function_send),
-								("ws2_32.dll",  "WSARecv", self.handle_function_recv),
-								("ws2_32.dll",  "send",    self.handle_function_send),
-								("msvcrt.dll",  "strcpy",  self.handle_function_cpy),
-								("msvcrt.dll",  "strncpy", self.handle_function_cpy),
-								("msvcrt.dll",  "memcpy",  self.handle_function_cpy),
-								("msvcrt.dll",  "wcscpy",  self.handle_function_cpy),
-								("kernel32.dll", "RaiseException", self.handle_function_raise),
-								("kernel32.dll", "HeapAlloc" ,self.handle_function_heap_allocated),
-								("ole32.dll", "CoTaskMemAlloc", self.handle_function_heap_allocated),
-								
-						 	 ]
-		self.loadCallbacks(internal_callbacks)
+	def _loadInternalCallbacks(self,handlers):
+		for dll,fname,handlerclass in handlers:
+			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	def handle_ret(self, toaddr):
 		esp = self.register("esp")
@@ -583,12 +668,17 @@ class TracedProcess(processinfo.Process):
 		self.runCallbacks(function,"enter")
 		self.log(CallEvent(function))
 
-	def runCallbacks(self, function, *args):
+	def runCallbacks(self, function, event_type):
 		""" Run registered Callbacks for (dll, function) tuple. """
 		dll,name = function.resolveToName()	
 		if self.callonfunction.has_key(dll+name):
 			for callback in self.callonfunction[dll+name]:
-				callback(function, *args)
+				if event_type == "enter":
+					callback.onEnter(function)
+				elif event_type == "leave":
+					callback.onLeave(function)
+				else:
+					raise Exception("unknown event type!")
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
@@ -609,6 +699,9 @@ class TracedProcess(processinfo.Process):
 		self.callbacklist_loaded = True
 
 class UntracedProcess(processinfo.Process):
+	def __init__(self, callhandler):
+		processinfo.Process.__init__(self)
+
 	def handle_call(self, *args):
 		pass
 	def handle_syscall(self, *args):
@@ -637,11 +730,26 @@ def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
 # Register Processes to trace
-trace_processes = [
-	"telnet.exe",
-	"notepad.exe",
-	"wget.exe"
-]
+trace_processes = {
+	"telnet.exe":[],
+	"notepad.exe":[],
+	"wget.exe":[
+				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
+				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
+				("wsock32.dll", "recv",    RecvFunctionHandler),
+				("wsock32.dll", "send",    SendFunctionHandler),
+				("ws2_32.dll",  "WSARecv", RecvFunctionHandler),
+				("ws2_32.dll",  "send",    SendFunctionHandler),
+				("msvcrt.dll",  "strcpy",  CpyFunctionHandler),
+				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
+				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
+				("msvcrt.dll",  "wcscpy",  CpyFunctionHandler),
+				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
+				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
+				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+			   ],
+}
 
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
