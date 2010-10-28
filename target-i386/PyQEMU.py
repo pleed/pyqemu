@@ -7,6 +7,7 @@ import glob
 import struct
 import cPickle
 import avl
+import gc
 
 import PyFlxInstrument
 import processinfo
@@ -117,6 +118,7 @@ class Stack(list):
 		return len(self) == 0
 
 class CalledFunction:
+	""" Function that was called before, encapsulates entry/exit states """
 	def __init__(self, fromaddr, toaddr, nextaddr, process):
 		self.fromaddr = fromaddr
 		self.toaddr   = toaddr
@@ -175,6 +177,7 @@ class CalledFunction:
 		return self.process.readmem(esp+num*4, 4)
 
 class EventLogger:
+	""" Object serialization logger """
 	def __init__(self, dumpfile):
 		self.dumpfile = dumpfile
 		self.dumper   = cPickle
@@ -187,10 +190,12 @@ class EventLogger:
 		self.dumpfile.close()
 
 class StdoutEventLogger(EventLogger):
+	""" Event logger for debugging """
 	def handle_event(self, obj):
 		self.dumpfile.write("%s\n"%str(obj))
 
 class Buffer:
+	""" Represents allocated memory """
 	def __init__(self, startaddr, size, origin = None, segment = None):
 		self.startaddr = startaddr
 		self.size      = size
@@ -240,6 +245,7 @@ class Buffer:
 		return self.size
 
 class HeapMemoryTracer:
+	""" Traces memory located on heap """
 	def __init__(self, process):
 		self.tree = avl.new()
 		self.process = process
@@ -283,6 +289,7 @@ class HeapMemoryTracer:
 		return self.getBuffer(address) is not None
 
 class StackMemoryTracer:
+	""" Traces memory located on stack """
 	def __init__(self, process):
 		self.process = process
 		self.buffers = {}
@@ -309,6 +316,7 @@ class StackMemoryTracer:
 		return self.buffers[address]
 
 class DataMemoryTracer:
+	""" Traces memory globally allocated in image """
 	def __init__(self, process):
 		self.process = process
 
@@ -319,6 +327,7 @@ class DataMemoryTracer:
 		return Buffer(address, -2, None, "DATA")
 
 class UnknownMemoryTracer:
+	""" Traces memory from unknown origins """
 	def __init__(self, process):
 		self.process = process
 		self.addresses = {}
@@ -338,6 +347,7 @@ class UnknownMemoryTracer:
 		
 
 class MemoryManager:
+	""" main memory manager, encapsulates as much of the underlying memory classes as possible """
 	def __init__(self, process):
 		self.heap    = HeapMemoryTracer(process)
 		self.stack   = StackMemoryTracer(process)
@@ -368,6 +378,7 @@ class MemoryManager:
 		return tracer.getBuffer(addr)
 
 class Event:
+	""" Event base class """
 	def __init__(self, obj):
 		self.obj = obj
 
@@ -375,6 +386,7 @@ class Event:
 		return "%s: %s"%(self.prefix, str(self.obj))
 
 class CopyEvent(Event):
+	""" Memory was copied from src to dst """
 	def __init__(self, dst_buffer, src_buffer, len, dst_addr = 0, src_addr = 0):
 		self.dst_buffer = dst_buffer
 		self.src_buffer = src_buffer
@@ -404,40 +416,37 @@ class RecvEvent(Event):
 		Event.__init__(self, buffer)
 
 class AllocateEvent(Event):
+	""" Memory allocated """
 	def __init__(self, buffer):
 		self.prefix = "Alloc"
 		Event.__init__(self, buffer)
 
 class DeallocateEvent(Event):
+	""" Memory deallocated """
 	def __init__(self, buffer):
 		self.prefix = "Free"
 		Event.__init__(self, buffer)
 
 class CallEvent(Event):
+	""" Function called """
 	def __init__(self, function):
 		self.prefix = "Call"
 		Event.__init__(self, function)
 
 class RetEvent(Event):
+	""" Function returned """
 	def __init__(self, function):
 		self.prefix = "Ret"
 		Event.__init__(self, function)
 
 class LateRetEvent(Event):
+	""" Sometimes functions do not return properly, this event will show that, but later """
 	def __init__(self, function):
 		self.prefix = "LateRet"
 		Event.__init__(self, function)
 
-def TriggerFunctionHandlerHelper(handler, function, type):
-	print "TriggerFunctionHandler calling handler: %s"%str(handler)
-	if type == "enter":
-		handler.onEnter(function)
-	elif type == "leave":
-		handler.onLeave(function)
-	else:
-		raise Exception("Unknown Callback type: %s"%str(type))
-
 class FunctionHandler:
+	""" base class for function handlers """
 	def __init__(self, process):
 		self.process = process
 
@@ -466,6 +475,8 @@ class HeapFreeFunctionHandler(FunctionHandler):
 			self.process.memory.heap.deallocate(addr)
 		else:
 			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+		# isnt that a nice place to do garbage collection?
+		#gc.collect()
 
 class RecvFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -485,6 +496,7 @@ class SendFunctionHandler(FunctionHandler):
 		self.process.log(SendEvent(buffer))
 
 class ReallocFunctionHandler(FunctionHandler):
+	""" Handles realloc like functions, relies on other handlers producing events (e.g. malloc) """
 	def onEnter(self, function):
 		self.addPendingReturn(function)
 		self.old_ptr  = function.getIntArg(1)
@@ -519,6 +531,7 @@ class ReallocFunctionHandler(FunctionHandler):
 				self.process.memory.heap.deallocate(old_buffer)
 
 class CpyFunctionHandler(FunctionHandler):
+	""" Handles copying functions without a length argument """
 	def onEnter(self, function, len = -1):
 		dst = function.getIntArg(1)
 		src = function.getIntArg(2)
@@ -527,11 +540,13 @@ class CpyFunctionHandler(FunctionHandler):
 		self.process.log(CopyEvent(dst_buffer, src_buffer, len, dst, src))
 
 class NCpyFunctionHandler(CpyFunctionHandler):
+	""" Handles copying functions with a length argument """
 	def onEnter(self, function):
 		len = function.getIntArg(3)
 		CpyFunctionHandler.onEnter(self, function, len)
 
 class StrDupFunctionHandler(FunctionHandler):
+	""" Handles strdup like functions """
 	def onEnter(self, function):
 		self.addPendingReturn(function)
 		self.src = function.getIntArg(1)
@@ -544,31 +559,36 @@ class StrDupFunctionHandler(FunctionHandler):
 
 
 class RaiseFunctionHandler(FunctionHandler):
+	""" we have to notice exceptions later to keep callstack up to date """
 	def onEnter(self, function):
 		raise Exception("Program raised Exception via %s"%function)
 
 class TracedProcess(processinfo.Process):
-	""" A traced process with functionality to register callbacks for vm call handling. """
+	""" A traced process with functionality to register callbacks for vm inspection """
 
 	def __init__(self, callhandler = []):
+		# log events
 		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
+		# stores registerd callbacks
 		self.callonfunction      = {}
-		self.callhistory         = []
+		# at any time updated callstack
 		self.callstack			 = Stack()
+		# holds registered ret hooks for entered functions
 		self.wait_for_return     = {}
+		# memory management
 		self.memory              = MemoryManager(self)
+		# needed for jump pads
 		self.previous_call       = None
-		processinfo.Process.__init__(self)
 
-		self._loadInternalCallbacks(callhandler)
+		processinfo.Process.__init__(self)
+		self.loadCallbacks(callhandler)
 
 	def getstackframe(self, address):
+		""" Returns the corresponding function which owns the stack frame the address belongs to """
 		esp = self.register("esp")
 		stack_top = self.callstack.bottom().top()
-		print "------------------"
 		for function in self.callstack:
 			print "%s , top: 0x%x"%(function,function.top())
-		print "------------------"
 		if esp <= address <= stack_top:
 			frameid = len(self.callstack)-1
 			while frameid >= 0 and self.callstack[frameid].top() < address:
@@ -581,6 +601,7 @@ class TracedProcess(processinfo.Process):
 			return None
 
 	def log(self, obj):
+		""" Log event """
 		self.logger.handle_event(obj)
 
 	def register(self, register):
@@ -600,13 +621,16 @@ class TracedProcess(processinfo.Process):
 		return PyFlxInstrument.genreg(index)
 
 	def add_pending_return(self, function):
+		""" Used by FunctionHandlers to hook corresponding return of a called function """
 		self.wait_for_return[hash((function.nextaddr,function.top()))] = function
 
-	def _loadInternalCallbacks(self,handlers):
+	def loadCallbacks(self,handlers):
+		""" Load FunctionHandlers from dict """
 		for dll,fname,handlerclass in handlers:
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	def handle_ret(self, toaddr):
+		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		esp = self.register("esp")
 		index = hash((toaddr,esp))
 
@@ -619,7 +643,6 @@ class TracedProcess(processinfo.Process):
 			else:
 				f = self.callstack.top()
 				while f.top() < esp:
-					print "omitting %s"%str(self.callstack.top())
 					self.log(LateRetEvent(f))
 					del(f)
 					f = self.callstack.pop()
@@ -649,7 +672,7 @@ class TracedProcess(processinfo.Process):
 		self._handle_call_filter(*args)
 
 	def addrInExe(self, addr):
-		""" Returns true if address is in main executable mapping. """
+		""" check if address is located in main executable image """
 		image = self.get_image_by_address(addr)
 		if image is not None:
 			return image.get_basedllname().lower() == self.imagefilename()
@@ -657,7 +680,7 @@ class TracedProcess(processinfo.Process):
 			return False
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
-		""" Resolve interesting call and trigger callbacks. """
+		""" test for interesting calls/jmps and trigger next stage handlers """
 		# handle jumps that could be jump pads
 		if self._is_jmp(fromaddr, toaddr, nextaddr):
 			if self._is_jmp_pad(fromaddr, toaddr, nextaddr):
@@ -692,9 +715,11 @@ class TracedProcess(processinfo.Process):
 		return False
 
 	def _is_jmp(self, fromaddr, toaddr, nextaddr):
+		#jumps will set fromaddr/nextaddr to 0, calls *should* not
 		return (fromaddr == 0) and (nextaddr == 0)
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
+		""" if call/jmp could generate interesting event, this function will handle it """
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
 		self.callstack.push(function)
 		self.runCallbacks(function,"enter")
@@ -723,12 +748,6 @@ class TracedProcess(processinfo.Process):
 		else:
 			self.callonfunction[dllname+function] = [callback]
 		return None
-
-	def loadCallbacks(self, callbacklist):
-		""" Callbacks are stored in a dictionary with dll+fname as key, containing lists. """
-		for callback in callbacklist:
-			self.registerFunctionHandler(*callback)
-		self.callbacklist_loaded = True
 
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):
