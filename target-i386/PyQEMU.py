@@ -245,8 +245,15 @@ class HeapMemoryTracer:
 		self.process = process
 
 	def allocate(self, address, size):
+		global heap_allocation_functions
 		try:
-			allocating_function = self.process.callstack.top()
+			index = -1
+			while True:
+				dll, name = self.process.callstack[index].resolveToName()
+				if not (dll, name) in heap_allocation_functions:
+					break
+				index -= 1
+			allocating_function = self.process.callstack[index]
 		except IndexError:
 			allocating_function = None
 		b = Buffer(address, size, allocating_function, "HEAP")
@@ -267,7 +274,7 @@ class HeapMemoryTracer:
 			obj = self.tree.at_most(address)
 			self.tree.remove(obj)
 		else:
-			raise Exception("double free detected by HeapMemoryTracer!")
+			debug("double free detected by HeapMemoryTracer!")
 
 	def free(self, address):
 		self.deallocate(address)
@@ -452,7 +459,6 @@ class HeapAllocationFunctionHandler(FunctionHandler):
 
 class HeapFreeFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
-		print "HeapFreeFunctionHandler.onEnter!!!"
 		addr = function.getIntArg(1)
 		if self.process.memory.heap.allocated(addr):
 			buffer = self.process.memory.heap.getBuffer(addr)
@@ -486,7 +492,21 @@ class ReallocFunctionHandler(FunctionHandler):
 
 	def onLeave(self, function):
 		new_ptr = function.retval()
-		if new_ptr != NULL:
+		if self.old_ptr == NULL:
+			# will call malloc - nothing to do
+			return
+
+		elif self.new_size == 0:
+			# behaves like free
+			addr = self.old_ptr
+			if self.process.memory.heap.allocated(addr):
+				buffer = self.process.memory.heap.getBuffer(addr)
+				self.process.log(DeallocateEvent(buffer))
+				self.process.memory.heap.deallocate(addr)
+			else:
+				self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+		elif new_ptr != NULL:
+			# reallocation, probably
 			if self.old_ptr == new_ptr:
 				buffer = self.process.memory.getBuffer(self.old_ptr)
 				buffer.size = self.new_size
@@ -510,6 +530,18 @@ class NCpyFunctionHandler(CpyFunctionHandler):
 	def onEnter(self, function):
 		len = function.getIntArg(3)
 		CpyFunctionHandler.onEnter(self, function, len)
+
+class StrDupFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		self.src = function.getIntArg(1)
+
+	def onLeave(self, function):
+		self.dst = function.retval()
+		src_buffer = self.process.memory.getBuffer(self.src)
+		dst_buffer = self.process.memory.heap.allocate(self.dst, src_buffer.size)
+		self.process.log(CopyEvent(dst_buffer, src_buffer, src_buffer.size))
+
 
 class RaiseFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -729,10 +761,35 @@ def error_dummy(func, *args):
 def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
+# Heap allocation functions to get real origin
+# O(n) :(
+heap_allocation_functions = [
+				("msvcrt.dll",  "malloc"),
+				("kernel32.dll", "HeapAlloc"),
+				("ole32.dll", "CoTaskMemAlloc"),
+				("msvcrt.dll", "realloc"),
+				("msvcrt.dll", "_strdup"),
+							]
 # Register Processes to trace
 trace_processes = {
 	"telnet.exe":[],
-	"notepad.exe":[],
+	"notepad.exe":[
+				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
+				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
+				("wsock32.dll", "recv",    RecvFunctionHandler),
+				("wsock32.dll", "send",    SendFunctionHandler),
+				("ws2_32.dll",  "WSARecv", RecvFunctionHandler),
+				("ws2_32.dll",  "send",    SendFunctionHandler),
+				("msvcrt.dll",  "strcpy",  CpyFunctionHandler),
+				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
+				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
+				("msvcrt.dll",  "wcscpy",  CpyFunctionHandler),
+				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
+				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
+				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
+				  ],
 	"wget.exe":[
 				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
 				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
@@ -748,6 +805,7 @@ trace_processes = {
 				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
 				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
 				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
 			   ],
 }
 
