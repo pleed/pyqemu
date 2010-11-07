@@ -344,10 +344,15 @@ class DataMemoryTracer:
 		self.tree.insert(b)
 		return b
 
+	def inData(self, address):
+		return self.process.get_image_by_address(address) is not None
+
 	def allocated(self, address):
-		if self.process.get_image_by_address(address) is not None:
+		if self.inData(address):
 			try:
 				buffer = self.tree.at_most(address)
+				if not buffer.includes(address):
+					return False
 			except ValueError:
 				self.allocate(address)
 			return True
@@ -356,7 +361,11 @@ class DataMemoryTracer:
 	def getBuffer(self, address):
 		if self.allocated(address):
 			return self.tree.at_most(address)
-		return None
+		else:
+			if self.inData(address):
+				return self.allocate(address)
+			else:
+				return None
 
 class UnknownMemoryTracer:
 	""" Traces memory from unknown origins """
@@ -469,27 +478,38 @@ class WSARecvFunctionHandler(FunctionHandler):
 		self.addr  = function.getIntArg(2)
 		self.count = function.getIntArg(3)
 		self.call  = function.getIntArg(7)
+		self.socket,self.buffers,self.count,self.recvd,self.flags,self.overlapped,self.callback = function.getIntArg(1),function.getIntArg(2),function.getIntArg(3),function.getIntArg(4),function.getIntArg(5),function.getIntArg(6),function.getIntArg(7),
 
 	def onLeave(self, function):
 		eax = function.retval()
 		if eax == 0:
 			bytesreceived = struct.unpack("I", self.process.readmem(function.getIntArg(4), 4))[0]
+			total_received = bytesreceived
 			i = 0
-			while i<self.count:
+			while i<self.count and bytesreceived > 0:
 				len,ptr = struct.unpack("II", self.process.readmem(self.addr+i*8, 8))
-				i += 1
 				self.buffer = self.process.memory.getBuffer(ptr)
-				if len > self.buffer.size:
-					self.buffer.size = len
-				bytesreceived -= len
-				if bytesreceived >= 0:
-					self.process.log(RecvEvent(self.buffer))
+				self.buffer.size = max(self.buffer.size, len)
+				bytesinbuffer = min(bytesreceived, len)
+				bytesreceived -= bytesinbuffer
+				self.process.log(RecvEvent(self.buffer, ptr, bytesinbuffer))
+				i += 1
 
 class SendFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
-		addr = function.getIntArg(2)
-		buffer = self.process.memory.getBuffer(addr)
-		self.process.log(SendEvent(buffer))
+		self.addPendingReturn(function)
+		self.addr = function.getIntArg(2)
+		self.len  = function.getIntArg(3)
+
+
+	def onLeave(self, function):
+		bytes_sent = function.retval()
+		if bytes_sent > 0:
+			buffer = self.process.memory.getBuffer(self.addr)
+			self.process.log(SendEvent(buffer, self.addr, self.len, bytes_sent))
+		else:
+			pass
+			#error occured
 
 class ReallocFunctionHandler(FunctionHandler):
 	""" Handles realloc like functions, relies on other handlers producing events (e.g. malloc) """
@@ -554,9 +574,10 @@ class StrDupFunctionHandler(FunctionHandler):
 
 	def onLeave(self, function):
 		self.dst = function.retval()
-		src_buffer = self.process.memory.getBuffer(self.src)
-		dst_buffer = self.process.memory.heap.allocate(self.dst, src_buffer.size)
-		self.process.log(CopyEvent(dst_buffer, src_buffer, src_buffer.size))
+		if self.dst != NULL:
+			src_buffer = self.process.memory.getBuffer(self.src)
+			dst_buffer = self.process.memory.getBuffer(self.dst)
+			self.process.log(CopyEvent(dst_buffer, src_buffer, dst_buffer.size))
 
 
 class RaiseFunctionHandler(FunctionHandler):
