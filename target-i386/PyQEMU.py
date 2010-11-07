@@ -214,8 +214,8 @@ class Buffer:
 		self.backend   = get_current_process().backend
 
 		# Assign unique ID, several buffers could be mapped to the same address after freeing the previous
-		self.identifier+= 1
-		self.id        = self.identifier
+		Buffer.identifier+= 1
+		self.id        = Buffer.identifier
 
 	def read(self, len = None):
 		if len is None:
@@ -254,11 +254,12 @@ class Buffer:
 		return self.startaddr
 
 	def __str__(self):
-		s = "0x%x[%s]"%(self.startaddr, str(self.size))
+		s = "[id=%d:0x%x[%s]"%(self.id, self.startaddr, str(self.size))
 		if self.origin is not None:
 			s += "[%s]"%self.origin
 		if self.segment is not None:
 			s += "[%s]"%self.segment
+		s+="]"
 		return s
 
 	def __len__(self):
@@ -328,6 +329,7 @@ class StackMemoryTracer:
 		keys = self.buffers.keys()
 		for key in keys:
 			if self.buffers[key].startaddr < esp:
+				self.process.log(DeallocateEvent(self.buffers[key]))
 				del(self.buffers[key])
 
 	def getBuffer(self, address):
@@ -668,6 +670,7 @@ class TracedProcess(processinfo.Process):
 					f = self.callstack.pop()
 		except IndexError:
 			pass
+		self.memory.stack.update()
 
 		# check for pending return callback
 		if self.wait_for_return.has_key(index):
