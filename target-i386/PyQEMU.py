@@ -119,6 +119,12 @@ class Stack(list):
 	def empty(self):
 		return len(self) == 0
 
+	def __str__(self):
+		s = ""
+		for item in self:
+			s+="%s\n"%item
+		return s
+
 class CalledFunction:
 	""" Function that was called before, encapsulates entry/exit states """
 	def __init__(self, fromaddr, toaddr, nextaddr, process):
@@ -707,11 +713,14 @@ class TracedProcess(processinfo.Process):
 		# handle jumps that could be jump pads
 		if self._is_jmp(fromaddr, toaddr, nextaddr):
 			if self._is_jmp_pad(fromaddr, toaddr, nextaddr):
-				f = self.callstack.top()
-				# did we push the previous call onto the callstack?
-				if (f.fromaddr, f.toaddr, f.nextaddr) == self.previous_call:
-					f = self.callstack.pop()
-					del(f)
+				try:
+					f = self.callstack.top()
+					# did we push the previous call onto the callstack?
+					if (f.fromaddr, f.toaddr, f.nextaddr) == self.previous_call:
+						f = self.callstack.pop()
+						del(f)
+				except IndexError:
+					pass
 				self._handle_interesting_call(self.previous_call[0], toaddr, self.previous_call[2], False)
 				self.previous_call = None
 			else:
@@ -835,6 +844,8 @@ trace_processes = {
 				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
 				("msvcrt.dll", "calloc",   CallocFunctionHandler),
 			   ],
+	"asam.exe":[],
+	"virus.exe":[],
 }
 
 # Register FLX Callbacks 
