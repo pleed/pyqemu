@@ -2555,6 +2555,7 @@ void helper_call_protected(target_ulong src_eip,
 }
 
 void helper_syscall_event(void){
+  if(instrumentation_active && instrumentation_call_active)
 	flxinstrument_syscall_event(env->regs[R_EAX]);
 }
 

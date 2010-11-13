@@ -9,6 +9,7 @@ import cPickle
 import pickle
 import avl
 import gc
+import copy
 
 from event import *
 import PyFlxInstrument
@@ -34,7 +35,6 @@ R_SS = 2
 R_DS = 3
 R_FS = 4
 R_GS = 5
-
 
 KNOWN_Processes = {}
 
@@ -163,6 +163,12 @@ class CalledFunction:
 		""" Stack frame starts at stored EIP! In this definition, arguments belong to predecessor """
 		return self.entrystate["esp"]
 
+	def __deepcopy__(self, memo):
+		new_object = CalledFunction(self.fromaddr, self.toaddr, self.nextaddr, self.process)
+		new_object.entrystate = copy.deepcopy(self.entrystate, memo)
+		new_object.exitstate = copy.deepcopy(self.exitstate, memo)
+		return new_object
+
 	def __str__(self):
 		return "%s::%s()"%(self.resolveToName())
 
@@ -206,7 +212,7 @@ class EventLogger:
 class StdoutEventLogger(EventLogger):
 	""" Event logger for debugging """
 	def handle_event(self, obj):
-		self.dumpfile.write("%s\n"%str(obj))
+		self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
 
 class Buffer:
 	identifier = 0
@@ -341,6 +347,11 @@ class StackMemoryTracer:
 	def getBuffer(self, address):
 		return self.buffers[address]
 
+	def __deepcopy__(self, memo):
+		new_object = StackMemoryTracer(self.process)
+		new_object.buffers = copy.deepcopy(self.buffers, memo)
+		return new_object
+
 class DataMemoryTracer:
 	""" Traces memory globally allocated in image """
 	def __init__(self, process):
@@ -409,11 +420,23 @@ class UnknownMemoryTracer:
 
 class MemoryManager:
 	""" main memory manager, encapsulates as much of the underlying memory classes as possible """
-	def __init__(self, process):
-		self.heap    = HeapMemoryTracer(process)
-		self.stack   = StackMemoryTracer(process)
-		self.data    = DataMemoryTracer(process)
-		self.unknown = UnknownMemoryTracer(process)
+	def __init__(self, process, heap = None, stack = None, data = None, unknown = None):
+		if heap is None:
+			self.heap = HeapMemoryTracer(process)
+		else:
+			self.heap = heap
+		if stack is None:
+			self.stack = StackMemoryTracer(process)
+		else:
+			self.stack = stack
+		if data is None:
+			self.data = DataMemoryTracer(process)
+		else:
+			self.data = data
+		if unknown is None:
+			self.unknown = UnknownMemoryTracer(process)
+		else:
+			self.unknown = unknown
 
 	def onStack(self, addr):
 		return self.stack.allocated(addr)
@@ -593,25 +616,83 @@ class RaiseFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
 		raise Exception("Program raised Exception via %s"%function)
 
+class ProcessCallback:
+	def __init__(self, func):
+		self.func = func
+
+	def __call__(self, *args):
+		process = get_current_process()
+		if not process.isRegisteredThread():
+			print "Checking createNewThread"
+			process.createNewThread()
+		return self.func(process,*args)
+
+class Thread:
+	def __init__(self, *args):
+		self.callstack = Stack()
+		self.wait_for_return = {}
+		self.memory  = MemoryManager(*args)
+		self.previous_call = None
+
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
 
 	def __init__(self, callhandler = []):
+		self.threadcount         = 0
+		self.threads             = {}
 		# log events
 		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
 		# stores registerd callbacks
 		self.callonfunction      = {}
-		# at any time updated callstack
-		self.callstack			 = Stack()
-		# holds registered ret hooks for entered functions
-		self.wait_for_return     = {}
-		# memory management
-		self.memory              = MemoryManager(self)
-		# needed for jump pads
-		self.previous_call       = None
+
+		self.create_thread_list  = []
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks(callhandler)
+
+	def isRegisteredThread(self):
+		try:
+			t = self.thread
+			return True
+		except KeyError:
+			return False
+
+	def createNewThread(self):
+		if self.threadcount == 0:
+			self.threadcount += 1
+			self.threads[self.cur_tid] = Thread(self)
+		else:
+			if len(self.create_thread_list) > 1:
+				raise Exception("Race condition creating new threads!")
+			creating_thread_id = self.create_thread_list.pop()
+			self.threads[self.cur_tid] = Thread(self, self.threads[creating_thread_id].memory.heap, \
+			                                          copy.deepcopy(self.threads[creating_thread_id].memory.stack),\
+			                                          self.threads[creating_thread_id].memory.data, \
+													  self.threads[creating_thread_id].memory.unknown)
+		print "Thread %d registered"%self.cur_tid
+
+	def registerCreateThreadCall(self):
+		self.create_thread_list.append(self.cur_tid)
+
+	def getThread(self):
+		try:
+			return self.threads[self.cur_tid]
+		except KeyError:
+			print "getThread checking createNewThread"
+			self.createNewThread()
+	thread = property(getThread)
+
+	def getCallstack(self):
+		return self.thread.callstack
+	callstack = property(getCallstack)
+
+	def getWaitForReturn(self):
+		return self.thread.wait_for_return
+	wait_for_return = property(getWaitForReturn)
+
+	def getMemory(self):
+		return self.thread.memory
+	memory = property(getMemory)
 
 	def getstackframe(self, address):
 		""" Returns the corresponding function which owns the stack frame the address belongs to """
@@ -657,6 +738,7 @@ class TracedProcess(processinfo.Process):
 		for dll,fname,handlerclass in handlers:
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
+	@ProcessCallback
 	def handle_ret(self, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		esp = self.register("esp")
@@ -693,9 +775,14 @@ class TracedProcess(processinfo.Process):
 					del(self.wait_for_return[hash(toaddr,function.top())])
 			print "wait_for_return size is now: %d"%len(self.wait_for_return)
 
+	@ProcessCallback
 	def handle_syscall(self, eax):
-		print "syscall :), eax is %i"%eax
+		# NtCreateThread
+		if eax == 0x35:
+			print "NtCreateThread"
+			self.registerCreateThreadCall()
 
+	@ProcessCallback
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
 		self._handle_call_filter(*args)
@@ -716,18 +803,18 @@ class TracedProcess(processinfo.Process):
 				try:
 					f = self.callstack.top()
 					# did we push the previous call onto the callstack?
-					if (f.fromaddr, f.toaddr, f.nextaddr) == self.previous_call:
+					if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
 						f = self.callstack.pop()
 						del(f)
 				except IndexError:
 					pass
-				self._handle_interesting_call(self.previous_call[0], toaddr, self.previous_call[2], False)
-				self.previous_call = None
+				self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
+				self.thread.previous_call = None
 			else:
 				return
 		# handle normal calls
 		else:
-			self.previous_call = (fromaddr, toaddr, nextaddr)
+			self.thread.previous_call = (fromaddr, toaddr, nextaddr)
 			from_image = self.get_image_by_address(fromaddr)
 			to_image   = self.get_image_by_address(toaddr)
 			if from_image is None or to_image is None:
@@ -742,7 +829,7 @@ class TracedProcess(processinfo.Process):
 	def _is_jmp_pad(self, fromaddr, toaddr, nextaddr):
 		# if target is a known function, check if address pushed by previous call is still on $esp
 		if self.symbols.has_key(toaddr) and \
-		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.previous_call[2]:
+		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.thread.previous_call[2]:
 			return True
 		return False
 
