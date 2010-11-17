@@ -1,17 +1,37 @@
 import pefile
 import os
 import avl
+import glob
 
 class DLLHandler:
 	def __init__(self, dlldir):
 		self.dlldir = dlldir
 		self.tree = avl.new()
+		self.known_libs = {}
 
 	def loadDLL(self, filename, imagebase):
-		lib = DLLFile(self.dlldir+"/"+filename, imagebase)
-		self.tree.insert(lib)
+		filename = filename.lower()
+		if self.known_libs.has_key(filename):
+			return
+		if not imagebase in self.tree:
+			try:
+				nocasefilename = self._emulateFilenameNoCase(filename)
+				if nocasefilename is None:
+					raise IOError
+				lib = DLLFile(nocasefilename, imagebase)
+				self.tree.insert(lib)
+				self.known_libs[filename] = lib
+			except IOError:
+				print "Could not load dll: %s"%filename
+				self.known_libs[filename] = None
 
-	def _getLib(self, address):
+	def getLibByName(self, filename):
+		filename = filename.lower()
+		if self.known_libs.has_key(filename):
+			return self.known_libs[filename]
+		return None
+
+	def getLib(self, address):
 		try:
 			lib = self.tree.at_most(address)
 		except ValueError:
@@ -21,14 +41,13 @@ class DLLHandler:
 		else:
 			return None
 
-	def resolveToName(self, addr):
-		dll = self._getLib(addr)
-		if dll is None:
-			return None, None
-		try:
-			return str(dll), dll[addr]
-		except KeyError:
-			return str(dll), None
+	def _emulateFilenameNoCase(self, filename):
+		filelist = glob.glob(self.dlldir+"/*")
+		filelist = map(lambda x: x.lower(), filelist)
+		for file in filelist:
+			if os.path.basename(file) == filename:
+				return file
+		return None
 
 class DLLFile(dict):
 	def __init__(self, filename, imagebase):
@@ -39,9 +58,12 @@ class DLLFile(dict):
 
 		# Load functions
 		lib = pefile.PE(filename)
+		print "Filename: %s"%filename
 		self.size = lib.OPTIONAL_HEADER.SizeOfImage
-		for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
-			self[imagebase+function.address] = function.name
+		if hasattr(lib,"DIRECTORY_ENTRY_EXPORT"):
+			for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
+				print "Loading function %s"%function.name
+				self[imagebase+function.address] = (function.ordinal, function.address, function.name)
 		del(lib)
 
 	def includes(self, address):

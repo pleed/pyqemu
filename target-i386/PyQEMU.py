@@ -16,6 +16,8 @@ import PyFlxInstrument
 import processinfo
 from Structures import *
 from windecl import *
+from dllhandling import *
+import syscalls
 
 DEBUG = True
 NULL = 0
@@ -151,7 +153,7 @@ class CalledFunction:
 		if dll is None:
 			return "Unknown","Unknown"
 		try:
-			return dll.get_basedllname().lower(), self.process.symbols[addr][2]
+			return dll.get_basedllname().lower(), self.process.getSymbol(addr)
 		except KeyError:
 			return dll.get_basedllname(), hex(addr)
 
@@ -616,14 +618,13 @@ class RaiseFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
 		raise Exception("Program raised Exception via %s"%function)
 
-class ProcessCallback:
+class RegisteredCallback:
 	def __init__(self, func):
 		self.func = func
 
 	def __call__(self, *args):
 		process = get_current_process()
 		if not process.isRegisteredThread():
-			print "Checking createNewThread"
 			process.createNewThread()
 		return self.func(process,*args)
 
@@ -638,10 +639,12 @@ class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
 
 	def __init__(self, callhandler = []):
+		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
 		# log events
 		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
+		self.dllhandler          = DLLHandler("/media/shared/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
 
@@ -663,7 +666,7 @@ class TracedProcess(processinfo.Process):
 			self.threads[self.cur_tid] = Thread(self)
 		else:
 			if len(self.create_thread_list) > 1:
-				raise Exception("Race condition creating new threads!")
+				raise Exception("Race condition creating new threads!, FIX IT!")
 			creating_thread_id = self.create_thread_list.pop()
 			self.threads[self.cur_tid] = Thread(self, self.threads[creating_thread_id].memory.heap, \
 			                                          copy.deepcopy(self.threads[creating_thread_id].memory.stack),\
@@ -678,7 +681,6 @@ class TracedProcess(processinfo.Process):
 		try:
 			return self.threads[self.cur_tid]
 		except KeyError:
-			print "getThread checking createNewThread"
 			self.createNewThread()
 	thread = property(getThread)
 
@@ -738,7 +740,7 @@ class TracedProcess(processinfo.Process):
 		for dll,fname,handlerclass in handlers:
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
-	@ProcessCallback
+	@RegisteredCallback
 	def handle_ret(self, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		esp = self.register("esp")
@@ -775,14 +777,19 @@ class TracedProcess(processinfo.Process):
 					del(self.wait_for_return[hash(toaddr,function.top())])
 			print "wait_for_return size is now: %d"%len(self.wait_for_return)
 
-	@ProcessCallback
+	@RegisteredCallback
 	def handle_syscall(self, eax):
 		# NtCreateThread
+		syscall_name = syscalls.getSyscallByNumber(eax)
+		if syscall_name is not None:
+			print "Syscall: %s"%syscall_name
 		if eax == 0x35:
 			print "NtCreateThread"
 			self.registerCreateThreadCall()
+		if syscall_name is None:
+			print "Unknown Syscall: 0x%x"%eax
 
-	@ProcessCallback
+	@RegisteredCallback
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
 		self._handle_call_filter(*args)
@@ -820,15 +827,39 @@ class TracedProcess(processinfo.Process):
 			if from_image is None or to_image is None:
 				self.update_images()
 			if from_image is not None and to_image is not None:
-				if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.symbols.has_key(toaddr):
+				if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.hasSymbol(toaddr):
 					to_image.update()
 				# just known functions or call from/to main exe are interesting right now
-				if self.addrInExe(toaddr) or self.addrInExe(fromaddr) or self.symbols.has_key(toaddr):
+				if self.addrInExe(toaddr) or self.addrInExe(fromaddr) or self.hasSymbol(toaddr):
 					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+
+	def getSymbol(self, addr):
+		if self.symbols.has_key(addr):
+			return self.symbols[addr][2]
+		else:
+			if self.detected_dlls < len(self.images):
+				for image in self.images:
+					base = image
+					image = self.get_image_by_address(image)
+					self.dllhandler.loadDLL(image.get_basedllname(), base)
+				self.detected_dlls = len(self.images)
+			lib = self.dllhandler.getLib(addr)
+			if lib is not None and lib.has_key(addr):
+				return lib[addr][2]
+		return str(hex(addr))
+
+	def hasSymbol(self, addr):
+		if self.symbols.has_key(addr):
+			return True
+		else:
+			lib = self.dllhandler.getLib(addr)
+			if lib is not None and lib.has_key(addr):
+				return True
+		return False
 
 	def _is_jmp_pad(self, fromaddr, toaddr, nextaddr):
 		# if target is a known function, check if address pushed by previous call is still on $esp
-		if self.symbols.has_key(toaddr) and \
+		if self.hasSymbol(toaddr) and \
 		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.thread.previous_call[2]:
 			return True
 		return False
@@ -931,8 +962,42 @@ trace_processes = {
 				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
 				("msvcrt.dll", "calloc",   CallocFunctionHandler),
 			   ],
-	"asam.exe":[],
-	"virus.exe":[],
+	"asam.exe":[
+				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
+				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
+				("wsock32.dll", "recv",    WSARecvFunctionHandler),
+				("wsock32.dll", "send",    SendFunctionHandler),
+				("ws2_32.dll",  "WSARecv", WSARecvFunctionHandler),
+				("ws2_32.dll",  "send",    SendFunctionHandler),
+				("msvcrt.dll",  "strcpy",  StrCpyFunctionHandler),
+				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
+				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
+				("msvcrt.dll",  "wcscpy",  CpyFunctionHandler),
+				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
+				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
+				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
+				("msvcrt.dll", "calloc",   CallocFunctionHandler),
+				],
+	"virus.exe":[
+				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
+				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
+				("wsock32.dll", "recv",    WSARecvFunctionHandler),
+				("wsock32.dll", "send",    SendFunctionHandler),
+				("ws2_32.dll",  "WSARecv", WSARecvFunctionHandler),
+				("ws2_32.dll",  "send",    SendFunctionHandler),
+				("msvcrt.dll",  "strcpy",  StrCpyFunctionHandler),
+				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
+				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
+				("msvcrt.dll",  "wcscpy",  CpyFunctionHandler),
+				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
+				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
+				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
+				("msvcrt.dll", "calloc",   CallocFunctionHandler),
+				],
 }
 
 # Register FLX Callbacks 
