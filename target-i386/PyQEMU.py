@@ -782,12 +782,11 @@ class TracedProcess(processinfo.Process):
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(eax)
 		if syscall_name is not None:
-			print "Syscall: %s"%syscall_name
+			self.log(SyscallEvent(syscall_name))
+		else:
+			self.log(SyscallEvent(eax))
 		if eax == 0x35:
-			print "NtCreateThread"
 			self.registerCreateThreadCall()
-		if syscall_name is None:
-			print "Unknown Syscall: 0x%x"%eax
 
 	@RegisteredCallback
 	def handle_call(self, *args):
