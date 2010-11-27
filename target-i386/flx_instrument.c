@@ -131,7 +131,6 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 			    );
 	}
    
-   Py_XINCREF(retval);
    return retval;
 }
 
@@ -147,7 +146,7 @@ static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
   PyObject *retval = Py_None;
   if (current_environment)
     retval = Py_BuildValue("I", current_environment->eip);
-  Py_XINCREF(retval);
+  //Py_XINCREF(retval);
 
   return retval;
 }
@@ -180,7 +179,7 @@ static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
    }
 
    retval = Py_BuildValue("I", current_environment->regs[index]);
-   Py_XINCREF(retval);
+   //Py_XINCREF(retval);
    return retval;
 }
 
@@ -207,7 +206,7 @@ static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
    }
    
    retval = Py_BuildValue("I", current_environment->segs[index].base);
-   Py_XINCREF(retval);
+   //Py_XINCREF(retval);
    return retval;
 }
 
@@ -252,7 +251,7 @@ static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
    }
    
    retval = Py_BuildValue("s#", buf, len);
-   Py_XINCREF(retval);
+   //Py_XINCREF(retval);
    free(buf);
 
    return retval;

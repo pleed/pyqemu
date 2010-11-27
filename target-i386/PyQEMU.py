@@ -10,12 +10,12 @@ import pickle
 import avl
 import gc
 import copy
+import guppy
 
 from event import *
 import PyFlxInstrument
 import processinfo
 from Structures import *
-from windecl import *
 from dllhandling import *
 import syscalls
 
@@ -39,6 +39,7 @@ R_FS = 4
 R_GS = 5
 
 KNOWN_Processes = {}
+cleanup_processes = []
 
 # Helper functions
 def get_current_process():
@@ -62,6 +63,12 @@ def debug(msg):
 def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
 	global R_FS
+
+	if len(cleanup_processes) > 0:
+		print "Deleting process"
+		p,cr3 = cleanup_processes.pop()
+		KNOWN_Processes[cr3] = UntracedProcess([])
+		del(p)
 
 	kpcr_addr = PyFlxInstrument.creg(R_FS)
 	if KNOWN_Processes.has_key(new_cr3):
@@ -208,13 +215,14 @@ class EventLogger:
 		self.dumper.dump(obj, self.dumpfile)
 		self.dumpfile.flush()
 
-	def __del__(self):
+	def close(self):
 		self.dumpfile.close()
 
 class StdoutEventLogger(EventLogger):
 	""" Event logger for debugging """
 	def handle_event(self, obj):
 		self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
+		self.dumpfile.flush()
 
 class Buffer:
 	identifier = 0
@@ -783,6 +791,10 @@ class TracedProcess(processinfo.Process):
 		syscall_name = syscalls.getSyscallByNumber(eax)
 		if syscall_name is not None:
 			self.log(SyscallEvent(syscall_name))
+			if syscall_name == "NtTerminateProcess":
+				global cleanup_processes
+				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
+				
 		else:
 			self.log(SyscallEvent(eax))
 		if eax == 0x35:
@@ -898,6 +910,14 @@ class TracedProcess(processinfo.Process):
 			self.callonfunction[dllname+function] = [callback]
 		return None
 
+	def __del__(self):
+		for tid,thread in self.threads.items():
+			del(thread)
+		self.logger.close()
+		del(self.logger)
+		del(self.dllhandler)
+		del(self.callonfunction)
+
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):
 		processinfo.Process.__init__(self)
@@ -1002,5 +1022,5 @@ trace_processes = {
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
-ev_ret       = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
+ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
