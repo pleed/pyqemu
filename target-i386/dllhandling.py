@@ -55,14 +55,12 @@ class DLLFile(dict):
 		self.filename = os.path.basename(filename)
 
 		dict.__init__(self)
-
+		print "Loading %s"%filename
 		# Load functions
 		lib = pefile.PE(filename)
-		print "Filename: %s"%filename
 		self.size = lib.OPTIONAL_HEADER.SizeOfImage
 		if hasattr(lib,"DIRECTORY_ENTRY_EXPORT"):
 			for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
-				print "Loading function %s"%function.name
 				self[imagebase+function.address] = (function.ordinal, function.address, function.name)
 		del(lib)
 
