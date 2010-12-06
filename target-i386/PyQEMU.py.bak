@@ -5,23 +5,19 @@ import sys
 import os
 import glob
 import struct
+import cPickle
 import pickle
 import avl
 import gc
 import copy
 import guppy
-import cProfile
-import threading
-import Queue
 
-import event
 from event import *
 import PyFlxInstrument
 import processinfo
 from Structures import *
-import Structures
+from windecl import *
 from dllhandling import *
-import dllhandling
 import syscalls
 
 DEBUG = True
@@ -44,7 +40,6 @@ R_FS = 4
 R_GS = 5
 
 KNOWN_Processes = {}
-cleanup_processes = []
 
 # Helper functions
 def get_current_process():
@@ -69,11 +64,6 @@ def event_update_cr3(old_cr3, new_cr3):
 	global KNOWN_Processes	
 	global R_FS
 
-	if len(cleanup_processes) > 0:
-		print "Deleting process"
-		p,cr3 = cleanup_processes.pop()
-		KNOWN_Processes[cr3] = UntracedProcess([])
-		del(p)
 
 	kpcr_addr = PyFlxInstrument.creg(R_FS)
 	if KNOWN_Processes.has_key(new_cr3):
@@ -150,9 +140,6 @@ class CalledFunction:
 		self.entrystate = PyFlxInstrument.registers()
 		self.exitstate = None
 
-		self.dllname = None
-		self.name = None
-
 	def isReturning(self, nextaddr):
 		if nextaddr == self.nextaddr:
 			self.exitstate = PyFlxInstrument.registers()
@@ -164,17 +151,13 @@ class CalledFunction:
 		return self.exitstate["eax"]
 
 	def resolveToName(self):
-		if self.name is None and self.dllname is None:
-			dll, addr = self.resolve()
-			if dll is None:
-				return "Unknown","Unknown"
-			try:
-				self.dllname, self.name =  dll.get_basedllname().lower(), self.process.getSymbol(addr)
-				return self.dllname, self.name
-			except KeyError:
-				return dll.get_basedllname(), hex(addr)
-		else:
-			return self.dllname, self.name
+		dll, addr = self.resolve()
+		if dll is None:
+			return "Unknown","Unknown"
+		try:
+			return dll.get_basedllname().lower(), self.process.getSymbol(addr)
+		except KeyError:
+			return dll.get_basedllname(), hex(addr)
 
 	def resolve(self):
 		image = self.process.get_image_by_address(self.toaddr)
@@ -211,28 +194,26 @@ class CalledFunction:
 		esp = self.process.genreg(R_ESP)
 		return self.process.readmem(esp+num*4, 4)
 
-class EventLogger(pickle.Pickler):
-	cache_treshold = 100
+class EventLogger:
 	""" Object serialization logger """
 	def __init__(self, dumpfile):
-		pickle.Pickler.__init__(self, dumpfile)
-		self.eventcache = []
+		self.dumpfile = dumpfile
+		self.dumper   = pickle
 
 	def handle_event(self, obj):
-		if len(self.eventcache) <= self.cache_treshold:
-			self.eventcache.append(obj)
-		else:
-			for obj in self.eventcache:
-				self.dump(obj)
-			self.clear_memo()
-			self.eventcache = []
+		if obj is None:
+			print "obj is None"
+		if self.dumpfile is None:
+			print "file is None"
+		print "type obj: "+str(type(obj))
+		print "type file:"+str(type(self.dumpfile))
+		self.dumper.dump(obj, self.dumpfile)
+		#self.dumpfile.flush()
 
-	def close(self):
+	def __del__(self):
 		self.dumpfile.close()
 
-class StdoutEventLogger:
-	def __init__(self, dumpfile):
-		self.dumpfile = dumpfile
+class StdoutEventLogger(EventLogger):
 	""" Event logger for debugging """
 	def handle_event(self, obj):
 		self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
@@ -252,12 +233,6 @@ class Buffer:
 		Buffer.identifier+= 1
 		self.id        = Buffer.identifier
 
-	def sizeHint(self, len):
-		self.size = max(len, self.size)
-
-	def update(self):
-		self.read()
-
 	def read(self, len = None):
 		try:
 			if len is None:
@@ -265,7 +240,8 @@ class Buffer:
 			else:
 				return self.backend.read(self.startaddr, len)
 		except PageFaultException:
-			return ""
+			print "Page Fault raised while reading at 0x%x, offset 0x%x"%(self.startaddr,self.size)
+		return ""
 
 	def includes(self, address):
 		return self.startaddr <= address <= self.endaddr
@@ -359,8 +335,6 @@ class StackMemoryTracer:
 
 	def allocated(self, address):
 		esp = self.process.register("esp")
-		if self.process.callstack.empty():
-			return False
 		stack_top = self.process.callstack.bottom().top()
 		if esp <= address <= stack_top:
 			function = self.process.getstackframe(address)
@@ -509,19 +483,6 @@ class FunctionHandler:
 	def addPendingReturn(self, function):
 		self.process.add_pending_return(function)
 
-class RecvFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		self.addPendingReturn(function)
-		self.addr = function.getIntArg(2)
-
-	def onLeave(self, function):
-		self.sent = function.retval()
-		self.buffer = self.process.memory.getBuffer(self.addr)
-		if self.sent > 0:
-			self.process.log(RecvEvent(self.buffer, self.addr, self.sent))
-			pass
-
-
 class HeapAllocationFunctionHandler(FunctionHandler):
 	def onLeave(self, function):
 		addr = function.retval()
@@ -547,39 +508,7 @@ class HeapFreeFunctionHandler(FunctionHandler):
 			self.process.memory.heap.deallocate(addr)
 		else:
 			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
-
-class LoadLibraryFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		filename = function.getIntArg(1)		
-		try:
-			print "LoadLibrary(%s)"%STR(self.process.backend, filename)
-		except PageFaultException:
-			pass
-
-class LoadLibraryAFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		filename = function.getIntArg(1)		
-		try:
-			print "LoadLibraryA(%s)"%STR(self.process.backend, filename)
-		except PageFaultException:
-			pass
-
-class LoadLibraryWFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		filename = function.getIntArg(1)		
-		try:
-			print "LoadLibraryW(%s)"%WSTR(self.process.backend, filename)
-		except PageFaultException:
-			pass
-
-class LoadLibraryExAFunctionHandler(LoadLibraryAFunctionHandler):
-	def onEnter(self, function):
-		LoadLibraryAFunctionHandler.onEnter(self,function)
-
-class LoadLibraryExWFunctionHandler(LoadLibraryWFunctionHandler):
-	def onEnter(self, function):
-		LoadLibraryWFunctionHandler.onEnter(self,function)
-
+		# isnt that a nice place to do garbage collection?
 
 class WSARecvFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -598,7 +527,7 @@ class WSARecvFunctionHandler(FunctionHandler):
 			while i<self.count and bytesreceived > 0:
 				len,ptr = struct.unpack("II", self.process.readmem(self.addr+i*8, 8))
 				self.buffer = self.process.memory.getBuffer(ptr)
-				self.buffer.sizeHint(len)
+				self.buffer.size = max(self.buffer.size, len)
 				bytesinbuffer = min(bytesreceived, len)
 				bytesreceived -= bytesinbuffer
 				self.process.log(RecvEvent(self.buffer, ptr, bytesinbuffer))
@@ -610,36 +539,15 @@ class SendFunctionHandler(FunctionHandler):
 		self.addr = function.getIntArg(2)
 		self.len  = function.getIntArg(3)
 
+
 	def onLeave(self, function):
 		bytes_sent = function.retval()
-		buffer = self.process.memory.getBuffer(self.addr)
-		buffer.sizeHint(self.len)
-		buffer.update()
 		if bytes_sent > 0:
 			buffer = self.process.memory.getBuffer(self.addr)
 			self.process.log(SendEvent(buffer, self.addr, self.len, bytes_sent))
 		else:
 			pass
 			#error occured
-
-class ConnectFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		self.addPendingReturn(function)
-		self.socket   = function.getIntArg(1)
-		self.sockaddr = function.getIntArg(2)
-		self.len      = function.getIntArg(3)
-
-	def onLeave(self, function):
-		ret = function.retval()
-		ip = ".".join(map(str,map(ord, self.process.readmem(self.sockaddr+4, 4))))
-		port = struct.unpack(">H", self.process.readmem(self.sockaddr+2, 2))
-		print "Connection to ip: %s"%ip
-		print "Connection to port: %d"%port
-		print "length was: %d"%self.len
-		if ret == 0:
-			print "connection established"
-		else:
-			print "connection failed"
 
 class ReallocFunctionHandler(FunctionHandler):
 	""" Handles realloc like functions, relies on other handlers producing events (e.g. malloc) """
@@ -683,55 +591,12 @@ class CpyFunctionHandler(FunctionHandler):
 		src = function.getIntArg(2)
 		src_buffer = self.process.memory.getBuffer(src)
 		dst_buffer = self.process.memory.getBuffer(dst)
-		src_buffer.sizeHint(len)
-		dst_buffer.sizeHint(len)
 		self.process.log(CopyEvent(dst_buffer, src_buffer, len, dst, src))
 
 class StrCpyFunctionHandler(CpyFunctionHandler):
-	def onEnter(self, function, stringtype = STR):
+	def onEnter(self, function):
 		src = function.getIntArg(2)
-		CpyFunctionHandler.onEnter(self, function, len=len(stringtype(self.process.backend, src)))
-
-class StrCatFunctionHandler(FunctionHandler):
-	def onEnter(self, function, stringtype = STR):
-		dst = function.getIntArg(1)
-		src = function.getIntArg(2)
-		src_buffer = self.process.memory.getBuffer(src)
-		dst_buffer = self.process.memory.getBuffer(dst)
-		srclen = len(stringtype(self.process.backend, src))
-		dstlen = len(stringtype(self.process.backend, dst))
-		src_buffer.sizeHint(srclen)
-		dst_buffer.sizeHint(dstlen+srclen)
-		self.process.log(CopyEvent(dst_buffer, src_buffer, srclen, dst+srclen, src))
-
-class WcsCatFunctionHandler(StrCatFunctionHandler):
-	def onEnter(self, function):
-		StrCatFunctionHandler.onEnter(self, function, WSTR)
-
-class WcsCpyFunctionHandler(StrCpyFunctionHandler):
-	def onEnter(self, function):
-		StrCpyFunctionHandler.onEnter(self, function, WSTR)
-
-class StrLenFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		self.addPendingReturn(function)
-		self.addr = function.getIntArg(1)
-
-	def onLeave(self, function):
-		len = function.retval()
-		buffer = self.process.memory.getBuffer(self.addr)
-		buffer.sizeHint(len)
-
-class WcsLenFunctionHandler(FunctionHandler):
-	def onEnter(self, function):
-		self.addPendingReturn(function)
-		self.addr = function.getIntArg(1)
-
-	def onLeave(self, function):
-		len = function.retval()
-		len = len*2
-		buffer = self.process.memory.getBuffer(self.addr)
-		buffer.sizeHint(len)
+		CpyFunctionHandler.onEnter(self, function, len=len(STR(self.process.backend, src)))
 
 class NCpyFunctionHandler(CpyFunctionHandler):
 	""" Handles copying functions with a length argument """
@@ -752,15 +617,6 @@ class StrDupFunctionHandler(FunctionHandler):
 			dst_buffer = self.process.memory.getBuffer(self.dst)
 			self.process.log(CopyEvent(dst_buffer, src_buffer, dst_buffer.size))
 
-class CreateThreadFunctionHandler(FunctionHandler):
-	""" Handles strdup like functions """
-	def onEnter(self, function):
-		self.addPendingReturn(function)
-
-	def onLeave(self, function):
-		self.threadhandle = function.retval()
-		if self.threadhandle != NULL:
-			self.process.registerCreateThreadCall()
 
 class RaiseFunctionHandler(FunctionHandler):
 	""" we have to notice exceptions later to keep callstack up to date """
@@ -791,8 +647,9 @@ class TracedProcess(processinfo.Process):
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
+		# log events
 		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
-		self.dllhandler          = DLLHandler("/media/shared/dlls/")
+		self.dllhandler          = DLLHandler("/media/shared/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
 
@@ -857,7 +714,8 @@ class TracedProcess(processinfo.Process):
 			else:
 				return None
 		else:
-			raise Exception("Address not on stack!")
+			print "Address not on stack!!!"
+			return None
 
 	def log(self, obj):
 		""" Log event """
@@ -890,6 +748,7 @@ class TracedProcess(processinfo.Process):
 
 	@RegisteredCallback
 	def handle_ret(self, toaddr):
+		return
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		esp = self.register("esp")
 		index = hash((toaddr,esp))
@@ -927,21 +786,19 @@ class TracedProcess(processinfo.Process):
 
 	@RegisteredCallback
 	def handle_syscall(self, eax):
+		return
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(eax)
 		if syscall_name is not None:
 			self.log(SyscallEvent(syscall_name))
-			if syscall_name == "NtTerminateProcess":
-				global cleanup_processes
-				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
-			if syscall_name == "NtCreateThread":
-				print "NtCreateThread called"
-				
 		else:
 			self.log(SyscallEvent(eax))
+		if eax == 0x35:
+			self.registerCreateThreadCall()
 
 	@RegisteredCallback
 	def handle_call(self, *args):
+		return
 		""" Call Opcode handler. """
 		self._handle_call_filter(*args)
 
@@ -976,10 +833,12 @@ class TracedProcess(processinfo.Process):
 			from_image = self.get_image_by_address(fromaddr)
 			to_image   = self.get_image_by_address(toaddr)
 			if from_image is None or to_image is None:
-				self.update_images()
+				pass
+				#self.update_images()
 			if from_image is not None and to_image is not None:
 				if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.hasSymbol(toaddr):
-					to_image.update()
+					pass
+					#to_image.update()
 				# just known functions or call from/to main exe are interesting right now
 				if self.addrInExe(toaddr) or self.addrInExe(fromaddr) or self.hasSymbol(toaddr):
 					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
@@ -996,7 +855,7 @@ class TracedProcess(processinfo.Process):
 				self.detected_dlls = len(self.images)
 			lib = self.dllhandler.getLib(addr)
 			if lib is not None and lib.has_key(addr):
-				return str(lib[addr][2])
+				return lib[addr][2]
 		return str(hex(addr))
 
 	def hasSymbol(self, addr):
@@ -1010,8 +869,6 @@ class TracedProcess(processinfo.Process):
 
 	def _is_jmp_pad(self, fromaddr, toaddr, nextaddr):
 		# if target is a known function, check if address pushed by previous call is still on $esp
-		if self.thread.previous_call is None:
-			return False
 		if self.hasSymbol(toaddr) and \
 		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.thread.previous_call[2]:
 			return True
@@ -1023,6 +880,7 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
+		return
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
 		self.callstack.push(function)
 		self.runCallbacks(function,"enter")
@@ -1031,9 +889,6 @@ class TracedProcess(processinfo.Process):
 	def runCallbacks(self, function, event_type):
 		""" Run registered Callbacks for (dll, function) tuple. """
 		dll,name = function.resolveToName()	
-		if dll is None or name is None:
-			print "dll: "+str(type(dll))
-			print "name: "+str(type(name))
 		if self.callonfunction.has_key(dll+name):
 			for callback in self.callonfunction[dll+name]:
 				if event_type == "enter":
@@ -1054,14 +909,6 @@ class TracedProcess(processinfo.Process):
 		else:
 			self.callonfunction[dllname+function] = [callback]
 		return None
-
-	def __del__(self):
-		for tid,thread in self.threads.items():
-			del(thread)
-		self.logger.close()
-		del(self.logger)
-		del(self.dllhandler)
-		del(self.callonfunction)
 
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):
@@ -1103,8 +950,7 @@ heap_allocation_functions = [
 				("msvcrt.dll", "realloc"),
 				("msvcrt.dll", "_strdup"),
 				("msvcrt.dll", "calloc"),
-							]
-
+]
 HOOKS = [
 				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
 				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
@@ -1112,12 +958,10 @@ HOOKS = [
 				("wsock32.dll", "send",    SendFunctionHandler),
 				("ws2_32.dll",  "WSARecv", WSARecvFunctionHandler),
 				("ws2_32.dll",  "send",    SendFunctionHandler),
-				("ws2_32.dll",  "recv",    RecvFunctionHandler),
-				("ws2_32.dll",  "connect", ConnectFunctionHandler),
 				("msvcrt.dll",  "strcpy",  StrCpyFunctionHandler),
 				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
 				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
-				("msvcrt.dll",  "wcscpy",  WcsCpyFunctionHandler),
+				("msvcrt.dll",  "wcscpy",  CpyFunctionHandler),
 				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
 				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
 				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
@@ -1125,28 +969,16 @@ HOOKS = [
 				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
 				("msvcrt.dll", "calloc",   CallocFunctionHandler),
 				("ntdll.dll",  "memmove",  NCpyFunctionHandler),
-				("msvcrt.dll", "wcscat",   WcsCatFunctionHandler),
-				("msvcrt.dll", "wcslen",   WcsLenFunctionHandler),
-				("msvcrt.dll", "strlen",   StrLenFunctionHandler),
-				("msvcrt.dll", "strcat",   StrCatFunctionHandler),
-				("msvcrt.dll", "wcscat",   WcsCatFunctionHandler),
-				("kernel32.dll",  "LoadLibrary", LoadLibraryFunctionHandler),
-				("kernel32.dll",  "LoadLibraryA", LoadLibraryAFunctionHandler),
-				("kernel32.dll",  "LoadLibraryW", LoadLibraryWFunctionHandler),
-				("kernel32.dll",  "LoadLibraryExA", LoadLibraryExAFunctionHandler),
-				("kernel32.dll",  "LoadLibraryExW", LoadLibraryExWFunctionHandler),
-				("kernel32.dll",  "CreateThread", CreateThreadFunctionHandler),
-				
+				("msvcrt.dll", "memmove",  NCpyFunctionHandler),
 ]
 # Register Processes to trace
 trace_processes = {
-	"telnet.exe":[],
-	"wget.exe":  HOOKS,
-	"asam.exe":  HOOKS,
-	"virus.exe": HOOKS,
-	"putty.exe": HOOKS,
-	"ftp.exe":   HOOKS,
-	"curl.exe":  HOOKS,
+	"telnet.exe" : HOOKS,
+	"notepad.exe": HOOKS,
+	"wget.exe"   : HOOKS,
+	"asam.exe"   : HOOKS,
+	"virus.exe"  : HOOKS,
+	"putty.exe"  : HOOKS,
 }
 
 # Register FLX Callbacks 
@@ -1154,3 +986,4 @@ ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process()
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
+
