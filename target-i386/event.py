@@ -2,6 +2,7 @@
 
 import string
 from copy import deepcopy
+import syscalls
 
 def string_from_buf(buffer, len = None, omit = 0):
 	if len is None:
@@ -24,8 +25,11 @@ class Event:
 	pass
 
 class SyscallEvent(Event):
-	def __init__(self, number):
-		self.number = number
+	def __init__(self, syscall):
+		self.syscall = syscall
+
+	def __str__(self):
+		return "Syscall: (%s)"%self.syscall
 
 class CopyEvent(Event):
 	""" Memory was copied from src to dst """
@@ -47,7 +51,7 @@ class CopyEvent(Event):
 		self.dst_content = dst_buffer.read()[self.dst_buffer_offset:]
 
 	def __str__(self):
-		return "Copy: (%d, %d, %s) <-- (%d, %d, %s)"%(self.dst_buffer_id, self.dst_buffer_offset, self.dst_buffer_segment, self.src_buffer_id, self.src_buffer_offset, self.src_buffer_segment)
+		return "Copy: (%d, %d, %s) <-- (%d, %d, %s)"%(self.dst_buffer_id, self.dst_buffer_offset, self.dst_segment, self.src_buffer_id, self.src_buffer_offset, self.src_segment)
 
 class SendEvent(Event):
 	def __init__(self, buffer, addr, requested_len, sent_len):
@@ -69,7 +73,7 @@ class RecvEvent(Event):
 		self.buffer_segment = buffer.segment
 
 	def __str__(self):
-		return "Recv: (%d, %d, %s)"%(self.buffer_id, self.send_offset, self.buffer_segment)
+		return "Recv: (%d, %d, %d, %s)"%(self.buffer_id, self.recv_offset, self.num_received, self.buffer_segment)
 
 class AllocateEvent(Event):
 	""" Memory allocated """

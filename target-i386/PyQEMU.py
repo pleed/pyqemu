@@ -756,11 +756,12 @@ class CreateThreadFunctionHandler(FunctionHandler):
 	""" Handles strdup like functions """
 	def onEnter(self, function):
 		self.addPendingReturn(function)
+		self.process.registerCreateThreadCall()
 
 	def onLeave(self, function):
 		self.threadhandle = function.retval()
-		if self.threadhandle != NULL:
-			self.process.registerCreateThreadCall()
+		if self.threadhandle == NULL:
+			self.process.unregisterCreateThreadCall()
 
 class RaiseFunctionHandler(FunctionHandler):
 	""" we have to notice exceptions later to keep callstack up to date """
@@ -824,6 +825,9 @@ class TracedProcess(processinfo.Process):
 
 	def registerCreateThreadCall(self):
 		self.create_thread_list.append(self.cur_tid)
+
+	def unregisterCreateThreadCall(self):
+		del(self.create_thread_list[self.cur_tid])
 
 	def getThread(self):
 		try:
