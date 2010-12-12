@@ -140,6 +140,12 @@ class Stack(list):
 			s+="%s\n"%item
 		return s
 
+	def __deepcopy__(self, memo):
+		new_object = Stack()
+		for item in self:
+			new_object.append(copy.deepcopy(item))
+		return new_object
+
 class CalledFunction:
 	""" Function that was called before, encapsulates entry/exit states """
 	def __init__(self, fromaddr, toaddr, nextaddr, process):

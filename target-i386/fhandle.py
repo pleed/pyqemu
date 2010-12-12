@@ -72,6 +72,7 @@ class RtlAllocateHeapFunctionHandler(FunctionHandler):
 		addr = function.retval()
 		buffer = self.process.memory.heap.allocate(addr, self.size)
 		self.process.log(AllocateEvent(buffer))
+		self.process.log("Alloc 0x%x"%addr)
 
 class LocalAllocFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -105,13 +106,24 @@ class HeapFreeFunctionHandler(FunctionHandler):
 
 class RtlFreeHeapFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
-		addr = function.getIntArg(3)
-		if self.process.memory.heap.allocated(addr):
-			buffer = self.process.memory.heap.getBuffer(addr)
-			self.process.log(DeallocateEvent(buffer))
-			self.process.memory.heap.deallocate(addr)
-		else:
-			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+		self.addPendingReturn(function)
+		self.addr = function.getIntArg(3)
+		self.flags= function.getIntArg(2)
+
+	def onLeave(self, function):
+		retval = function.retval()
+		self.process.log("After Ret:")
+		self.process.log("Function: %s:%s()"%function.resolveToName())
+		self.process.log("Free 0x%x"%self.addr)
+		self.process.log("Retval: %d"%int(retval))
+		self.process.log("Flags: 0x%x"%int(self.flags))
+		if retval != 0:
+			if self.process.memory.heap.allocated(self.addr):
+				buffer = self.process.memory.heap.getBuffer(self.addr)
+				self.process.log(DeallocateEvent(buffer))
+				self.process.memory.heap.deallocate(self.addr)
+			else:
+				print "Free of unknown Buffer 0x%x"%self.addr
 
 
 class LoadLibraryFunctionHandler(FunctionHandler):
@@ -306,7 +318,7 @@ class lstrlenWFunctionHandler(StrLenFunctionHandler):
 		StrLenFunctionHandler.onEnter(self, function)
 
 	def onLeave(self, function):
-		len = function.retval*2 # unicode
+		len = function.retval()*2 # unicode
 		buffer = self.process.memory.getBuffer(self.addr)
 		buffer.sizeHint(len)
 
