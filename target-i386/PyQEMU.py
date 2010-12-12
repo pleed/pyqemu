@@ -507,10 +507,13 @@ class RegisteredCallback:
 		return self.func(process,*args)
 
 class Thread:
-	def __init__(self, *args):
-		self.callstack = Stack()
+	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
+		if callstack is None:
+			self.callstack = Stack()
+		else:
+			self.callstack = callstack
 		self.wait_for_return = {}
-		self.memory  = MemoryManager(*args)
+		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
 
 class TracedProcess(processinfo.Process):
@@ -548,7 +551,8 @@ class TracedProcess(processinfo.Process):
 			self.threads[self.cur_tid] = Thread(self, self.threads[creating_thread_id].memory.heap, \
 			                                          copy.deepcopy(self.threads[creating_thread_id].memory.stack),\
 			                                          self.threads[creating_thread_id].memory.data, \
-													  self.threads[creating_thread_id].memory.unknown)
+													  self.threads[creating_thread_id].memory.unknown,
+													  copy.deepcopy(self.threads[creating_thread_id].callstack))
 		print "Thread %d registered"%self.cur_tid
 
 	def registerCreateThreadCall(self):
@@ -826,50 +830,6 @@ def error_dummy(func, *args):
 def ensure_error_handling_helper(func):
 	return lambda *args: error_dummy(func,*args)
 
-# Heap allocation functions to get real origin
-# O(n) :(
-heap_allocation_functions = [
-				("msvcrt.dll",  "malloc"),
-				("kernel32.dll", "HeapAlloc"),
-				("ole32.dll", "CoTaskMemAlloc"),
-				("msvcrt.dll", "realloc"),
-				("msvcrt.dll", "_strdup"),
-				("msvcrt.dll", "calloc"),
-							]
-
-HOOKS = [
-				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
-				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
-				("wsock32.dll", "recv",    WSARecvFunctionHandler),
-				("wsock32.dll", "send",    SendFunctionHandler),
-				("ws2_32.dll",  "WSARecv", WSARecvFunctionHandler),
-				("ws2_32.dll",  "send",    SendFunctionHandler),
-				("ws2_32.dll",  "recv",    RecvFunctionHandler),
-				("ws2_32.dll",  "connect", ConnectFunctionHandler),
-				("msvcrt.dll",  "strcpy",  StrCpyFunctionHandler),
-				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
-				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
-				("msvcrt.dll",  "wcscpy",  WcsCpyFunctionHandler),
-				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
-				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
-				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
-				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
-				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
-				("msvcrt.dll", "calloc",   CallocFunctionHandler),
-				("ntdll.dll",  "memmove",  NCpyFunctionHandler),
-				("msvcrt.dll", "wcscat",   WcsCatFunctionHandler),
-				("msvcrt.dll", "wcslen",   WcsLenFunctionHandler),
-				("msvcrt.dll", "strlen",   StrLenFunctionHandler),
-				("msvcrt.dll", "strcat",   StrCatFunctionHandler),
-				("msvcrt.dll", "wcscat",   WcsCatFunctionHandler),
-				("kernel32.dll",  "LoadLibrary", LoadLibraryFunctionHandler),
-				("kernel32.dll",  "LoadLibraryA", LoadLibraryAFunctionHandler),
-				("kernel32.dll",  "LoadLibraryW", LoadLibraryWFunctionHandler),
-				("kernel32.dll",  "LoadLibraryExA", LoadLibraryExAFunctionHandler),
-				("kernel32.dll",  "LoadLibraryExW", LoadLibraryExWFunctionHandler),
-				("kernel32.dll",  "CreateThread", CreateThreadFunctionHandler),
-				
-]
 # Register Processes to trace
 trace_processes = {
 	"telnet.exe":[],

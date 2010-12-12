@@ -53,11 +53,36 @@ class RecvFunctionHandler(FunctionHandler):
 
 
 class HeapAllocationFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		self.size = function.getIntArg(1)
+	
 	def onLeave(self, function):
 		addr = function.retval()
-		size = function.getIntArg(1)
-		buffer = self.process.memory.heap.allocate(addr, size)
+		if addr != NULL:
+			buffer = self.process.memory.heap.allocate(addr, self.size)
+			self.process.log(AllocateEvent(buffer))
+
+class RtlAllocateHeapFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		self.size = function.getIntArg(3)
+	
+	def onLeave(self, function):
+		addr = function.retval()
+		buffer = self.process.memory.heap.allocate(addr, self.size)
 		self.process.log(AllocateEvent(buffer))
+
+class LocalAllocFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.addPendingReturn(function)
+		self.size = function.getIntArg(2)
+
+	def onLeave(self, function):
+		addr = function.retval()
+		if addr != NULL:
+			buffer = self.process.memory.heap.allocate(addr, self.size)
+			self.process.log(AllocateEvent(buffer))
 
 class CallocFunctionHandler(FunctionHandler):
 	def onLeave(self, function):
@@ -77,6 +102,17 @@ class HeapFreeFunctionHandler(FunctionHandler):
 			self.process.memory.heap.deallocate(addr)
 		else:
 			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+
+class RtlFreeHeapFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		addr = function.getIntArg(3)
+		if self.process.memory.heap.allocated(addr):
+			buffer = self.process.memory.heap.getBuffer(addr)
+			self.process.log(DeallocateEvent(buffer))
+			self.process.memory.heap.deallocate(addr)
+		else:
+			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+
 
 class LoadLibraryFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -213,14 +249,22 @@ class CpyFunctionHandler(FunctionHandler):
 		src = function.getIntArg(2)
 		src_buffer = self.process.memory.getBuffer(src)
 		dst_buffer = self.process.memory.getBuffer(dst)
-		src_buffer.sizeHint(len)
 		dst_buffer.sizeHint(len)
-		self.process.log(CopyEvent(dst_buffer, src_buffer, len, dst, src))
+		self.process.log(CopyEvent(dst_buffer, src_buffer, min(src_buffer.size, len ), dst, src))
 
 class StrCpyFunctionHandler(CpyFunctionHandler):
 	def onEnter(self, function, stringtype = STR):
 		src = function.getIntArg(2)
 		CpyFunctionHandler.onEnter(self, function, len=len(stringtype(self.process.backend, src)))
+
+class StrNCpyFunctionHandler(CpyFunctionHandler):
+	def onEnter(self, function, stringtype = STR, maxlen = -1):
+		src = function.getIntArg(2)
+		CpyFunctionHandler.onEnter(self, function, len=min(maxlen, len(stringtype(self.process.backend, src))))
+
+class lstrcpyWFunctionHandler(StrCpyFunctionHandler):
+	def onEnter(self, function, stringtype = WSTR):
+		StrCpyFunctionHandler.onEnter(self, function, stringtype)
 
 class StrCatFunctionHandler(FunctionHandler):
 	def onEnter(self, function, stringtype = STR):
@@ -242,6 +286,11 @@ class WcsCpyFunctionHandler(StrCpyFunctionHandler):
 	def onEnter(self, function):
 		StrCpyFunctionHandler.onEnter(self, function, WSTR)
 
+class WcsNCpyFunctionHandler(StrNCpyFunctionHandler):
+	def onEnter(self, function):
+		len = function.getIntArg(3)
+		StrNCpyFunctionHandler.onEnter(self, function, WSTR, len)
+
 class StrLenFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
 		self.addPendingReturn(function)
@@ -249,6 +298,15 @@ class StrLenFunctionHandler(FunctionHandler):
 
 	def onLeave(self, function):
 		len = function.retval()
+		buffer = self.process.memory.getBuffer(self.addr)
+		buffer.sizeHint(len)
+
+class lstrlenWFunctionHandler(StrLenFunctionHandler):
+	def onEnter(self, function):
+		StrLenFunctionHandler.onEnter(self, function)
+
+	def onLeave(self, function):
+		len = function.retval*2 # unicode
 		buffer = self.process.memory.getBuffer(self.addr)
 		buffer.sizeHint(len)
 
@@ -297,3 +355,65 @@ class RaiseFunctionHandler(FunctionHandler):
 	""" we have to notice exceptions later to keep callstack up to date """
 	def onEnter(self, function):
 		raise Exception("Program raised Exception via %s"%function)
+
+# Heap allocation functions to get real origin on buffer allocation
+# O(n) :(
+heap_allocation_functions = [
+				("msvcrt.dll",  "malloc"),
+				("kernel32.dll", "HeapAlloc"),
+				("ole32.dll", "CoTaskMemAlloc"),
+				("msvcrt.dll", "realloc"),
+				("msvcrt.dll", "_strdup"),
+				("msvcrt.dll", "calloc"),
+							]
+
+HOOKS = [
+				("msvcrt.dll",  "malloc",  HeapAllocationFunctionHandler),
+				("msvcrt.dll",  "free",    HeapFreeFunctionHandler),
+				("wsock32.dll", "recv",    WSARecvFunctionHandler),
+				("wsock32.dll", "send",    SendFunctionHandler),
+				("ws2_32.dll",  "WSARecv", WSARecvFunctionHandler),
+				("ws2_32.dll",  "send",    SendFunctionHandler),
+				("ws2_32.dll",  "recv",    RecvFunctionHandler),
+				("ws2_32.dll",  "connect", ConnectFunctionHandler),
+				("msvcrt.dll",  "strcpy",  StrCpyFunctionHandler),
+				("kernel32.dll", "lsrcpyA",  StrCpyFunctionHandler),
+				("msvcrt.dll",  "strncpy", NCpyFunctionHandler),
+				("msvcrt.dll",  "memcpy",  NCpyFunctionHandler),
+				("kernel32.dll", "RaiseException", RaiseFunctionHandler),
+				("kernel32.dll", "HeapAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll", "CoTaskMemAlloc", HeapAllocationFunctionHandler),
+				("msvcrt.dll", "realloc",  ReallocFunctionHandler),
+				("msvcrt.dll", "_strdup",  StrDupFunctionHandler),
+				("msvcrt.dll", "calloc",   CallocFunctionHandler),
+				("ntdll.dll",  "memmove",  NCpyFunctionHandler),
+				("msvcrt.dll", "wcscat",   WcsCatFunctionHandler),
+				("msvcrt.dll", "wcscpy",  WcsCpyFunctionHandler),
+				("msvcrt.dll", "wcslen",   WcsLenFunctionHandler),
+				("ntdll.dll",  "wcscpy",   WcsCpyFunctionHandler),
+				("ntdll.dll",  "wcslen",   WcsLenFunctionHandler),
+				("msvcrt.dll", "strlen",   StrLenFunctionHandler),
+				("msvcrt.dll", "strcat",   StrCatFunctionHandler),
+				("kernel32.dll",  "LoadLibrary", LoadLibraryFunctionHandler),
+				("kernel32.dll",  "LoadLibraryA", LoadLibraryAFunctionHandler),
+				("kernel32.dll",  "LoadLibraryW", LoadLibraryWFunctionHandler),
+				("kernel32.dll",  "LoadLibraryExA", LoadLibraryExAFunctionHandler),
+				("kernel32.dll",  "LoadLibraryExW", LoadLibraryExWFunctionHandler),
+				("kernel32.dll",  "CreateThread", CreateThreadFunctionHandler),
+				("kernel32.dll",  "lstrcpyA", StrCpyFunctionHandler),
+				("kernel32.dll",  "lstrcpyW", lstrcpyWFunctionHandler),
+				("kernel32.dll",  "lstrlenA", StrLenFunctionHandler),
+				("kernel32.dll",  "lstrlenW", lstrlenWFunctionHandler),
+				("kernel32.dll",  "LocalAlloc", LocalAllocFunctionHandler),
+				("kernel32.dll",  "LocalFree", HeapFreeFunctionHandler),
+				("kernel32.dll",  "GlobalAlloc", LocalAllocFunctionHandler),
+				("kernel32.dll",  "GlobalFree", HeapFreeFunctionHandler),
+				("msvcrt.dll",   "wcsncpy",   WcsNCpyFunctionHandler),
+				("ntdll.dll",    "wcsncpy",    WcsNCpyFunctionHandler),
+				("ntdll.dll",  "RtlFreeHeap", RtlFreeHeapFunctionHandler),
+				("ntdll.dll",  "RtlAllocateHeap", RtlAllocateHeapFunctionHandler),
+				("ntdll.dll",  "FreeHeap"       , HeapFreeFunctionHandler),
+				("ntdll.dll",  "AllocateHeap"   , HeapAllocationFunctionHandler),
+				("ole32.dll",  "CoTaskMemAlloc" , HeapAllocationFunctionHandler),
+				("ole32.dll",  "CoTaskMemFree"  , HeapFreeFunctionHandler),
+]
