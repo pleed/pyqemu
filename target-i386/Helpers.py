@@ -16,6 +16,8 @@ IMAGE_TYPE_UNKNOWN = 0
 IMAGE_TYPE_DLL = 1
 IMAGE_TYPE_EXE = 2
 
+NULL = 0
+
 def kernelspace(addr):
 	return not userspace(addr)
 
