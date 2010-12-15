@@ -243,6 +243,7 @@ class StdoutEventLogger:
 	""" Event logger for debugging """
 	def handle_event(self, obj):
 		self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
+		self.dumpfile.flush() #remove in production env
 
 class Buffer:
 	identifier = 0
@@ -672,15 +673,11 @@ class TracedProcess(processinfo.Process):
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(eax)
 		if syscall_name is not None:
-			self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtTerminateProcess":
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
 			if syscall_name == "NtCreateThread":
 				print "NtCreateThread called"
-				
-		else:
-			self.log(SyscallEvent(eax))
 
 	@RegisteredCallback
 	def handle_call(self, *args):
@@ -697,34 +694,60 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" test for interesting calls/jmps and trigger next stage handlers """
-		# handle jumps that could be jump pads
-		if self._is_jmp(fromaddr, toaddr, nextaddr):
-			if self._is_jmp_pad(fromaddr, toaddr, nextaddr):
-				try:
-					f = self.callstack.top()
-					# did we push the previous call onto the callstack?
-					if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
-						f = self.callstack.pop()
-						del(f)
-				except IndexError:
-					pass
-				self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
-				self.thread.previous_call = None
+		if self.hasSymbol(toaddr):
+			# Jmp
+			if self._is_jmp(fromaddr, toaddr, nextaddr):
+				if not self._is_jmp_pad(fromaddr, toaddr, nextaddr):
+					return
+				else:
+					try:
+						f = self.callstack.top()
+						# did we push the previous call onto the callstack?
+						if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
+							f = self.callstack.pop()
+							del(f)
+					except IndexError:
+						return
+					if self.callFromExe():
+						self.log("Resolved through jump pad:")
+						self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
+					self.thread.previous_call = None
+			# Call
 			else:
-				return
-		# handle normal calls
+				# Call comes from exe and so is interesting for us
+				if self.callFromExe():
+					#self.log("Resolved early:")
+					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+					return
+				# Call in library is not interesting, log it for debugging
+				else:
+					#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
+					return
 		else:
-			self.thread.previous_call = (fromaddr, toaddr, nextaddr)
+			# unresolvabled jumps are meaningless
+			if self._is_jmp(fromaddr, toaddr, nextaddr):
+				return
+			# try to resolve call
 			from_image = self.get_image_by_address(fromaddr)
 			to_image   = self.get_image_by_address(toaddr)
 			if from_image is None or to_image is None:
 				self.update_images()
 			if from_image is not None and to_image is not None:
-				if (self.addrInExe(toaddr) or self.addrInExe(fromaddr)) and not self.hasSymbol(toaddr):
-					to_image.update()
-				# just known functions or call from/to main exe are interesting right now
-				if self.addrInExe(toaddr) or self.addrInExe(fromaddr) or self.hasSymbol(toaddr):
+				if self.callFromExe():
+					self.thread.previous_call = (fromaddr, toaddr, nextaddr)
+					if not self.hasSymbol(toaddr):
+						to_image.update()
+					# log it in all cases
+					#self.log("Resolved late:")
 					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+
+	def callFromExe(self):
+		try:
+			dll,name = self.callstack.top().resolveToName()
+			#self.log("dll: %s, name: %s, exe: %s, equal: %s"%(dll,name,self.imagefilename(),str(dll == self.imagefilename())))
+			return dll == self.imagefilename()
+		except IndexError:
+			return True
 
 	def getSymbol(self, addr):
 		if self.symbols.has_key(addr):
@@ -763,12 +786,20 @@ class TracedProcess(processinfo.Process):
 		#jumps will set fromaddr/nextaddr to 0, calls *should* not
 		return (fromaddr == 0) and (nextaddr == 0)
 
+	def log_call(self, function, prefix = ""):
+		if prefix != "":
+			self.log(prefix)
+		try:
+			self.log(CallEvent(function, self.callstack[-1]))
+		except IndexError:
+			self.log(CallEvent(function))
+
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
+		self.log_call(function)
 		self.callstack.push(function)
 		self.runCallbacks(function,"enter")
-		self.log(CallEvent(function))
 
 	def runCallbacks(self, function, event_type):
 		""" Run registered Callbacks for (dll, function) tuple. """
@@ -845,6 +876,7 @@ trace_processes = {
 	"putty.exe": HOOKS,
 	"ftp.exe":   HOOKS,
 	"curl.exe":  HOOKS,
+	"notepad.exe": HOOKS,
 }
 
 # Register FLX Callbacks 

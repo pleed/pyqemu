@@ -102,7 +102,8 @@ class HeapFreeFunctionHandler(FunctionHandler):
 			self.process.log(DeallocateEvent(buffer))
 			self.process.memory.heap.deallocate(addr)
 		else:
-			self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+			#self.process.log(DeallocateEvent("unknown: 0x%x"%addr))
+			self.process.log("Freeing unknown: 0x%x"%addr)
 
 class RtlFreeHeapFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
@@ -112,17 +113,12 @@ class RtlFreeHeapFunctionHandler(FunctionHandler):
 
 	def onLeave(self, function):
 		retval = function.retval()
-		self.process.log("After Ret:")
-		self.process.log("Function: %s:%s()"%function.resolveToName())
-		self.process.log("Free 0x%x"%self.addr)
-		self.process.log("Retval: %d"%int(retval))
-		self.process.log("Flags: 0x%x"%int(self.flags))
 		if retval != 0:
 			if self.process.memory.heap.allocated(self.addr):
 				buffer = self.process.memory.heap.getBuffer(self.addr)
 				self.process.log(DeallocateEvent(buffer))
 				self.process.memory.heap.deallocate(self.addr)
-			else:
+			elif self.addr != NULL:
 				print "Free of unknown Buffer 0x%x"%self.addr
 
 
@@ -218,6 +214,12 @@ class ConnectFunctionHandler(FunctionHandler):
 			print "connection established"
 		else:
 			print "connection failed"
+			print "return value: %d"%ret
+
+class WSAGetLastErrorFunctionHandler(FunctionHandler):
+	def onLeave(self, function):
+		ret = function.retval()
+		print "WSAGetLastError() returned: %d"%ret
 
 class ReallocFunctionHandler(FunctionHandler):
 	""" Handles realloc like functions, relies on other handlers producing events (e.g. malloc) """
@@ -428,4 +430,5 @@ HOOKS = [
 				("ntdll.dll",  "AllocateHeap"   , HeapAllocationFunctionHandler),
 				("ole32.dll",  "CoTaskMemAlloc" , HeapAllocationFunctionHandler),
 				("ole32.dll",  "CoTaskMemFree"  , HeapFreeFunctionHandler),
+				("ws2_32.dll", "WSAGetLastError", WSAGetLastErrorFunctionHandler),
 ]

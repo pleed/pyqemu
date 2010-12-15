@@ -97,11 +97,16 @@ class DeallocateEvent(Event):
 
 class CallEvent(Event):
 	""" Function called """
-	def __init__(self, function):
+	def __init__(self, function, fromfunction = None):
 		self.dll, self.name = function.resolveToName()
+		if fromfunction is None:
+			self.fromdll = ""
+			self.fromname = "main()"
+		else:
+			self.fromdll, self.fromname = fromfunction.resolveToName()
 
 	def __str__(self):
-		return "Call: (%s, %s)"%(self.dll, self.name)
+		return "Call: (%s, %s) -------> (%s, %s)"%(self.fromdll, self.fromname, self.dll, self.name)
 
 class RetEvent(Event):
 	""" Function returned """
