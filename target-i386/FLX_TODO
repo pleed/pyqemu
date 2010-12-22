@@ -1,2 +1,25 @@
 - watch for CALL/RET numbers (should be equal)
 - besseres ret/call/jmp hooking konzept
+
+
+Ideen:
+
+	- beliebige eingabe -> hohe entropie
+	- schleifen!
+	- gleiche groesse im ausgabepuffer (meisstens)
+	- keine nutzung von api funktionen (syscalls)
+
+	Blockchiffren
+		- diffusion/konfusion -> eingabebits beeinflussen viele andere eingabebits zum erzeugen der ausgabebits
+		- umkehrung mit gleicher funktion
+		- datenaenderungsquotient
+
+	Stromchiffren
+		- input laenge egal
+		- daten werden aus pseudo rng generiert und fliessen in ausgabedaten mit ein
+
+	- operationen: substitution, xor, permutation
+	- normalerweise relative straighter programmfluss, ausgefuehrte instruktionen/opcodes hoeher als normal (schleifen)
+	- wird mit einem puffer nicht mehrmals aufgerufen
+	- wenige branches (schleifen, keine if/switch anweisungen)
+
