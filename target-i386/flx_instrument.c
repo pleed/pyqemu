@@ -68,6 +68,7 @@ static PyObject *PyFlx_C_Module;
 
 //todo: register and unregister routines
 PyObject *PyFlx_ev_call = NULL;
+PyObject *PyFlx_ev_jmp = NULL;
 PyObject *PyFlx_ev_syscall = NULL;
 PyObject *PyFlx_ev_update_cr3 = NULL;
 PyObject *PyFlx_ev_ret = NULL;
@@ -382,6 +383,15 @@ void flxinstrument_init(void) {
        printf("Call event active\n");
        instrumentation_call_active = 1;
      }   
+   PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
+   Py_XINCREF(PyFlx_ev_jmp);
+   if (PyFlx_ev_jmp && PyCallable_Check(PyFlx_ev_jmp))
+     {
+       printf("Jmp event active\n");
+       instrumentation_call_active = 1;
+     }   
+
+
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
    Py_XINCREF(PyFlx_ev_ret);
    if (PyFlx_ev_ret && PyCallable_Check(PyFlx_ev_ret) && instrumentation_call_active)
@@ -417,8 +427,10 @@ void flxinstrument_init(void) {
 
      Py_XDECREF(PyFlx_ev_call);
      PyFlx_ev_call = NULL;
+     Py_XDECREF(PyFlx_ev_jmp);
+     PyFlx_ev_jmp = NULL;
      Py_XDECREF(PyFlx_ev_ret);
-     PyFlx_ev_call = NULL;
+     PyFlx_ev_ret = NULL;
      
      Py_XDECREF(PyFlx_ev_syscall);
      PyFlx_ev_syscall = NULL;
@@ -518,6 +530,37 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, ui
 				 call_origin,
 				 call_destination,
 				 next_eip);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_jmp_event(uint32_t jmp_destination) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_jmp_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_jmp)) {
+    fprintf(stderr, "No registered call event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_jmp,
+				 (char*) "(I)",
+				 jmp_destination);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

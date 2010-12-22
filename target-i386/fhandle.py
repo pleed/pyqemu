@@ -413,7 +413,7 @@ HOOKS = [
 				("kernel32.dll",  "LoadLibraryW", LoadLibraryWFunctionHandler),
 				("kernel32.dll",  "LoadLibraryExA", LoadLibraryExAFunctionHandler),
 				("kernel32.dll",  "LoadLibraryExW", LoadLibraryExWFunctionHandler),
-				("kernel32.dll",  "CreateThread", CreateThreadFunctionHandler),
+				#("kernel32.dll",  "CreateThread", CreateThreadFunctionHandler),
 				("kernel32.dll",  "lstrcpyA", StrCpyFunctionHandler),
 				("kernel32.dll",  "lstrcpyW", lstrcpyWFunctionHandler),
 				("kernel32.dll",  "lstrlenA", StrLenFunctionHandler),

@@ -677,12 +677,31 @@ class TracedProcess(processinfo.Process):
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
 			if syscall_name == "NtCreateThread":
-				print "NtCreateThread called"
+				self.registerCreateThreadCall()
 
 	@RegisteredCallback
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
 		self._handle_call_filter(*args)
+
+	@RegisteredCallback
+	def handle_jmp(self, toaddr):
+		if not self._is_jmp_pad(toaddr):
+			return
+		else:
+			try:
+				f = self.callstack.top()
+				# did we push the previous call onto the callstack?
+				if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
+					f = self.callstack.pop()
+					del(f)
+			except IndexError:
+				return
+			if self.callFromExe():
+				self.log("Resolved through jump pad:")
+				self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
+			self.thread.previous_call = None
+
 
 	def addrInExe(self, addr):
 		""" check if address is located in main executable image """
@@ -695,34 +714,15 @@ class TracedProcess(processinfo.Process):
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" test for interesting calls/jmps and trigger next stage handlers """
 		if self.hasSymbol(toaddr):
-			# Jmp
-			if self._is_jmp(fromaddr, toaddr, nextaddr):
-				if not self._is_jmp_pad(fromaddr, toaddr, nextaddr):
-					return
-				else:
-					try:
-						f = self.callstack.top()
-						# did we push the previous call onto the callstack?
-						if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
-							f = self.callstack.pop()
-							del(f)
-					except IndexError:
-						return
-					if self.callFromExe():
-						self.log("Resolved through jump pad:")
-						self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
-					self.thread.previous_call = None
-			# Call
+			# Call comes from exe and so is interesting for us
+			if self.callFromExe():
+				#self.log("Resolved early:")
+				self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+				return
+			# Call in library is not interesting, log it for debugging
 			else:
-				# Call comes from exe and so is interesting for us
-				if self.callFromExe():
-					#self.log("Resolved early:")
-					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
-					return
-				# Call in library is not interesting, log it for debugging
-				else:
-					#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
-					return
+				#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
+				return
 		else:
 			# unresolvabled jumps are meaningless
 			if self._is_jmp(fromaddr, toaddr, nextaddr):
@@ -744,7 +744,6 @@ class TracedProcess(processinfo.Process):
 	def callFromExe(self):
 		try:
 			dll,name = self.callstack.top().resolveToName()
-			#self.log("dll: %s, name: %s, exe: %s, equal: %s"%(dll,name,self.imagefilename(),str(dll == self.imagefilename())))
 			return dll == self.imagefilename()
 		except IndexError:
 			return True
@@ -773,7 +772,7 @@ class TracedProcess(processinfo.Process):
 				return True
 		return False
 
-	def _is_jmp_pad(self, fromaddr, toaddr, nextaddr):
+	def _is_jmp_pad(self, toaddr):
 		# if target is a known function, check if address pushed by previous call is still on $esp
 		if self.thread.previous_call is None:
 			return False
@@ -882,5 +881,6 @@ trace_processes = {
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
+ev_jmp        = ensure_error_handling_helper(lambda *args: get_current_process().handle_jmp(*args))
 ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
