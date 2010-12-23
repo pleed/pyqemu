@@ -218,6 +218,9 @@ class CalledFunction:
 		esp = self.process.genreg(R_ESP)
 		return self.process.readmem(esp+num*4, 4)
 
+	def __hash__(self):
+		return hash(self.resolveToName())
+
 class EventLogger(pickle.Pickler):
 	cache_treshold = 100
 	""" Object serialization logger """
@@ -522,6 +525,10 @@ class Thread:
 		self.wait_for_return = {}
 		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
+		self.statistics = Statistics()
+
+	def updateStatistic(self):
+		self.statistics.newCall(self)
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
