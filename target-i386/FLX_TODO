@@ -5,9 +5,9 @@
 Ideen:
 
 	- beliebige eingabe -> hohe entropie
-	- schleifen!
+	- schleifen! DONE
 	- gleiche groesse im ausgabepuffer (meisstens)
-	- keine nutzung von api funktionen (syscalls)
+	- keine nutzung von api funktionen (syscalls)    DONE
 
 	Blockchiffren
 		- diffusion/konfusion -> eingabebits beeinflussen viele andere eingabebits zum erzeugen der ausgabebits
@@ -18,8 +18,8 @@ Ideen:
 		- input laenge egal
 		- daten werden aus pseudo rng generiert und fliessen in ausgabedaten mit ein
 
-	- operationen: substitution, xor, permutation
-	- normalerweise relative straighter programmfluss, ausgefuehrte instruktionen/opcodes hoeher als normal (schleifen)
+	- operationen: substitution, xor, permutation    DONE
+	- normalerweise relative straighter programmfluss, ausgefuehrte instruktionen/opcodes hoeher als normal (schleifen) DONE
 	- wird mit einem puffer nicht mehrmals aufgerufen
 	- wenige branches (schleifen, keine if/switch anweisungen)
 

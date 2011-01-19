@@ -1,6 +1,7 @@
 #!/usr/include/python
 
 import traceback
+import json
 import sys
 import os
 import glob
@@ -13,6 +14,8 @@ import guppy
 import cProfile
 import threading
 import Queue
+import random
+import time
 
 import event
 from event import *
@@ -24,6 +27,7 @@ from dllhandling import *
 import dllhandling
 import syscalls
 from fhandle import *
+from FlxPyEmu import *
 
 DEBUG = True
 NULL = 0
@@ -224,28 +228,52 @@ class CalledFunction:
 class EventLogger(pickle.Pickler):
 	cache_treshold = 100
 	""" Object serialization logger """
-	def __init__(self, dumpfile):
-		pickle.Pickler.__init__(self, dumpfile)
+	def __init__(self, directory, dumpfile):
+		self.dir = directory
+		self.dumpfile = open(directory+dumpfile,"w")
 		self.eventcache = []
+		random.seed(time.time())
 
 	def handle_event(self, obj):
+		self.eventcache.append(obj)
 		if len(self.eventcache) <= self.cache_treshold:
-			self.eventcache.append(obj)
+			return
 		else:
-			for obj in self.eventcache:
-				self.dump(obj)
-			self.clear_memo()
-			self.eventcache = []
+			self.flushEvents()
+
+	def flushEvents(self):
+		for obj in self.eventcache:
+			self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
+		self.eventcache = []
+		self.dumpfile.flush()
 
 	def close(self):
+		self.flushEvents()
 		self.dumpfile.close()
+
+	def getRandomFileName(self):
+		return str(random.random())[2:]
+
+	def logFunctionAnalysis(self, function, dotfile, stats):
+		logdir = self.dir+function
+		if not os.path.exists(logdir):
+			os.mkdir(logdir)
+		fileprefix = self.getRandomFileName()
+		dotfilename = logdir+"/"+fileprefix+".dot"
+		d = open(dotfilename,"w")
+		d.write(dotfile)
+		d.close()
+
+		statsfilename = logdir+"/"+fileprefix+".json"
+		statsfile = open(statsfilename,"w")
+		statsfile.write(json.dumps(stats))
+		statsfile.close()
 
 class StdoutEventLogger:
 	def __init__(self, dumpfile):
 		self.dumpfile = dumpfile
 	""" Event logger for debugging """
 	def handle_event(self, obj):
-		self.dumpfile.write("Process: %d, Thread: %d, %s\n"%(get_current_process().pid,get_current_process().cur_tid,str(obj)))
 		self.dumpfile.flush() #remove in production env
 
 class Buffer:
@@ -525,10 +553,6 @@ class Thread:
 		self.wait_for_return = {}
 		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
-		self.statistics = Statistics()
-
-	def updateStatistic(self):
-		self.statistics.newCall(self)
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
@@ -537,7 +561,7 @@ class TracedProcess(processinfo.Process):
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
-		self.logger              = StdoutEventLogger(open("/tmp/flx_dump_events","w"))
+		self.logger              = EventLogger("/tmp/","flx_dump_events")
 		self.dllhandler          = DLLHandler("/media/shared/dlls/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
@@ -802,6 +826,9 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
+		global emulate_functions
+		if toaddr in emulate_functions[self.imagefilename()]:
+			emulate_function(self, toaddr)
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
 		self.log_call(function)
 		self.callstack.push(function)
@@ -875,15 +902,90 @@ def ensure_error_handling_helper(func):
 
 # Register Processes to trace
 trace_processes = {
-	"telnet.exe":[],
-	"wget.exe":  HOOKS,
-	"asam.exe":  HOOKS,
-	"virus.exe": HOOKS,
-	"putty.exe": HOOKS,
-	"ftp.exe":   HOOKS,
-	"curl.exe":  HOOKS,
-	"notepad.exe": HOOKS,
+#	"telnet.exe":[],
+#	"wget.exe":  HOOKS,
+	"aescrypt.exe":  HOOKS,
+#	"asam.exe":  HOOKS,
+#	"virus.exe": HOOKS,
+#	"putty.exe": HOOKS,
+#	"ftp.exe":   HOOKS,
+#	"curl.exe":  HOOKS,
+#	"notepad.exe": HOOKS,
 }
+
+emulate_functions = {
+	"aescrypt.exe": [
+					0x40a960,
+					0x40f9da,
+					0x40e5a0,
+					0x4033b0,
+					0x40b7e4,
+					0x40f238,
+					0x405de0,
+					0x40a1bb,
+					0x408d43,
+					0x40f9e9,
+					0x408ef8,
+					0x41040f,
+					0x40f7d5,
+					0x40ec04,
+					0x4120db,
+					0x4094f2,
+					0x40fe6a,
+					0x40f212,
+					0x40ff9a,
+					0x40b865,
+					0x40eb12,
+					0x40c465,
+					0x40884a,
+					0x4097a4,
+					0x4099d6,
+					0x4015b0,
+					0x4098bc,
+					0x40b5b3,
+					0x409020,
+					0x40b8eb,
+					0x410048,
+					0x40f9f8,
+					],
+}
+
+class PyQemuEmulationInterface:
+	def __init__(self, process):
+		self.process = process
+
+	def getMemory(self, startaddr, length):
+		startaddr = startaddr & 0xffffffff
+		return self.process.backend.read(startaddr, length)
+
+	def getPage(self, page, memory):
+		page = page & 0xffffffff
+		return self.getMemory(page, memory.PAGESIZE)
+
+def emulate_function(process, eip):
+	dbg_level = 0
+	if eip == 0x4015b0:
+		dbg_level = 3
+	emu = FunctionEmulator(PyQemuEmulationInterface(process), DataflowRecorder(), dbg_level)
+	regs = PyFlxInstrument.registers()
+	regs["eip"] = eip
+	print "EIP is now: 0x%x"%regs["eip"]
+	del(regs["eflags"])
+	del(regs["cr0"])
+	del(regs["cr2"])
+	del(regs["cr3"])
+	del(regs["cr4"])
+	try:
+		dotfile,stats = emu.run(regs,hex(eip))
+		if dotfile is not None and stats is not None:
+			process.logger.logFunctionAnalysis(hex(eip), dotfile, stats)
+		else:
+			print "Emulation returned None,None"
+		
+	except PageFaultException:
+		print "Got Page fault! Continueing!"
+	except TypeError:
+		print "Got Type Error! Continueing!"
 
 # Register FLX Callbacks 
 ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
