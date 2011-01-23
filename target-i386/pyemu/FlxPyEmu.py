@@ -34,7 +34,6 @@ class TestPyQEMU_Interface:
 	def getPage(self, page, memory):
 		return self.getMemory(page, memory.PAGESIZE)
 
-
 class FlowGraph:
 	def __init__(self):
 		self.mode = "reading"
@@ -43,7 +42,7 @@ class FlowGraph:
 		self.graph = pgv.AGraph(directed=True)
 
 	def update(self, address, operation):
-		self.graph.add_node(hex(address))
+		self.graph.add_node(address)
 		if operation == "read":
 			self.recordRead(address)
 		else:
@@ -70,7 +69,6 @@ class FlowGraph:
 
 	def dump(self):
 		return self.graph.string()
-		
 
 class DataflowRecorder:
 	def __init__(self):
@@ -83,20 +81,26 @@ class DataflowRecorder:
 		self.memory_read_hash = {}
 		self.flowgraph = FlowGraph()
 		self.influencing_memory = []
+		self.memory_write_count = {}
 
 	def memAccess(self, emu, address, value, size, operation):
 		if operation == "write":
 			for offset in range(size):
 				self.memory_write_hash[address+offset] = (value,size)
 			self.memory_write_operations += 1
+			if not self.memory_write_count.has_key(address):
+				self.memory_write_count[address] = 0
+			self.memory_write_count[address] +=1
 		elif operation == "read":
+			if address == emu.get_register("EIP"):
 			for offset in range(size):
 				self.memory_read_hash[address+offset]  = (value,size)
 			self.memory_read_operations += 1
 		else:
 			raise Exception("unknown operation: %s"%operation)
 
-		self.flowgraph.update(address, operation)
+		for addr in range(address, address+size):
+			self.flowgraph.update(addr, operation)
 
 		#print "Address: %s, Value: %s, Size: %s, Operation: %s"%(str(address), str(value), str(size), str(operation))
 
@@ -113,7 +117,7 @@ class DataflowRecorder:
 		if emu.cpu.executed_instructions[EIP].mnemonic in ["xor","neg","or","and","shl","shr","sal","sar"]:
 			self.binary_operations += 1
 
-	def showStats(self):
+	def getStats(self):
 		stats = {}
 		dotfile = self.flowgraph.dump()
 
@@ -139,11 +143,12 @@ class DataflowRecorder:
 		stats["entropy_read"] = float(self.entropy(read_data))
 
 		write_data = ""
-		for key,value in self.memory_read_hash.items():
+		for key,value in self.memory_write_hash.items():
 			v = value[0]
 			s = value[1]
 			write_data += hex(v)[s*2*-1:]
 		stats["entropy_write"] = float(self.entropy(write_data))
+		stats["write_stats"] = self.memory_write_count
 		return dotfile, stats
 
 	def entropy(self, data):
@@ -189,7 +194,7 @@ class FunctionEmulator(PEPyEmu):
 				return None,None
 			self.flow_rec.recordInstruction(self, eip)
 			#print "-------------------------------------------"
-		return self.flow_rec.showStats()
+		return self.flow_rec.getStats()
 
 	def handleBeginOfFunction(self, emu, mnemonic, eip, *operands):
 		self.stack_depth += 1

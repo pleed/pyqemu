@@ -880,6 +880,9 @@ class UntracedProcess(processinfo.Process):
 	def handle_ret(self, *args):
 		pass
 
+	def handle_jmp(self, *args):
+		pass
+
 def init(sval):	
 	print "Python instrument started"
 	return 1
@@ -905,6 +908,7 @@ trace_processes = {
 #	"telnet.exe":[],
 #	"wget.exe":  HOOKS,
 	"aescrypt.exe":  HOOKS,
+	"fencryption.exe": HOOKS,
 #	"asam.exe":  HOOKS,
 #	"virus.exe": HOOKS,
 #	"putty.exe": HOOKS,
@@ -948,6 +952,7 @@ emulate_functions = {
 					0x410048,
 					0x40f9f8,
 					],
+	"fencryption.exe": [],
 }
 
 class PyQemuEmulationInterface:
@@ -964,9 +969,7 @@ class PyQemuEmulationInterface:
 
 def emulate_function(process, eip):
 	dbg_level = 0
-	if eip == 0x4015b0:
-		dbg_level = 3
-	emu = FunctionEmulator(PyQemuEmulationInterface(process), DataflowRecorder(), dbg_level)
+	emu = FunctionEmulator(PyQemuEmulationInterface(process), DataflowRecorder(), 0)
 	regs = PyFlxInstrument.registers()
 	regs["eip"] = eip
 	print "EIP is now: 0x%x"%regs["eip"]
