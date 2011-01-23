@@ -960,8 +960,11 @@ class PyQemuEmulationInterface:
 		self.process = process
 
 	def getMemory(self, startaddr, length):
+		print "Get Memory from: 0x%x, length: %d"%(startaddr, length)
 		startaddr = startaddr & 0xffffffff
-		return self.process.backend.read(startaddr, length)
+		mem = self.process.backend.read(startaddr, length)
+		print "Got Memory from: 0x%x, length: %d"%(startaddr, len(mem))
+		return mem
 
 	def getPage(self, page, memory):
 		page = page & 0xffffffff

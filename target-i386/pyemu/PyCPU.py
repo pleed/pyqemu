@@ -543,8 +543,6 @@ class PyCPU:
     #
     def get_memory(self, address, size):
         value = self.emu.memory.get_memory(address, size)
-        if value == False:
-            print "failed to read from %x, len: %d"%(address,size)
 
         # The processor only fetches mem in dword max, this lets us hack
         # around code fetches

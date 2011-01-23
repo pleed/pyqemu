@@ -129,10 +129,8 @@ class PyMemory:
             # We must get our memory
             if page not in self.pages:
                 if not self.get_page(page):
-                    self.pages[page] = PyMemoryPage(page, self.membackend.getPage(page, self),0x7)
-                    return self.get_memory(address, size)
-                    #return self.emu.raise_exception("GP", page)
-                
+                    return self.emu.raise_exception("GP", page)
+
             for x in xrange(0, size):
                 if address < (page + self.PAGESIZE):
                     # Do stuff on this page
@@ -147,17 +145,16 @@ class PyMemory:
                     size -= x
                     break
         size = oldsize
-        
+
         if size == 1:
-            return struct.unpack("<B", rawbytes)[0]
+            retval = struct.unpack("<B", rawbytes)[0]
         elif size == 2:
-            return struct.unpack("<H", rawbytes)[0]
+            retval = struct.unpack("<H", rawbytes)[0]
         elif size == 4:
-            return struct.unpack("<L", rawbytes)[0]
+            retval = struct.unpack("<L", rawbytes)[0]
         else:
-            return rawbytes
-                        
-        return False
+            retval = rawbytes
+        return retval
     
     #
     # set_memory: Set an address to a specific value.  This can be a
@@ -200,8 +197,7 @@ class PyMemory:
             # We must get our memory
             if page not in self.pages:
                 if not self.get_page(page):
-                    self.pages[page] = PyMemoryPage(page, self.membackend.getPage(page, self),0x7)
-                    return self.set_memory(address, value, size)
+                    return self.emu.raise_exception("GP", page)
   
             newdata = self.pages[page].data[:address & 0x00000fff]
             for x in xrange(0, size):
@@ -246,10 +242,8 @@ class PyMemory:
             return True
             
     def get_page(self, page):
-        print "[*] We dont know, this should be overloaded"
-        
         return False
-    
+           
     def set_debug(self, level):
         self.DEBUG = level
 
@@ -411,8 +405,9 @@ class PEMemory(PyMemory):
     # get_page: Stores a page in the base class cache
     #
     def get_page(self, page):
-        if self.fault:
+        p = PyMemoryPage(page, self.membackend.getPage(page, self))
+        if p is None:
             return False
-            
-        # Grab a new page object
-        return self.allocate_page(page)
+        p.set_rwx()
+        self.pages[page] = p
+        return True

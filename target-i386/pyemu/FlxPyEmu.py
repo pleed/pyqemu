@@ -88,11 +88,13 @@ class DataflowRecorder:
 			for offset in range(size):
 				self.memory_write_hash[address+offset] = (value,size)
 			self.memory_write_operations += 1
-			if not self.memory_write_count.has_key(address):
-				self.memory_write_count[address] = 0
-			self.memory_write_count[address] +=1
+			for addr in range(address, address+size):
+				if not self.memory_write_count.has_key(addr):
+					self.memory_write_count[addr] = 0
+				self.memory_write_count[addr] +=1
 		elif operation == "read":
 			if address == emu.get_register("EIP"):
+				return
 			for offset in range(size):
 				self.memory_read_hash[address+offset]  = (value,size)
 			self.memory_read_operations += 1
