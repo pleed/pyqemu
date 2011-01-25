@@ -713,12 +713,15 @@ class TracedProcess(processinfo.Process):
 	@RegisteredCallback
 	def handle_call(self, *args):
 		""" Call Opcode handler. """
+		#self.logger.handle_event("CALLED: "+hex(args[1]))
 		self._handle_call_filter(*args)
 
 	@RegisteredCallback
 	def handle_jmp(self, toaddr):
+		#self.logger.handle_event("JMP: "+hex(toaddr))
 		if not self._is_jmp_pad(toaddr):
-			return
+			PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_JMP)
+			#self.logger.handle_event("Blacklisting: "+str(toaddr))
 		else:
 			try:
 				f = self.callstack.top()
@@ -749,14 +752,15 @@ class TracedProcess(processinfo.Process):
 			if self.callFromExe():
 				#self.log("Resolved early:")
 				self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
-				return
 			# Call in library is not interesting, log it for debugging
 			else:
 				#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
-				return
+				PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_CALL)
+				#self.logger.handle_event("Blacklisting: "+str(toaddr))
 		else:
 			# unresolvabled jumps are meaningless
 			if self._is_jmp(fromaddr, toaddr, nextaddr):
+				raise Exception("should not reach this!")
 				return
 			# try to resolve call
 			from_image = self.get_image_by_address(fromaddr)
@@ -771,6 +775,10 @@ class TracedProcess(processinfo.Process):
 					# log it in all cases
 					#self.log("Resolved late:")
 					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
+				else:
+					# blacklist call target
+					PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_CALL)
+					#self.logger.handle_event("Blacklisting: "+str(hex(toaddr)))
 
 	def callFromExe(self):
 		try:
@@ -909,16 +917,17 @@ trace_processes = {
 #	"wget.exe":  HOOKS,
 	"aescrypt.exe":  HOOKS,
 	"fencryption.exe": HOOKS,
+	"ssh.exe": HOOKS,
 #	"asam.exe":  HOOKS,
 #	"virus.exe": HOOKS,
 #	"putty.exe": HOOKS,
 #	"ftp.exe":   HOOKS,
-#	"curl.exe":  HOOKS,
+	"curl.exe":  HOOKS,
 #	"notepad.exe": HOOKS,
 }
 
 emulate_functions = {
-	"aescrypt.exe": [
+	"aescrypt.exe":[
 					0x40a960,
 					0x40f9da,
 					0x40e5a0,
@@ -952,7 +961,11 @@ emulate_functions = {
 					0x410048,
 					0x40f9f8,
 					],
+	"ssh.exe":     [ 
+					0x4350f0
+					],
 	"fencryption.exe": [],
+	"curl.exe": [],
 }
 
 class PyQemuEmulationInterface:
@@ -960,10 +973,10 @@ class PyQemuEmulationInterface:
 		self.process = process
 
 	def getMemory(self, startaddr, length):
-		print "Get Memory from: 0x%x, length: %d"%(startaddr, length)
+		#print "Get Memory from: 0x%x, length: %d"%(startaddr, length)
 		startaddr = startaddr & 0xffffffff
 		mem = self.process.backend.read(startaddr, length)
-		print "Got Memory from: 0x%x, length: %d"%(startaddr, len(mem))
+		#print "Got Memory from: 0x%x, length: %d"%(startaddr, len(mem))
 		return mem
 
 	def getPage(self, page, memory):

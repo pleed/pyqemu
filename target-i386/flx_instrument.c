@@ -81,10 +81,97 @@ static PyObject *PyFlx_REG_ESP;
 static PyObject *PyFlx_REG_EBP;
 static PyObject *PyFlx_REG_ESI;
 static PyObject *PyFlx_REG_EDI;
+static PyObject *PyFlx_ISEMPTY;
+static PyObject *PyFlx_ISCALL;
+static PyObject *PyFlx_ISJMP;
 
 
 CPUState *current_environment = NULL;
+blacklist* bl = NULL;
+uint32_t element_counter = 0;
 
+void flxinstrument_blacklist_alloc(void){
+	bl = malloc(sizeof(blacklist));
+	memset(bl, 0, sizeof(blacklist));
+}
+
+int flxinstrument_is_blacklisted(uint32_t addr, uint32_t SLOT_TYPE){
+	int i;
+	for(i=0; i<10; ++i){
+		blacklist_slot* bls = bl->slots+((addr+i)&0xffffff);
+		if(bls->set == SLOT_TYPE && \
+		   bls->cr3 == current_environment->cr[3] && \
+		   bls->msb == addr>>24){
+			//printf("found blacklisted\n");
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void flxinstrument_blacklist(uint32_t addr, uint32_t SLOT_TYPE){
+	blacklist_slot* bls;
+	int i;
+	int found = 0;
+	for(i=0; i<10; ++i){
+		bls = &(bl->slots[(addr+i)&0xffffff]);
+		if(bls->set == FLX_SLOT_EMPTY){
+			bls->set = SLOT_TYPE;
+			bls->msb = addr >> 24;
+			bls->cr3 = current_environment->cr[3];
+			found = 1;
+			break;
+		}
+	}
+	if(!found){
+		printf("Slot is already full! 0x%x\n",addr);
+		printf("Elements: %i\n",element_counter);
+	}
+}
+
+void flxinstrument_blacklist_cleanup(void){
+	int i;
+	int max = FLX_BLACKLIST_SIZE;
+	for(i=0; i<max; ++i){
+		blacklist_slot* bs = &(bl->slots[i]);
+		if(bs->set && bs->cr3 == current_environment->cr[3]){
+			memset(bs, 0, sizeof(blacklist_slot));
+		}
+	}
+}
+
+static PyObject* PyFlxC_blacklist_cleanup(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_blacklist_cleanup");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flxinstrument_blacklist_cleanup();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_blacklist(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_blacklist");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t address;
+  uint32_t type;
+  
+  if(!PyArg_ParseTuple(args, "II", &address, &type)) {
+    return NULL;
+  }
+  
+  flxinstrument_blacklist(address, type);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -96,7 +183,7 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 #endif
    PyObject *retval = Py_None;
    if(!PyArg_ParseTuple(args, "")) {
-      // raise exception, too?
+  	  Py_INCREF(Py_None);
       return Py_None;
    }
 
@@ -131,8 +218,8 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 			    "eip", current_environment->eip
 			    );
 	}
-   
-   return retval;
+  Py_INCREF(Py_None);
+  return retval;
 }
 
 
@@ -275,7 +362,6 @@ static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *arg
   
   instrumentation_active = active_flag;
   
-  Py_INCREF(Py_None);
   return Py_None;
 }
 
@@ -286,6 +372,12 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"registers", (PyCFunction)PyFlxC_registers, METH_VARARGS,
      "Returns a dictionary containing all registers"
+    },
+    {"blacklist", (PyCFunction)PyFlxC_blacklist, METH_VARARGS,
+     "Blacklist a function"
+    },
+    {"blacklist_cleanup", (PyCFunction)PyFlxC_blacklist_cleanup, METH_VARARGS,
+     "Clean blacklist from process specific entries"
     },
     {"eip", (PyCFunction)PyFlxC_eip, METH_VARARGS,
      "Returns the eip register"
@@ -342,6 +434,12 @@ initpyflxinstrument(void)
   Py_XINCREF(PyFlx_REG_ESI);
   PyFlx_REG_EDI = PyInt_FromLong(R_EDI);
   Py_XINCREF(PyFlx_REG_EDI);
+  PyFlx_ISEMPTY = PyInt_FromLong(FLX_SLOT_EMPTY);
+  Py_XINCREF(PyFlx_ISEMPTY);
+  PyFlx_ISCALL = PyInt_FromLong(FLX_SLOT_ISCALL);
+  Py_XINCREF(PyFlx_ISCALL);
+  PyFlx_ISJMP = PyInt_FromLong(FLX_SLOT_ISJMP);
+  Py_XINCREF(PyFlx_ISJMP);
 
   PyObject_SetAttrString(PyFlx_C_Module, "REG_EAX", PyFlx_REG_EAX );
   PyObject_SetAttrString(PyFlx_C_Module, "REG_ECX", PyFlx_REG_ECX );
@@ -351,6 +449,9 @@ initpyflxinstrument(void)
   PyObject_SetAttrString(PyFlx_C_Module, "REG_EBP", PyFlx_REG_EBP );
   PyObject_SetAttrString(PyFlx_C_Module, "REG_ESI", PyFlx_REG_ESI );
   PyObject_SetAttrString(PyFlx_C_Module, "REG_EDI", PyFlx_REG_EDI );
+  PyObject_SetAttrString(PyFlx_C_Module, "SLOT_EMPTY", PyFlx_ISEMPTY );
+  PyObject_SetAttrString(PyFlx_C_Module, "SLOT_CALL", PyFlx_ISCALL );
+  PyObject_SetAttrString(PyFlx_C_Module, "SLOT_JMP", PyFlx_ISJMP );
 }
 
 
@@ -375,6 +476,7 @@ void flxinstrument_init(void) {
    instrumentation_active = 0;
    instrumentation_syscall_active= 0;
    instrumentation_call_active = 0;
+   flxinstrument_blacklist_alloc();
    
    PyFlx_ev_call = PyObject_GetAttrString(Py_Python_Module, "ev_call");
    Py_XINCREF(PyFlx_ev_call);

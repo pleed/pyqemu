@@ -2197,7 +2197,7 @@ void helper_load_seg(int seg_reg, int selector)
 
 void helper_jmp(target_ulong new_eip){
 	if(instrumentation_active && instrumentation_call_active)
-		if(!(new_eip & 0x80000000))
+  		if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(new_eip, FLX_SLOT_ISJMP))
   	 		 flxinstrument_jmp_event(new_eip);
 }
 
@@ -2548,7 +2548,7 @@ void helper_call_protected(target_ulong src_eip,
 {
   if(instrumentation_active && instrumentation_call_active){
   	// We are not interested in kernel mode stuff
-  	if (!(new_eip & 0x80000000) ){
+  	if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(new_eip, FLX_SLOT_ISCALL)){
   	  flxinstrument_call_event(src_eip, new_eip, next_eip);
   	}
   }
