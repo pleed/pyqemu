@@ -253,7 +253,7 @@ static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
    PyObject *retval;
 
    if (!current_environment) {
-     Py_XINCREF(Py_None);
+     Py_INCREF(Py_None);
      return Py_None;
    }
 
@@ -331,7 +331,7 @@ static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
 			   0) != 0){
      //fixme: set error message
      free(buf);
-     Py_INCREF(PyExc_RuntimeError);
+     //Py_INCREF(PyExc_RuntimeError);
      return PyErr_Format(PyExc_RuntimeError, 
 			 "Error reading from 0x%08x (len: %d)\n",
 			 addr,
@@ -362,6 +362,7 @@ static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *arg
   
   instrumentation_active = active_flag;
   
+  Py_INCREF(Py_None);
   return Py_None;
 }
 

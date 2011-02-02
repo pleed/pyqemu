@@ -1357,6 +1357,14 @@ class PyCPU:
     # get_memory_address: Calculates the memory address from the instruction.
     #
     def get_memory_address(self, instruction, opnum, size):
+        address =self.get_memory_address_old(instruction, opnum, size)
+        #if address & 0xffffffff != address:
+        #    print "FAIL!"
+        #    import time
+        #    time.sleep(1)
+        return address&0xffffffff
+
+    def get_memory_address_old(self, instruction, opnum, size):
         # Get the proper operand
         if opnum == 1:
             op = instruction.op1

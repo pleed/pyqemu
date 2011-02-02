@@ -145,7 +145,6 @@ class PyMemory:
                     size -= x
                     break
         size = oldsize
-
         if size == 1:
             retval = struct.unpack("<B", rawbytes)[0]
         elif size == 2:

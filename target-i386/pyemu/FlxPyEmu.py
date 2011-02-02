@@ -3,6 +3,7 @@
 import os, sys
 import math
 import pygraphviz as pgv
+import pydasm
 
 sys.path.append("./lib")
 
@@ -188,11 +189,15 @@ class FunctionEmulator(PEPyEmu):
 			self.set_register_handler(key, self.flow_rec.regAccess)
 
 		while not self.done:
+			error = False
 			eip = self.get_register("EIP")
 			#print "EIP: 0x%x"%eip
 			self.flow_rec.recordEIP(eip)
 			if not self.execute():
 				print "COULD NOT EXECUTE!"
+				error = True
+			#print "Executing: %s"%self.get_disasm()
+			if error:
 				return None,None
 			self.flow_rec.recordInstruction(self, eip)
 			#print "-------------------------------------------"
