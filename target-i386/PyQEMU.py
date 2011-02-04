@@ -757,6 +757,9 @@ class TracedProcess(processinfo.Process):
 			PyFlxInstrument.breakpoint_insert(toaddr)
 			print "Inserting Breakpoint at 0x%x"%(toaddr+1)
 			PyFlxInstrument.breakpoint_insert(toaddr+1)
+		#else:
+		#	print "Inserting Breakpoint at 0x%x"%toaddr
+		#	PyFlxInstrument.breakpoint_insert(toaddr)
 		if self.hasSymbol(toaddr):
 			# Call comes from exe and so is interesting for us
 			if self.callFromExe():

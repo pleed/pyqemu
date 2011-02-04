@@ -7840,6 +7840,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
         max_insns = CF_COUNT_MASK;
 
 	uint32_t next_breakpoint;
+	int breakpoint_reached = 0;
 	flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
     gen_icount_start();
     for(;;) {
@@ -7855,6 +7856,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
 		if(pc_ptr > next_breakpoint)
 			flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
 		if(unlikely(pc_ptr == next_breakpoint)){
+			breakpoint_reached = 1;
 			gen_flx_debug(dc, pc_ptr - dc->cs_base);
 		}
 
@@ -7902,6 +7904,11 @@ static inline void gen_intermediate_code_internal(CPUState *env,
             gen_eob(dc);
             break;
         }
+		if (breakpoint_reached){
+            gen_jmp_im(pc_ptr - dc->cs_base);
+            gen_eob(dc);
+            break;
+		}
     }
     if (tb->cflags & CF_LAST_IO)
         gen_io_end();
