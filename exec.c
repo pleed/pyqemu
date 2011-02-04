@@ -1371,12 +1371,12 @@ static void tb_reset_jump_recursive(TranslationBlock *tb)
 
 #if defined(TARGET_HAS_ICE)
 #if defined(CONFIG_USER_ONLY)
-static void breakpoint_invalidate(CPUState *env, target_ulong pc)
+void breakpoint_invalidate(CPUState *env, target_ulong pc)
 {
     tb_invalidate_phys_page_range(pc, pc + 1, 0);
 }
 #else
-static void breakpoint_invalidate(CPUState *env, target_ulong pc)
+void breakpoint_invalidate(CPUState *env, target_ulong pc)
 {
     target_phys_addr_t addr;
     target_ulong pd;

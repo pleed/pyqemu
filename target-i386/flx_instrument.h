@@ -32,6 +32,7 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, ui
 int flxinstrument_jmp_event(uint32_t jmp_destination);
 int flxinstrument_syscall_event(uint32_t eax);
 int flxinstrument_ret_event(uint32_t new_eip);
+int flxinstrument_breakpoint_event(uint32_t eip);
 
 void flxinstrument_blacklist_alloc(void);
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);

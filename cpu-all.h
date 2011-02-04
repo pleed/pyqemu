@@ -960,6 +960,8 @@ int cpu_physical_memory_get_dirty_tracking(void);
 int cpu_physical_sync_dirty_bitmap(target_phys_addr_t start_addr,
                                    target_phys_addr_t end_addr);
 
+void breakpoint_invalidate(CPUState *env, target_ulong pc);
+
 void dump_exec_info(FILE *f,
                     int (*cpu_fprintf)(FILE *f, const char *fmt, ...));
 #endif /* !CONFIG_USER_ONLY */

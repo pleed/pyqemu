@@ -663,6 +663,11 @@ class TracedProcess(processinfo.Process):
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	@RegisteredCallback
+	def handle_breakpoint(self, addr):
+		""" Called when a breakpoint is triggered """
+		print "Breakpoint triggered at 0x%x"%addr
+
+	@RegisteredCallback
 	def handle_ret(self, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		esp = self.register("esp")
@@ -747,6 +752,7 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" test for interesting calls/jmps and trigger next stage handlers """
+		PyFlxInstrument.breakpoint_insert(toaddr)
 		if self.hasSymbol(toaddr):
 			# Call comes from exe and so is interesting for us
 			if self.callFromExe():
@@ -1054,4 +1060,5 @@ ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process()
 ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
 ev_jmp        = ensure_error_handling_helper(lambda *args: get_current_process().handle_jmp(*args))
 ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
+ev_bp         = ensure_error_handling_helper(lambda *args: get_current_process().handle_breakpoint(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)

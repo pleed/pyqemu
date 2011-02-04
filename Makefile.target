@@ -31,7 +31,7 @@ endif
 
 PROGS=$(QEMU_PROG)
 
-LIBS+=-lm -lpython2.6
+LIBS+=-lm -lpython2.6 -lavl
 
 kvm.o kvm-all.o vhost.o vhost_net.o: QEMU_CFLAGS+=$(KVM_CFLAGS)
 
@@ -45,7 +45,7 @@ all: $(PROGS)
 
 #########################################################
 # cpu emulator library
-libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o
+libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o flx_breakpoint.o
 libobj-y += tcg/tcg.o
 libobj-$(CONFIG_SOFTFLOAT) += fpu/softfloat.o
 libobj-$(CONFIG_NOSOFTFLOAT) += fpu/softfloat-native.o
@@ -67,6 +67,8 @@ translate.o: translate.c cpu.h
 translate-all.o: translate-all.c cpu.h
 
 flx_instrument.o: flx_instrument.c
+
+flx_breakpoint.o: flx_breakpoint.c
 
 tcg/tcg.o: cpu.h
 

@@ -30,6 +30,7 @@
 
 #include "helper.h"
 #include "flx_instrument.h"
+#include "flx_breakpoint.h"
 #define GEN_HELPER 1
 #include "helper.h"
 
@@ -2684,6 +2685,10 @@ static void gen_interrupt(DisasContext *s, int intno,
     gen_helper_raise_interrupt(tcg_const_i32(intno), 
                                tcg_const_i32(next_eip - cur_eip));
     s->is_jmp = DISAS_TB_JUMP;
+}
+
+static void gen_flx_debug(DisasContext *s, target_ulong cur_eip){
+    gen_helper_flx_debug();
 }
 
 static void gen_debug(DisasContext *s, target_ulong cur_eip)
@@ -7834,6 +7839,8 @@ static inline void gen_intermediate_code_internal(CPUState *env,
     if (max_insns == 0)
         max_insns = CF_COUNT_MASK;
 
+	uint32_t next_breakpoint;
+	flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
     gen_icount_start();
     for(;;) {
         if (unlikely(!QTAILQ_EMPTY(&env->breakpoints))) {
@@ -7845,6 +7852,12 @@ static inline void gen_intermediate_code_internal(CPUState *env,
                 }
             }
         }
+		if(pc_ptr == next_breakpoint){
+			gen_flx_debug(dc, pc_ptr - dc->cs_base);
+		if(pc_ptr >= next_breakpoint)
+			flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
+		}
+
         if (search_pc) {
             j = gen_opc_ptr - gen_opc_buf;
             if (lj < j) {

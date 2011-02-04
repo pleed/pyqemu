@@ -24,6 +24,7 @@
 
 #include "disas.h"
 #include "flx_instrument.h"
+#include "flx_breakpoint.h"
 
 extern struct FILE *stdout;
 extern struct FILE *stderr;
@@ -2193,6 +2194,13 @@ void helper_load_seg(int seg_reg, int selector)
                 selector, (unsigned long)sc->base, sc->limit, sc->flags);
 #endif
     }
+}
+
+void helper_flx_debug(void)
+{
+	if(instrumentation_active && flx_breakpoint_search(current_environment->eip, current_environment->cr[3])){
+		flxinstrument_breakpoint_event(current_environment->eip);
+	}
 }
 
 void helper_jmp(target_ulong new_eip){

@@ -35,6 +35,7 @@
 
 #include "cpu.h"
 #include "flx_instrument.h"
+#include "flx_breakpoint.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -72,6 +73,7 @@ PyObject *PyFlx_ev_jmp = NULL;
 PyObject *PyFlx_ev_syscall = NULL;
 PyObject *PyFlx_ev_update_cr3 = NULL;
 PyObject *PyFlx_ev_ret = NULL;
+PyObject *PyFlx_ev_bp = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -138,6 +140,40 @@ void flxinstrument_blacklist_cleanup(void){
 			memset(bs, 0, sizeof(blacklist_slot));
 		}
 	}
+}
+
+static PyObject* PyFlxC_breakpoint_delete(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_breakpoint_delete");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t address;
+  
+  if(!PyArg_ParseTuple(args, "I", &address))
+    return NULL;
+  flx_breakpoint_delete(address, current_environment->cr[3]);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_breakpoint_insert(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_breakpoint_insert");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t address;
+  
+  if(!PyArg_ParseTuple(args, "I", &address))
+    return NULL;
+  flx_breakpoint_insert(address, current_environment->cr[3]);
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static PyObject* PyFlxC_blacklist_cleanup(PyObject *self, PyObject *args) {
@@ -380,6 +416,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"blacklist_cleanup", (PyCFunction)PyFlxC_blacklist_cleanup, METH_VARARGS,
      "Clean blacklist from process specific entries"
     },
+    {"breakpoint_insert", (PyCFunction)PyFlxC_breakpoint_insert, METH_VARARGS,
+     "Insert breakpoint into current process"
+    },
+    {"breakpoint_delete", (PyCFunction)PyFlxC_breakpoint_delete, METH_VARARGS,
+     "Delete breakpoint from current process"
+    },
     {"eip", (PyCFunction)PyFlxC_eip, METH_VARARGS,
      "Returns the eip register"
     },
@@ -501,6 +543,15 @@ void flxinstrument_init(void) {
      {
        printf("Ret event active\n");
      }   
+
+   PyFlx_ev_bp = PyObject_GetAttrString(Py_Python_Module, "ev_bp");
+   Py_XINCREF(PyFlx_ev_bp);
+   if (PyFlx_ev_bp && PyCallable_Check(PyFlx_ev_bp) && instrumentation_call_active)
+     {
+       printf("Breakpoint event active\n");
+     }   
+   flx_breakpoint_init();
+
  
 
    PyFlx_ev_syscall = PyObject_GetAttrString(Py_Python_Module, "ev_syscall");
@@ -534,6 +585,8 @@ void flxinstrument_init(void) {
      PyFlx_ev_jmp = NULL;
      Py_XDECREF(PyFlx_ev_ret);
      PyFlx_ev_ret = NULL;
+     Py_XDECREF(PyFlx_ev_bp);
+     PyFlx_ev_bp = NULL;
      
      Py_XDECREF(PyFlx_ev_syscall);
      PyFlx_ev_syscall = NULL;
@@ -664,6 +717,37 @@ int flxinstrument_jmp_event(uint32_t jmp_destination) {
   result = PyObject_CallFunction(PyFlx_ev_jmp,
 				 (char*) "(I)",
 				 jmp_destination);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_breakpoint_event(uint32_t eip) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_breakpoint_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_bp)) {
+    fprintf(stderr, "No registered ret event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_bp,
+				 (char*) "(I)",
+				 eip);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
