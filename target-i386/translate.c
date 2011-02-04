@@ -7852,10 +7852,10 @@ static inline void gen_intermediate_code_internal(CPUState *env,
                 }
             }
         }
-		if(pc_ptr == next_breakpoint){
-			gen_flx_debug(dc, pc_ptr - dc->cs_base);
-		if(pc_ptr >= next_breakpoint)
+		if(pc_ptr > next_breakpoint)
 			flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
+		if(unlikely(pc_ptr == next_breakpoint)){
+			gen_flx_debug(dc, pc_ptr - dc->cs_base);
 		}
 
         if (search_pc) {

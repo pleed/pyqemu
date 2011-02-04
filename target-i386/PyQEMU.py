@@ -752,7 +752,11 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" test for interesting calls/jmps and trigger next stage handlers """
-		PyFlxInstrument.breakpoint_insert(toaddr)
+		if toaddr == 0x4015b0:
+			print "Inserting Breakpoint at 0x%x"%toaddr
+			PyFlxInstrument.breakpoint_insert(toaddr)
+			print "Inserting Breakpoint at 0x%x"%(toaddr+1)
+			PyFlxInstrument.breakpoint_insert(toaddr+1)
 		if self.hasSymbol(toaddr):
 			# Call comes from exe and so is interesting for us
 			if self.callFromExe():
