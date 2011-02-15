@@ -160,15 +160,23 @@ class CalledFunction:
 
 		self.entrystate = PyFlxInstrument.registers()
 		self.exitstate = None
+		self.return_callbacks = []
 
 		self.dllname = None
 		self.name = None
 
 	def isReturning(self, nextaddr):
 		if nextaddr == self.nextaddr:
-			self.exitstate = PyFlxInstrument.registers()
-			return self.entrystate["esp"] == self.exitstate["esp"]
+			return True
 		return False
+
+	def doReturn(self):
+		self.exitstate = PyFlxInstrument.registers()
+		for callback in self.return_callbacks:
+			callback(self)
+
+	def addReturnCallback(self, callback):
+		self.return_callbacks.append(callback)
 
 	def retval(self):
 		self.exitstate = PyFlxInstrument.registers()
@@ -459,6 +467,8 @@ class DataMemoryTracer:
 			else:
 				return None
 
+
+
 class UnknownMemoryTracer:
 	""" Traces memory from unknown origins """
 	def __init__(self, process):
@@ -534,6 +544,21 @@ class MemoryManager:
 		tracer = self.getMemoryTracer(addr)
 		return tracer.getBuffer(addr)
 
+class Breakpoint:
+	def __init__(self, address, callback):
+		PyFlxInstrument.breakpoint_insert(address)
+		self.address   = address
+		self.callback = callback
+
+	def trigger(self):
+		self.callback(self.address)
+
+	def delete(self):
+		PyFlxInstrument.breakpoint_delete(toaddr)
+
+	def __del__(self):
+		self.delete()
+
 class RegisteredCallback:
 	def __init__(self, func):
 		self.func = func
@@ -550,7 +575,6 @@ class Thread:
 			self.callstack = Stack()
 		else:
 			self.callstack = callstack
-		self.wait_for_return = {}
 		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
 
@@ -565,11 +589,20 @@ class TracedProcess(processinfo.Process):
 		self.dllhandler          = DLLHandler("/media/shared/dlls/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
+		self.breakpoints         = {}
 
 		self.create_thread_list  = []
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks(callhandler)
+
+	def addBreakpoint(self, addr, callback):
+		if not self.breakpoints.has_key(addr):
+			self.breakpoints[addr] = Breakpoint(addr, callback)
+
+	def delBreakpoint(self, addr):
+		self.breakpoints[addr].delete()
+		del(self.breakpoints[addr])
 
 	def isRegisteredThread(self):
 		try:
@@ -610,10 +643,6 @@ class TracedProcess(processinfo.Process):
 		return self.thread.callstack
 	callstack = property(getCallstack)
 
-	def getWaitForReturn(self):
-		return self.thread.wait_for_return
-	wait_for_return = property(getWaitForReturn)
-
 	def getMemory(self):
 		return self.thread.memory
 	memory = property(getMemory)
@@ -653,9 +682,9 @@ class TracedProcess(processinfo.Process):
 	def genreg(self, index):
 		return PyFlxInstrument.genreg(index)
 
-	def add_pending_return(self, function):
+	def addPendingReturn(self, function):
 		""" Used by FunctionHandlers to hook corresponding return of a called function """
-		self.wait_for_return[hash((function.nextaddr,function.top()))] = function
+		self.callstack.top().addReturnCallback(function)
 
 	def loadCallbacks(self,handlers):
 		""" Load FunctionHandlers from dict """
@@ -664,22 +693,23 @@ class TracedProcess(processinfo.Process):
 
 	@RegisteredCallback
 	def handle_breakpoint(self, addr):
-		""" Called when a breakpoint is triggered """
-		print "Breakpoint triggered at 0x%x"%addr
+		try:
+			breakpoint = self.breakpoints[addr]
+		except KeyError:
+			raise Exception("Unregistered breakpoint has been triggered!")
+		breakpoint.trigger()
 
 	@RegisteredCallback
 	def handle_ret(self, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
-		esp = self.register("esp")
-		index = hash((toaddr,esp))
-
 		# keep callstack up to date
 		try:
 			if self.callstack.top().isReturning(toaddr):
 				f = self.callstack.pop()
 				self.log(RetEvent(f))
-				del(f)
+				f.doReturn()
 			else:
+				esp = self.register("esp")
 				f = self.callstack.top()
 				while f.top() < esp:
 					self.log(LateRetEvent(f))
@@ -688,21 +718,6 @@ class TracedProcess(processinfo.Process):
 		except IndexError:
 			pass
 		self.memory.stack.update()
-
-		# check for pending return callback
-		if self.wait_for_return.has_key(index):
-			function = self.wait_for_return[index]
-			if not function.isReturning(toaddr):
-				raise Exception("FUNCTION NOT RETURNING!!!")
-			self.runCallbacks(function,"leave")
-			del(self.wait_for_return[index])
-
-		#garbage collection
-		if len(self.wait_for_return) > 500:
-			for index,function in self.wait_for_return:
-				if function.top() < esp:
-					del(self.wait_for_return[hash(toaddr,function.top())])
-			print "wait_for_return size is now: %d"%len(self.wait_for_return)
 
 	@RegisteredCallback
 	def handle_syscall(self, eax):
@@ -716,16 +731,15 @@ class TracedProcess(processinfo.Process):
 				self.registerCreateThreadCall()
 
 	@RegisteredCallback
-	def handle_call(self, *args):
+	def handle_call(self, fromaddr, toaddr, nextaddr):
 		""" Call Opcode handler. """
-		#self.logger.handle_event("CALLED: "+hex(args[1]))
-		self._handle_call_filter(*args)
+		self._handle_call_filter(fromaddr, toaddr, nextaddr)
 
 	@RegisteredCallback
-	def handle_jmp(self, toaddr):
+	def handle_jmp(self, fromaddr, toaddr):
 		#self.logger.handle_event("JMP: "+hex(toaddr))
 		if not self._is_jmp_pad(toaddr):
-			PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_JMP)
+			pass
 			#self.logger.handle_event("Blacklisting: "+str(toaddr))
 		else:
 			try:
@@ -739,6 +753,8 @@ class TracedProcess(processinfo.Process):
 			if self.callFromExe():
 				self.log("Resolved through jump pad:")
 				self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
+			else:
+				PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_JMP)
 			self.thread.previous_call = None
 
 
@@ -752,14 +768,6 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
 		""" test for interesting calls/jmps and trigger next stage handlers """
-		if toaddr == 0x4015b0:
-			print "Inserting Breakpoint at 0x%x"%toaddr
-			PyFlxInstrument.breakpoint_insert(toaddr)
-			print "Inserting Breakpoint at 0x%x"%(toaddr+1)
-			PyFlxInstrument.breakpoint_insert(toaddr+1)
-		#else:
-		#	print "Inserting Breakpoint at 0x%x"%toaddr
-		#	PyFlxInstrument.breakpoint_insert(toaddr)
 		if self.hasSymbol(toaddr):
 			# Call comes from exe and so is interesting for us
 			if self.callFromExe():
@@ -768,8 +776,9 @@ class TracedProcess(processinfo.Process):
 			# Call in library is not interesting, log it for debugging
 			else:
 				#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
-				PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_CALL)
+				PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_CALL)
 				#self.logger.handle_event("Blacklisting: "+str(toaddr))
+				pass
 		else:
 			# unresolvabled jumps are meaningless
 			if self._is_jmp(fromaddr, toaddr, nextaddr):
@@ -790,7 +799,8 @@ class TracedProcess(processinfo.Process):
 					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
 				else:
 					# blacklist call target
-					PyFlxInstrument.blacklist(toaddr, PyFlxInstrument.SLOT_CALL)
+					PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_CALL)
+					pass
 					#self.logger.handle_event("Blacklisting: "+str(hex(toaddr)))
 
 	def callFromExe(self):
@@ -883,12 +893,18 @@ class TracedProcess(processinfo.Process):
 		return None
 
 	def __del__(self):
-		for tid,thread in self.threads.items():
-			del(thread)
-		self.logger.close()
-		del(self.logger)
-		del(self.dllhandler)
-		del(self.callonfunction)
+		self.terminate()
+
+	def terminate(self):
+		try:
+			for tid,thread in self.threads.items():
+				del(thread)
+			self.logger.close()
+			del(self.logger)
+			del(self.dllhandler)
+			del(self.callonfunction)
+		except:
+			pass
 
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):

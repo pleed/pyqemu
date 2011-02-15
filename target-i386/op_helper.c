@@ -22,6 +22,7 @@
 #include "host-utils.h"
 #include "ioport.h"
 
+#include "tcg-op.h"
 #include "disas.h"
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
@@ -2203,10 +2204,10 @@ void helper_flx_debug(void)
 	}
 }
 
-void helper_jmp(target_ulong new_eip){
+void helper_jmp(target_ulong src_eip, target_ulong new_eip){
 	if(instrumentation_active && instrumentation_call_active)
-  		if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(new_eip, FLX_SLOT_ISJMP))
-  	 		 flxinstrument_jmp_event(new_eip);
+  		if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(src_eip, FLX_SLOT_ISJMP))
+  	 		 flxinstrument_jmp_event(src_eip, new_eip);
 }
 
 void helper_ret_event(target_ulong new_eip){
@@ -2534,10 +2535,11 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     }
 }
 
+int get_current_register(int index);
+
 void helper_call_im_protected(target_ulong src_eip,
 							  target_ulong new_eip, int next_eip){
   if (!(new_eip & 0x80000000) ){
-	//fprintf(stderr, "call_im:\n");
 	helper_call_protected(src_eip,new_eip,next_eip);
   }
 
@@ -2556,7 +2558,7 @@ void helper_call_protected(target_ulong src_eip,
 {
   if(instrumentation_active && instrumentation_call_active){
   	// We are not interested in kernel mode stuff
-  	if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(new_eip, FLX_SLOT_ISCALL)){
+  	if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(src_eip, FLX_SLOT_ISCALL)){
   	  flxinstrument_call_event(src_eip, new_eip, next_eip);
   	}
   }

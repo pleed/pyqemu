@@ -76,6 +76,12 @@ static TCGv cpu_tmp5;
 
 static uint8_t gen_opc_cc_op[OPC_BUF_SIZE];
 
+int get_current_register(int index);
+
+int get_current_register(int index){
+	return cpu_regs[index];
+}
+
 #include "gen-icount.h"
 
 #ifdef TARGET_X86_64
@@ -4674,7 +4680,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         case 4: /* jmp Ev */
             if (s->dflag == 0)
                 gen_op_andl_T0_ffff();
-			gen_helper_jmp(cpu_T[0]);
+			gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[0]);
             gen_op_jmp_T0();
             gen_eob(s);
             break;
@@ -4688,7 +4694,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_op_set_cc_op(s->cc_op);
                 gen_jmp_im(pc_start - s->cs_base);
                 tcg_gen_trunc_tl_i32(cpu_tmp2_i32, cpu_T[0]);
-				gen_helper_jmp(cpu_T[1]);
+				gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[1]);
                 gen_helper_ljmp_protected(cpu_tmp2_i32, cpu_T[1],
                                           tcg_const_i32(s->pc - pc_start));
             } else {

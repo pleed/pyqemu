@@ -37,7 +37,7 @@ class FunctionHandler:
 		raise Exception("Implement in inherited class!")
 
 	def addPendingReturn(self, function):
-		self.process.add_pending_return(function)
+		function.addReturnCallback(self.onLeave)
 
 class RecvFunctionHandler(FunctionHandler):
 	def onEnter(self, function):

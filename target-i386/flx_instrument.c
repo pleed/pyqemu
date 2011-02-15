@@ -98,37 +98,34 @@ void flxinstrument_blacklist_alloc(void){
 }
 
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t SLOT_TYPE){
-	int i;
-	for(i=0; i<10; ++i){
-		blacklist_slot* bls = bl->slots+((addr+i)&0xffffff);
-		if(bls->set == SLOT_TYPE && \
-		   bls->cr3 == current_environment->cr[3] && \
-		   bls->msb == addr>>24){
-			//printf("found blacklisted\n");
-			return 1;
-		}
-	}
+	blacklist_slot* bls = bl->slots+((addr)&0xffffff);
+	if(bls->set == SLOT_TYPE && \
+	   bls->cr3 == current_environment->cr[3] && \
+	   bls->msb == addr>>24)
+		return 1;
 	return 0;
 }
 
 void flxinstrument_blacklist(uint32_t addr, uint32_t SLOT_TYPE){
-	blacklist_slot* bls;
-	int i;
 	int found = 0;
-	for(i=0; i<10; ++i){
-		bls = &(bl->slots[(addr+i)&0xffffff]);
-		if(bls->set == FLX_SLOT_EMPTY){
-			bls->set = SLOT_TYPE;
-			bls->msb = addr >> 24;
-			bls->cr3 = current_environment->cr[3];
-			found = 1;
-			break;
-		}
+	blacklist_slot* bls;
+	bls = &(bl->slots[(addr)&0xffffff]);
+	if(bls->set == FLX_SLOT_EMPTY){
+		bls->set = SLOT_TYPE;
+		bls->msb = addr >> 24;
+		bls->cr3 = current_environment->cr[3];
+		found = 1;
+		++element_counter;
 	}
+#ifdef DEBUG
 	if(!found){
 		printf("Slot is already full! 0x%x\n",addr);
 		printf("Elements: %i\n",element_counter);
 	}
+	else{
+		printf("Slot found! 0x%x\n\n",addr);
+	}
+#endif
 }
 
 void flxinstrument_blacklist_cleanup(void){
@@ -698,7 +695,7 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, ui
   return retval;
 }
 
-int flxinstrument_jmp_event(uint32_t jmp_destination) {
+int flxinstrument_jmp_event(uint32_t jmp_source, uint32_t jmp_destination) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_jmp_event");  
   if(PyErr_Occurred())
@@ -715,7 +712,8 @@ int flxinstrument_jmp_event(uint32_t jmp_destination) {
   }
 
   result = PyObject_CallFunction(PyFlx_ev_jmp,
-				 (char*) "(I)",
+				 (char*) "(II)",
+				 jmp_source,
 				 jmp_destination);
 
   if (result != Py_None) {
