@@ -434,7 +434,7 @@ class StackMemoryTracer:
 		return new_object
 
 class DataMemoryTracer:
-	""" Traces memory globally allocated in image """
+	""" Traces memory globally allocated in memory data segment """
 	def __init__(self, process):
 		self.process = process
 		self.tree = avl.new()
@@ -616,21 +616,13 @@ class TracedProcess(processinfo.Process):
 			self.threadcount += 1
 			self.threads[self.cur_tid] = Thread(self)
 		else:
-			if len(self.create_thread_list) > 1:
-				raise Exception("Race condition creating new threads!, FIX IT!")
-			creating_thread_id = self.create_thread_list.pop()
-			self.threads[self.cur_tid] = Thread(self, self.threads[creating_thread_id].memory.heap, \
-			                                          copy.deepcopy(self.threads[creating_thread_id].memory.stack),\
-			                                          self.threads[creating_thread_id].memory.data, \
-													  self.threads[creating_thread_id].memory.unknown,
-													  copy.deepcopy(self.threads[creating_thread_id].callstack))
+			anythread = self.threads.values()[0]
+			self.threads[self.cur_tid] = Thread(self, anythread.memory.heap, \
+													  None, \
+			                                          anythread.memory.data, \
+													  anythread.memory.unknown,\
+													  None)
 		print "Thread %d registered"%self.cur_tid
-
-	def registerCreateThreadCall(self):
-		self.create_thread_list.append(self.cur_tid)
-
-	def unregisterCreateThreadCall(self):
-		del(self.create_thread_list[self.cur_tid])
 
 	def getThread(self):
 		try:
@@ -658,7 +650,7 @@ class TracedProcess(processinfo.Process):
 			if frameid >= 0:
 				return self.callstack[frameid]
 			else:
-				return None
+				raise Exception("Address not on stack!")
 		else:
 			raise Exception("Address not on stack!")
 
@@ -728,7 +720,7 @@ class TracedProcess(processinfo.Process):
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
 			if syscall_name == "NtCreateThread":
-				self.registerCreateThreadCall()
+				pass # notify in the future
 
 	@RegisteredCallback
 	def handle_call(self, fromaddr, toaddr, nextaddr):
@@ -780,10 +772,6 @@ class TracedProcess(processinfo.Process):
 				#self.logger.handle_event("Blacklisting: "+str(toaddr))
 				pass
 		else:
-			# unresolvabled jumps are meaningless
-			if self._is_jmp(fromaddr, toaddr, nextaddr):
-				raise Exception("should not reach this!")
-				return
 			# try to resolve call
 			from_image = self.get_image_by_address(fromaddr)
 			to_image   = self.get_image_by_address(toaddr)
@@ -857,6 +845,7 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
+		print "thread id: %d"%self.cur_tid
 		global emulate_functions
 		if toaddr in emulate_functions[self.imagefilename()]:
 			emulate_function(self, toaddr)
@@ -948,7 +937,7 @@ trace_processes = {
 	"fencryption.exe": HOOKS,
 	"ssh.exe": HOOKS,
 	"md5deep.exe":HOOKS,
-#	"asam.exe":  HOOKS,
+	"asam.exe":  HOOKS,
 #	"virus.exe": HOOKS,
 #	"putty.exe": HOOKS,
 #	"ftp.exe":   HOOKS,
@@ -1038,6 +1027,7 @@ emulate_functions = {
 
 	"fencryption.exe": [],
 	"curl.exe": [],
+	"asam.exe": [],
 }
 
 class PyQemuEmulationInterface:

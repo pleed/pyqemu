@@ -1,6 +1,4 @@
-- watch for CALL/RET numbers (should be equal)
-- besseres ret/call/jmp hooking konzept
-
+- besseres thread handling
 
 Ideen:
 
