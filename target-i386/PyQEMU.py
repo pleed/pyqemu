@@ -28,6 +28,7 @@ import dllhandling
 import syscalls
 from fhandle import *
 from FlxPyEmu import *
+from config import *
 
 DEBUG = True
 NULL = 0
@@ -596,6 +597,10 @@ class TracedProcess(processinfo.Process):
 		processinfo.Process.__init__(self)
 		self.loadCallbacks(callhandler)
 
+	@classmethod
+	def addProcessToTrace(cls, process_name):
+		pass
+
 	def addBreakpoint(self, addr, callback):
 		if not self.breakpoints.has_key(addr):
 			self.breakpoints[addr] = Breakpoint(addr, callback)
@@ -719,8 +724,16 @@ class TracedProcess(processinfo.Process):
 			if syscall_name == "NtTerminateProcess":
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
+				self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtCreateThread":
-				pass # notify in the future
+				print "New Thread has been created by %s"%self.name
+				self.log(SyscallEvent(syscall_name))
+			if syscall_name == "NtTerminateThread":
+				print "Thread %d terminated"%self.cur_tid
+				self.log(SyscallEvent(syscall_name))
+			if syscall_name == "NtCreateProcess" or syscall_name == "NtCreateProcessEx":
+				print "New Process has been created by %s"%self.name
+				self.log(SyscallEvent(syscall_name))
 
 	@RegisteredCallback
 	def handle_call(self, fromaddr, toaddr, nextaddr):
@@ -845,7 +858,6 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
-		print "thread id: %d"%self.cur_tid
 		global emulate_functions
 		if toaddr in emulate_functions[self.imagefilename()]:
 			emulate_function(self, toaddr)
@@ -871,6 +883,7 @@ class TracedProcess(processinfo.Process):
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
+	name = property(imagefilename)
 
 	def registerFunctionHandler(self, dllname, function, callback):
 		""" Registers a function that will be called when vm process calls dllname::funcname(). """
@@ -1068,10 +1081,253 @@ def emulate_function(process, eip):
 	except TypeError:
 		print "Got Type Error! Continueing!"
 
-# Register FLX Callbacks 
-ev_syscall    = ensure_error_handling_helper(lambda *args: get_current_process().handle_syscall(*args))
-ev_call       = ensure_error_handling_helper(lambda *args: get_current_process().handle_call(*args))
-ev_jmp        = ensure_error_handling_helper(lambda *args: get_current_process().handle_jmp(*args))
-ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
-ev_bp         = ensure_error_handling_helper(lambda *args: get_current_process().handle_breakpoint(*args))
-ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
+class ErrorHandlingDecorator:
+	def __init__(self, func):
+		self.func = func
+
+	def __call__(self, *args):
+		""" Make sure None will never be returned, spawn interactive shell when exception was raised. """
+		try:
+			ret = self.func(*args)
+			if ret is None:
+				return 0
+			return ret
+		except:
+			import code
+			traceback.print_exception(*sys.exc_info())
+			code.interact("PyQemu dbg>>>",local = locals())
+			sys.exit(-1)
+
+class QemuCPU:
+	""" encapsulates access to the cpu """
+	R_EAX = 0
+	R_ECX = 1
+	R_EDX = 2
+	R_EBX = 3
+	R_ESP = 4
+	R_EBP = 5
+	R_ESI = 6
+	R_EDI = 7
+	R_ES = 0
+	R_CS = 1
+	R_SS = 2
+	R_DS = 3
+	R_FS = 4
+	R_GS = 5
+
+	# singleton
+	_instance_counter = 0
+
+	def __init__(self):
+		self._ensureSingleInstance()
+
+	def _ensureSingleInstance(self):
+		if QemuCPU._instance_counter > 0:
+			raise Exception("%s is singleton"%str(self.__class__))
+		QemuCPU._instance_counter += 1
+
+	def genReg(self, register)
+		return PyFlxInstrument.genreg(register)
+
+	def cReg(self, register)
+		return PyFlxInstrument.creg(register)
+		kpcr_addr = PyFlxInstrument.creg(R_FS)
+
+	def getRegisters(self):
+		return PyFlxInstrument.registers()
+	registers = property(getRegisters)
+
+	EAX = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_EAX)
+	ECX = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_ECX)
+	EDX = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_EDX)
+	EBX = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_EBX)
+	ESP = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_ESP)
+	EBP = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_EBP)
+	ESI = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_ESI)
+	EDI = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_EDI)
+
+	ES = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_ES)
+	CS = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_CS)
+	SS = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_SS)
+	DS = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_DS)
+	FS = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_FS)
+	GS = property(lambda self: QemuCPU.genreg(self, QemuCPU.R_GS)
+	
+class ProgramAnalyzer:
+	""" Main class to analyze programs with PyQemu """
+
+	# singleton
+	_instance_counter = 0
+
+	def __init__(self, config):
+		self._ensureSingleInstance()
+		self.config = ProgramAnalyzerConfig(config)
+		self._registerQemuCallbacks()
+
+		self.cpu = QemuCPU()
+		self.memory = VMemBackend( 0, 0x100000000)				
+		self.processes = {}
+		self.terminating_processes = []
+		self.trace_processes = self.config.processes
+
+	def _ensureSingleInstance(self):
+		if ProgramAnalyzer._instance_counter > 0:
+			raise Exception("%s is singleton"%str(self.__class__))
+		ProgramAnalyzer._instance_counter += 1
+
+	def _registerQemuCallbacks(self):
+		global ev_syscall
+		global ev_call
+		global ev_jmp
+		global ev_ret
+		global ev_bp
+		global ev_update_cr3
+		ev_syscall = self.handle_syscall
+		ev_call    = self.handle_call
+		ev_jmp     = self.handle_jmp
+		ev_ret     = self.handle_ret
+		ev_bp      = self.handle_breakpoint
+		ev_update_cr3 = self.handle_schedule
+
+	def getCurrentProcess(self):
+		identifier = self.cpu.registers["cr3"]
+		return self.processes[identifier]
+	active = property(getCurrentProcess)
+
+	def processIsKnown(self, identifier):
+		return self.processes.has_key(identifier)
+
+	def analysisEnable(self):
+		PyFlxInstrument.set_instrumentation_active(1)
+
+	def analysisDisable(self):
+		PyFlxInstrument.set_instrumentation_active(0)
+
+	@ErrorHandler
+	def handle_syscall(self, syscall_number):
+		""" Called when syscall executed in VM userspace """
+		event = Syscall(syscall_number)
+		self.active.handle_event(event)
+
+	@ErrorHandler
+	def handle_call(self, src, dst, next):
+		""" Called when call executed in VM userspace. """
+		event = Call(src, dst, next)
+		self.active.handle_event(event)
+
+	@ErrorHandler
+	def handle_jmp(self, src, dst):
+		""" Called when jmp executed in VM userspace. """
+		event = Jmp(src, dst)
+		self.active.handle_event(event)
+
+	@ErrorHandler
+	def handle_breakpoint(self, addr):
+		""" Called when VM runs into a breakpoint. """
+		event = BreakpointEvent(addr)
+		self.active.handle_event(event)
+
+	@ErrorHandler
+	def handle_ret(self, dst):
+		""" Called when ret executed in VM userspace. """
+		event = Ret(dst)
+		self.active.handle_event(event)
+
+	@ErrorHandler
+	def handle_schedule(previous, next):
+		""" Called when kernel schedules a new process. """
+
+		# if processes were terminated, destroy objects
+		for process in self.terminating_processes:
+			del(process)
+		self.terminating_processes = []
+
+		# known process, restore analysis state
+		if self.processIsKnown(next):
+			process = self.processes[next]		
+			self._validateExistingProcess(process)
+	
+		# we have got a new process, instantiate corresponding object
+		elif kpcr_addr > 0xf0000000: #otherwise something breaks :(			   
+			self._addNewProcess(next)
+
+	def _addNewProcess(self, identifier):
+		""" Add an unknown process by instantiating process object and obtaining state information if already available """
+		filename = ""
+		try:
+			kpcr = KPCR( self.memory, self.cpu.FS ) #problem: here
+			filename = kpcr.PrcbData.CurrentThread.deref().ApcState.Process.deref().ImageFileName
+			filename = filename.replace("\x00", "")
+
+			if len(filename) > 0:
+				if filename.lower() in self.trace_processes.keys():
+					print "New TracedProcess %s"%filename
+					p = TracedProcess(self.trace_processes[filename.lower()])
+				else:
+					print "New UntracedProcess %s"%filename
+					p = UntracedProcess([])
+				self.processes[next] = p
+				p.watched = True
+		except:
+			return -1 # try again after the next schedule
+
+	def _validateExistingProcess(self, process)
+		""" Changes analysis state if necessary """
+		if not process.watched:
+			self.analysisEnable()
+
+		if not process.valid:
+			process.update()
+
+		if process.valid:
+			if isinstance(process, TracedProcess):
+				self.analysisEnable()
+			else:
+				self.analysisDisable()
+
+class QemuEvent:
+	def __init__(self):
+		pass
+
+class Syscall(QemuEvent):
+	def __init__(self, syscall_number):
+		self.nr = syscall_number
+
+class Call(QemuEvent):
+	def __init__(self, src, dst, next):
+		self.src  = src
+		self.dst  = dst
+		self.next = next
+
+class Jmp(QemuEvent):
+	def __init__(self, src, dst):
+		self.src  = src
+		self.dst  = dst
+	
+class BreakpointEvent(QemuEvent):
+	def __init__(self, addr):
+		self.addr = addr
+
+class Ret(QemuEvent):
+	def __init__(self, dst):
+		self.dst = dst
+
+def init(sval):	
+	print "Loading configuration file"
+	configfile = os.getenv("PYQEMU_CONFIG_FILE")
+	configtype = os.getenv("PYQEMU_CONFIG_TYPE")
+	configloader = ConfigLoaderFactory.create(configtype, configfile)
+	config = configloader.load()
+
+	print "Initializing Analyzer"
+	analyzer = ProgramAnalyzer(config)
+	print "PyQemu initialized"
+	return 1
+
+# Callbacks
+ev_syscall    = None
+ev_call       = None
+ev_jmp        = None
+ev_ret        = None
+ev_bp         = None
+ev_update_cr3 = None
