@@ -1,4 +1,5 @@
 - besseres thread handling
+- typen beim Auslesen der Funktionsargumente besser beruecksichtigen
 
 Ideen:
 

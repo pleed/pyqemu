@@ -5,6 +5,9 @@
 
 #define FLX_BLACKLIST_SIZE 256*256*256
 
+#define userspace(x) (!(x&0x80000000))
+#define kernelspace(x) (x&0x80000000)
+
 #define FLX_SLOT_EMPTY  0
 #define FLX_SLOT_ISCALL 1
 #define FLX_SLOT_ISJMP  2
@@ -33,6 +36,7 @@ int flxinstrument_jmp_event(uint32_t jmp_source, uint32_t jmp_destination);
 int flxinstrument_syscall_event(uint32_t eax);
 int flxinstrument_ret_event(uint32_t new_eip);
 int flxinstrument_breakpoint_event(uint32_t eip);
+int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite);
 
 void flxinstrument_blacklist_alloc(void);
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);

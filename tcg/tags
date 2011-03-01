@@ -1,0 +1,2701 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ADD	ppc/tcg-target.c	345;"	d	file:
+ADD	ppc64/tcg-target.c	335;"	d	file:
+ADDC	ppc/tcg-target.c	347;"	d	file:
+ADDC	ppc64/tcg-target.c	337;"	d	file:
+ADDE	ppc/tcg-target.c	346;"	d	file:
+ADDE	ppc64/tcg-target.c	336;"	d	file:
+ADDI	ppc/tcg-target.c	315;"	d	file:
+ADDI	ppc64/tcg-target.c	303;"	d	file:
+ADDIC	ppc/tcg-target.c	314;"	d	file:
+ADDIC	ppc64/tcg-target.c	302;"	d	file:
+ADDIS	ppc/tcg-target.c	316;"	d	file:
+ADDIS	ppc64/tcg-target.c	304;"	d	file:
+AND	ppc/tcg-target.c	348;"	d	file:
+AND	ppc64/tcg-target.c	338;"	d	file:
+ANDC	ppc/tcg-target.c	371;"	d	file:
+ANDI	ppc/tcg-target.c	321;"	d	file:
+ANDI	ppc64/tcg-target.c	309;"	d	file:
+ANDIS	ppc/tcg-target.c	322;"	d	file:
+ANDIS	ppc64/tcg-target.c	310;"	d	file:
+ARITH_ADC	arm/tcg-target.c	/^    ARITH_ADC = 0x5,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_ADC	i386/tcg-target.c	290;"	d	file:
+ARITH_ADD	arm/tcg-target.c	/^    ARITH_ADD = 0x4,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_ADD	i386/tcg-target.c	288;"	d	file:
+ARITH_ADD	sparc/tcg-target.c	224;"	d	file:
+ARITH_ADDCC	sparc/tcg-target.c	225;"	d	file:
+ARITH_ADDX	sparc/tcg-target.c	234;"	d	file:
+ARITH_AND	arm/tcg-target.c	/^    ARITH_AND = 0x0,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_AND	i386/tcg-target.c	292;"	d	file:
+ARITH_AND	sparc/tcg-target.c	226;"	d	file:
+ARITH_ANDN	sparc/tcg-target.c	227;"	d	file:
+ARITH_BIC	arm/tcg-target.c	/^    ARITH_BIC = 0xe,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_CMN	arm/tcg-target.c	/^    ARITH_CMN = 0xb,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_CMP	arm/tcg-target.c	/^    ARITH_CMP = 0xa,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_CMP	i386/tcg-target.c	295;"	d	file:
+ARITH_EOR	arm/tcg-target.c	/^    ARITH_EOR = 0x1,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_MOV	arm/tcg-target.c	/^    ARITH_MOV = 0xd,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_MOVCC	sparc/tcg-target.c	242;"	d	file:
+ARITH_MULX	sparc/tcg-target.c	239;"	d	file:
+ARITH_MVN	arm/tcg-target.c	/^    ARITH_MVN = 0xf,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_OR	i386/tcg-target.c	289;"	d	file:
+ARITH_OR	sparc/tcg-target.c	228;"	d	file:
+ARITH_ORCC	sparc/tcg-target.c	229;"	d	file:
+ARITH_ORN	sparc/tcg-target.c	230;"	d	file:
+ARITH_ORR	arm/tcg-target.c	/^    ARITH_ORR = 0xc,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_RSB	arm/tcg-target.c	/^    ARITH_RSB = 0x3,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_RSC	arm/tcg-target.c	/^    ARITH_RSC = 0x7,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_SBB	i386/tcg-target.c	291;"	d	file:
+ARITH_SBC	arm/tcg-target.c	/^    ARITH_SBC = 0x6,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_SDIV	sparc/tcg-target.c	238;"	d	file:
+ARITH_SDIVX	sparc/tcg-target.c	241;"	d	file:
+ARITH_SUB	arm/tcg-target.c	/^    ARITH_SUB = 0x2,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_SUB	i386/tcg-target.c	293;"	d	file:
+ARITH_SUB	sparc/tcg-target.c	232;"	d	file:
+ARITH_SUBCC	sparc/tcg-target.c	233;"	d	file:
+ARITH_SUBX	sparc/tcg-target.c	235;"	d	file:
+ARITH_TST	arm/tcg-target.c	/^    ARITH_TST = 0x8,$/;"	e	enum:arm_data_opc_e	file:
+ARITH_UDIV	sparc/tcg-target.c	237;"	d	file:
+ARITH_UDIVX	sparc/tcg-target.c	240;"	d	file:
+ARITH_UMUL	sparc/tcg-target.c	236;"	d	file:
+ARITH_XOR	i386/tcg-target.c	294;"	d	file:
+ARITH_XOR	sparc/tcg-target.c	231;"	d	file:
+ASI_PRIMARY_LITTLE	sparc/tcg-target.c	283;"	d	file:
+B	ppc/tcg-target.c	304;"	d	file:
+B	ppc64/tcg-target.c	282;"	d	file:
+BA	ppc/tcg-target.c	413;"	d	file:
+BA	ppc64/tcg-target.c	411;"	d	file:
+BA	sparc/tcg-target.c	219;"	d	file:
+BB	ppc/tcg-target.c	414;"	d	file:
+BB	ppc64/tcg-target.c	412;"	d	file:
+BC	ppc/tcg-target.c	305;"	d	file:
+BC	ppc64/tcg-target.c	283;"	d	file:
+BCCTR	ppc/tcg-target.c	336;"	d	file:
+BCCTR	ppc64/tcg-target.c	325;"	d	file:
+BCLR	ppc/tcg-target.c	335;"	d	file:
+BCLR	ppc64/tcg-target.c	324;"	d	file:
+BF	ppc/tcg-target.c	410;"	d	file:
+BF	ppc64/tcg-target.c	408;"	d	file:
+BI	ppc/tcg-target.c	411;"	d	file:
+BI	ppc64/tcg-target.c	409;"	d	file:
+BO	ppc/tcg-target.c	403;"	d	file:
+BO	ppc64/tcg-target.c	400;"	d	file:
+BO_ALWAYS	ppc/tcg-target.c	418;"	d	file:
+BO_ALWAYS	ppc64/tcg-target.c	416;"	d	file:
+BO_COND_FALSE	ppc/tcg-target.c	417;"	d	file:
+BO_COND_FALSE	ppc64/tcg-target.c	415;"	d	file:
+BO_COND_TRUE	ppc/tcg-target.c	416;"	d	file:
+BO_COND_TRUE	ppc64/tcg-target.c	414;"	d	file:
+BT	ppc/tcg-target.c	412;"	d	file:
+BT	ppc64/tcg-target.c	410;"	d	file:
+CALL	sparc/tcg-target.c	258;"	d	file:
+CMP	ppc/tcg-target.c	358;"	d	file:
+CMP	ppc64/tcg-target.c	348;"	d	file:
+CMPI	ppc/tcg-target.c	325;"	d	file:
+CMPI	ppc64/tcg-target.c	313;"	d	file:
+CMPL	ppc/tcg-target.c	359;"	d	file:
+CMPL	ppc64/tcg-target.c	349;"	d	file:
+CMPLI	ppc/tcg-target.c	324;"	d	file:
+CMPLI	ppc64/tcg-target.c	312;"	d	file:
+CMP_L	ppc64/tcg-target.c	33;"	d	file:
+CMP_L	ppc64/tcg-target.c	36;"	d	file:
+CNTLZD	ppc64/tcg-target.c	360;"	d	file:
+CNTLZW	ppc/tcg-target.c	369;"	d	file:
+CNTLZW	ppc64/tcg-target.c	359;"	d	file:
+COND_A	sparc/tcg-target.c	211;"	d	file:
+COND_AL	arm/tcg-target.c	/^    COND_AL = 0xe,$/;"	e	enum:arm_cond_code_e	file:
+COND_CC	arm/tcg-target.c	/^    COND_CC = 0x3,	\/* Unsigned less than *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_CC	sparc/tcg-target.c	216;"	d	file:
+COND_CS	arm/tcg-target.c	/^    COND_CS = 0x2,	\/* Unsigned greater or equal *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_CS	sparc/tcg-target.c	208;"	d	file:
+COND_E	sparc/tcg-target.c	204;"	d	file:
+COND_EQ	arm/tcg-target.c	/^    COND_EQ = 0x0,$/;"	e	enum:arm_cond_code_e	file:
+COND_EQ	hppa/tcg-target.c	273;"	d	file:
+COND_FALSE	hppa/tcg-target.c	280;"	d	file:
+COND_G	sparc/tcg-target.c	213;"	d	file:
+COND_GE	arm/tcg-target.c	/^    COND_GE = 0xa,$/;"	e	enum:arm_cond_code_e	file:
+COND_GE	sparc/tcg-target.c	214;"	d	file:
+COND_GT	arm/tcg-target.c	/^    COND_GT = 0xc,$/;"	e	enum:arm_cond_code_e	file:
+COND_GU	sparc/tcg-target.c	215;"	d	file:
+COND_HI	arm/tcg-target.c	/^    COND_HI = 0x8,	\/* Unsigned greater than *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_L	sparc/tcg-target.c	206;"	d	file:
+COND_LE	arm/tcg-target.c	/^    COND_LE = 0xd,$/;"	e	enum:arm_cond_code_e	file:
+COND_LE	hppa/tcg-target.c	275;"	d	file:
+COND_LE	sparc/tcg-target.c	205;"	d	file:
+COND_LEU	hppa/tcg-target.c	277;"	d	file:
+COND_LEU	sparc/tcg-target.c	207;"	d	file:
+COND_LS	arm/tcg-target.c	/^    COND_LS = 0x9,	\/* Unsigned less or equal *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_LT	arm/tcg-target.c	/^    COND_LT = 0xb,$/;"	e	enum:arm_cond_code_e	file:
+COND_LT	hppa/tcg-target.c	274;"	d	file:
+COND_LTU	hppa/tcg-target.c	276;"	d	file:
+COND_MI	arm/tcg-target.c	/^    COND_MI = 0x4,	\/* Negative *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_N	sparc/tcg-target.c	203;"	d	file:
+COND_NE	arm/tcg-target.c	/^    COND_NE = 0x1,$/;"	e	enum:arm_cond_code_e	file:
+COND_NE	sparc/tcg-target.c	212;"	d	file:
+COND_NEG	sparc/tcg-target.c	209;"	d	file:
+COND_NEVER	hppa/tcg-target.c	272;"	d	file:
+COND_OD	hppa/tcg-target.c	279;"	d	file:
+COND_PL	arm/tcg-target.c	/^    COND_PL = 0x5,	\/* Zero or greater *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_POS	sparc/tcg-target.c	217;"	d	file:
+COND_SV	hppa/tcg-target.c	278;"	d	file:
+COND_VC	arm/tcg-target.c	/^    COND_VC = 0x7,	\/* No overflow *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_VC	sparc/tcg-target.c	218;"	d	file:
+COND_VS	arm/tcg-target.c	/^    COND_VS = 0x6,	\/* Overflow *\/$/;"	e	enum:arm_cond_code_e	file:
+COND_VS	sparc/tcg-target.c	210;"	d	file:
+CRAND	ppc/tcg-target.c	337;"	d	file:
+CRAND	ppc64/tcg-target.c	326;"	d	file:
+CRANDC	ppc/tcg-target.c	338;"	d	file:
+CRANDC	ppc64/tcg-target.c	327;"	d	file:
+CRNAND	ppc/tcg-target.c	339;"	d	file:
+CRNAND	ppc64/tcg-target.c	328;"	d	file:
+CRNOR	ppc/tcg-target.c	341;"	d	file:
+CRNOR	ppc64/tcg-target.c	330;"	d	file:
+CROR	ppc/tcg-target.c	340;"	d	file:
+CROR	ppc64/tcg-target.c	329;"	d	file:
+CR_EQ	ppc/tcg-target.c	/^    CR_EQ,$/;"	e	enum:__anon14	file:
+CR_EQ	ppc64/tcg-target.c	/^    CR_EQ,$/;"	e	enum:__anon16	file:
+CR_GT	ppc/tcg-target.c	/^    CR_GT,$/;"	e	enum:__anon14	file:
+CR_GT	ppc64/tcg-target.c	/^    CR_GT,$/;"	e	enum:__anon16	file:
+CR_LT	ppc/tcg-target.c	/^    CR_LT,$/;"	e	enum:__anon14	file:
+CR_LT	ppc64/tcg-target.c	/^    CR_LT,$/;"	e	enum:__anon16	file:
+CR_SO	ppc/tcg-target.c	/^    CR_SO$/;"	e	enum:__anon14	file:
+CR_SO	ppc64/tcg-target.c	/^    CR_SO$/;"	e	enum:__anon16	file:
+CTR	ppc/tcg-target.c	386;"	d	file:
+CTR	ppc64/tcg-target.c	378;"	d	file:
+DEBUG_TCGV	tcg.h	138;"	d
+DEF	tcg-opc.h	304;"	d
+DEF	tcg.c	72;"	d	file:
+DEF	tcg.c	74;"	d	file:
+DEF	tcg.h	51;"	d
+DEF	tcg.h	53;"	d
+DIVD	ppc64/tcg-target.c	365;"	d	file:
+DIVDU	ppc64/tcg-target.c	366;"	d	file:
+DIVW	ppc/tcg-target.c	356;"	d	file:
+DIVW	ppc64/tcg-target.c	346;"	d	file:
+DIVWU	ppc/tcg-target.c	357;"	d	file:
+DIVWU	ppc64/tcg-target.c	347;"	d	file:
+EQV	ppc/tcg-target.c	373;"	d	file:
+EXT3_DIV	i386/tcg-target.c	309;"	d	file:
+EXT3_IDIV	i386/tcg-target.c	310;"	d	file:
+EXT3_IMUL	i386/tcg-target.c	308;"	d	file:
+EXT3_MUL	i386/tcg-target.c	307;"	d	file:
+EXT3_NEG	i386/tcg-target.c	306;"	d	file:
+EXT3_NOT	i386/tcg-target.c	305;"	d	file:
+EXT5_CALLN_Ev	i386/tcg-target.c	315;"	d	file:
+EXT5_DEC_Ev	i386/tcg-target.c	314;"	d	file:
+EXT5_INC_Ev	i386/tcg-target.c	313;"	d	file:
+EXT5_JMPN_Ev	i386/tcg-target.c	316;"	d	file:
+EXTSB	ppc/tcg-target.c	343;"	d	file:
+EXTSB	ppc64/tcg-target.c	332;"	d	file:
+EXTSH	ppc/tcg-target.c	344;"	d	file:
+EXTSH	ppc64/tcg-target.c	333;"	d	file:
+EXTSW	ppc64/tcg-target.c	334;"	d	file:
+FACILITY_EXT_IMM	s390/tcg-target.c	324;"	d	file:
+FACILITY_GEN_INST_EXT	s390/tcg-target.c	325;"	d	file:
+FACILITY_LONG_DISP	s390/tcg-target.c	323;"	d	file:
+FACILITY_ZARCH_ACTIVE	s390/tcg-target.c	322;"	d	file:
+FAST_PATH	ppc/tcg-target.c	38;"	d	file:
+FAST_PATH	ppc64/tcg-target.c	29;"	d	file:
+GET_TCGV_I32	tcg.h	157;"	d
+GET_TCGV_I32	tcg.h	170;"	d
+GET_TCGV_I64	tcg.h	158;"	d
+GET_TCGV_I64	tcg.h	171;"	d
+GET_TCGV_PTR	tcg.h	450;"	d
+GET_TCGV_PTR	tcg.h	460;"	d
+GUEST_BASE	ppc/tcg-target.c	41;"	d	file:
+GUEST_BASE	ppc64/tcg-target.c	40;"	d	file:
+GUEST_BASE	s390/tcg-target.c	55;"	d	file:
+HOST_LD_OP	sparc/tcg-target.c	737;"	d	file:
+HOST_LD_OP	sparc/tcg-target.c	742;"	d	file:
+HOST_SLL_OP	sparc/tcg-target.c	739;"	d	file:
+HOST_SLL_OP	sparc/tcg-target.c	744;"	d	file:
+HOST_SRA_OP	sparc/tcg-target.c	740;"	d	file:
+HOST_SRA_OP	sparc/tcg-target.c	745;"	d	file:
+HOST_ST_OP	sparc/tcg-target.c	738;"	d	file:
+HOST_ST_OP	sparc/tcg-target.c	743;"	d	file:
+INSN_ADD	hppa/tcg-target.c	282;"	d	file:
+INSN_ADDC	hppa/tcg-target.c	283;"	d	file:
+INSN_ADDI	hppa/tcg-target.c	284;"	d	file:
+INSN_ADDIL	hppa/tcg-target.c	285;"	d	file:
+INSN_ADDL	hppa/tcg-target.c	286;"	d	file:
+INSN_AND	hppa/tcg-target.c	287;"	d	file:
+INSN_ANDCM	hppa/tcg-target.c	288;"	d	file:
+INSN_ASI	sparc/tcg-target.c	195;"	d	file:
+INSN_BL	hppa/tcg-target.c	310;"	d	file:
+INSN_BLE_SR4	hppa/tcg-target.c	315;"	d	file:
+INSN_BLR	hppa/tcg-target.c	312;"	d	file:
+INSN_BL_N	hppa/tcg-target.c	311;"	d	file:
+INSN_BV	hppa/tcg-target.c	313;"	d	file:
+INSN_BV_N	hppa/tcg-target.c	314;"	d	file:
+INSN_COMBF	hppa/tcg-target.c	334;"	d	file:
+INSN_COMBT	hppa/tcg-target.c	333;"	d	file:
+INSN_COMCLR	hppa/tcg-target.c	289;"	d	file:
+INSN_COMIBF	hppa/tcg-target.c	336;"	d	file:
+INSN_COMIBT	hppa/tcg-target.c	335;"	d	file:
+INSN_COMICLR	hppa/tcg-target.c	290;"	d	file:
+INSN_COND	hppa/tcg-target.c	267;"	d	file:
+INSN_COND	sparc/tcg-target.c	202;"	d	file:
+INSN_DEP	hppa/tcg-target.c	291;"	d	file:
+INSN_DEPI	hppa/tcg-target.c	292;"	d	file:
+INSN_DEP_LEN	hppa/tcg-target.c	264;"	d	file:
+INSN_EXT3BR	hppa/tcg-target.c	253;"	d	file:
+INSN_EXT3SH	hppa/tcg-target.c	254;"	d	file:
+INSN_EXT4	hppa/tcg-target.c	255;"	d	file:
+INSN_EXT5	hppa/tcg-target.c	256;"	d	file:
+INSN_EXT6	hppa/tcg-target.c	257;"	d	file:
+INSN_EXT7	hppa/tcg-target.c	258;"	d	file:
+INSN_EXT8A	hppa/tcg-target.c	259;"	d	file:
+INSN_EXT8B	hppa/tcg-target.c	260;"	d	file:
+INSN_EXTRS	hppa/tcg-target.c	293;"	d	file:
+INSN_EXTRU	hppa/tcg-target.c	294;"	d	file:
+INSN_FLDDS	hppa/tcg-target.c	321;"	d	file:
+INSN_FSTDS	hppa/tcg-target.c	331;"	d	file:
+INSN_IM11	hppa/tcg-target.c	268;"	d	file:
+INSN_IM14	hppa/tcg-target.c	269;"	d	file:
+INSN_IM5	hppa/tcg-target.c	270;"	d	file:
+INSN_IMM11	sparc/tcg-target.c	197;"	d	file:
+INSN_IMM13	sparc/tcg-target.c	198;"	d	file:
+INSN_LDB	hppa/tcg-target.c	317;"	d	file:
+INSN_LDBX	hppa/tcg-target.c	323;"	d	file:
+INSN_LDH	hppa/tcg-target.c	318;"	d	file:
+INSN_LDHX	hppa/tcg-target.c	324;"	d	file:
+INSN_LDIL	hppa/tcg-target.c	295;"	d	file:
+INSN_LDO	hppa/tcg-target.c	296;"	d	file:
+INSN_LDW	hppa/tcg-target.c	319;"	d	file:
+INSN_LDWM	hppa/tcg-target.c	320;"	d	file:
+INSN_LDWX	hppa/tcg-target.c	325;"	d	file:
+INSN_MTCTL	hppa/tcg-target.c	297;"	d	file:
+INSN_OFF19	sparc/tcg-target.c	199;"	d	file:
+INSN_OFF22	sparc/tcg-target.c	200;"	d	file:
+INSN_OP	hppa/tcg-target.c	252;"	d	file:
+INSN_OP	sparc/tcg-target.c	188;"	d	file:
+INSN_OP2	sparc/tcg-target.c	189;"	d	file:
+INSN_OP3	sparc/tcg-target.c	190;"	d	file:
+INSN_OPF	sparc/tcg-target.c	191;"	d	file:
+INSN_OR	hppa/tcg-target.c	298;"	d	file:
+INSN_R1	hppa/tcg-target.c	262;"	d	file:
+INSN_R2	hppa/tcg-target.c	263;"	d	file:
+INSN_RD	sparc/tcg-target.c	192;"	d	file:
+INSN_RS1	sparc/tcg-target.c	193;"	d	file:
+INSN_RS2	sparc/tcg-target.c	194;"	d	file:
+INSN_SHD	hppa/tcg-target.c	299;"	d	file:
+INSN_SHDEP_CP	hppa/tcg-target.c	265;"	d	file:
+INSN_SHDEP_P	hppa/tcg-target.c	266;"	d	file:
+INSN_STB	hppa/tcg-target.c	327;"	d	file:
+INSN_STH	hppa/tcg-target.c	328;"	d	file:
+INSN_STW	hppa/tcg-target.c	329;"	d	file:
+INSN_STWM	hppa/tcg-target.c	330;"	d	file:
+INSN_SUB	hppa/tcg-target.c	300;"	d	file:
+INSN_SUBB	hppa/tcg-target.c	301;"	d	file:
+INSN_SUBI	hppa/tcg-target.c	302;"	d	file:
+INSN_T	hppa/tcg-target.c	261;"	d	file:
+INSN_VEXTRS	hppa/tcg-target.c	303;"	d	file:
+INSN_VEXTRU	hppa/tcg-target.c	304;"	d	file:
+INSN_VSHD	hppa/tcg-target.c	305;"	d	file:
+INSN_XOR	hppa/tcg-target.c	306;"	d	file:
+INSN_ZDEP	hppa/tcg-target.c	307;"	d	file:
+INSN_ZVDEP	hppa/tcg-target.c	308;"	d	file:
+IS_DEAD_IARG	tcg.c	1528;"	d	file:
+JCC_JA	i386/tcg-target.c	327;"	d	file:
+JCC_JAE	i386/tcg-target.c	323;"	d	file:
+JCC_JB	i386/tcg-target.c	322;"	d	file:
+JCC_JBE	i386/tcg-target.c	326;"	d	file:
+JCC_JE	i386/tcg-target.c	324;"	d	file:
+JCC_JG	i386/tcg-target.c	335;"	d	file:
+JCC_JGE	i386/tcg-target.c	333;"	d	file:
+JCC_JL	i386/tcg-target.c	332;"	d	file:
+JCC_JLE	i386/tcg-target.c	334;"	d	file:
+JCC_JMP	i386/tcg-target.c	319;"	d	file:
+JCC_JNE	i386/tcg-target.c	325;"	d	file:
+JCC_JNO	i386/tcg-target.c	321;"	d	file:
+JCC_JNP	i386/tcg-target.c	331;"	d	file:
+JCC_JNS	i386/tcg-target.c	329;"	d	file:
+JCC_JO	i386/tcg-target.c	320;"	d	file:
+JCC_JP	i386/tcg-target.c	330;"	d	file:
+JCC_JS	i386/tcg-target.c	328;"	d	file:
+JMPL	sparc/tcg-target.c	254;"	d	file:
+LBZ	ppc/tcg-target.c	306;"	d	file:
+LBZ	ppc64/tcg-target.c	284;"	d	file:
+LBZX	ppc/tcg-target.c	376;"	d	file:
+LBZX	ppc64/tcg-target.c	368;"	d	file:
+LD	ppc64/tcg-target.c	296;"	d	file:
+LDSB	sparc/tcg-target.c	260;"	d	file:
+LDSBA	sparc/tcg-target.c	271;"	d	file:
+LDSH	sparc/tcg-target.c	262;"	d	file:
+LDSHA	sparc/tcg-target.c	273;"	d	file:
+LDSW	sparc/tcg-target.c	264;"	d	file:
+LDSWA	sparc/tcg-target.c	275;"	d	file:
+LDU	ppc64/tcg-target.c	298;"	d	file:
+LDUB	sparc/tcg-target.c	259;"	d	file:
+LDUBA	sparc/tcg-target.c	270;"	d	file:
+LDUH	sparc/tcg-target.c	261;"	d	file:
+LDUHA	sparc/tcg-target.c	272;"	d	file:
+LDUW	sparc/tcg-target.c	263;"	d	file:
+LDUWA	sparc/tcg-target.c	274;"	d	file:
+LDX	ppc64/tcg-target.c	297;"	d	file:
+LDX	sparc/tcg-target.c	265;"	d	file:
+LDXA	sparc/tcg-target.c	276;"	d	file:
+LD_ADDR	ppc64/tcg-target.c	32;"	d	file:
+LD_ADDR	ppc64/tcg-target.c	35;"	d	file:
+LD_INT16	s390/tcg-target.c	211;"	d	file:
+LD_INT32	s390/tcg-target.c	213;"	d	file:
+LD_INT64	s390/tcg-target.c	215;"	d	file:
+LD_INT8	s390/tcg-target.c	209;"	d	file:
+LD_SIGNED	s390/tcg-target.c	207;"	d	file:
+LD_UINT16	s390/tcg-target.c	210;"	d	file:
+LD_UINT32	s390/tcg-target.c	212;"	d	file:
+LD_UINT64	s390/tcg-target.c	214;"	d	file:
+LD_UINT8	s390/tcg-target.c	208;"	d	file:
+LHA	ppc/tcg-target.c	308;"	d	file:
+LHA	ppc64/tcg-target.c	286;"	d	file:
+LHAX	ppc/tcg-target.c	378;"	d	file:
+LHAX	ppc64/tcg-target.c	370;"	d	file:
+LHBRX	ppc/tcg-target.c	360;"	d	file:
+LHBRX	ppc64/tcg-target.c	350;"	d	file:
+LHZ	ppc/tcg-target.c	307;"	d	file:
+LHZ	ppc64/tcg-target.c	285;"	d	file:
+LHZX	ppc/tcg-target.c	377;"	d	file:
+LHZX	ppc64/tcg-target.c	369;"	d	file:
+LINKAGE_AREA_SIZE	ppc/tcg-target.c	28;"	d	file:
+LINKAGE_AREA_SIZE	ppc/tcg-target.c	31;"	d	file:
+LINKAGE_AREA_SIZE	ppc/tcg-target.c	34;"	d	file:
+LK	ppc/tcg-target.c	405;"	d	file:
+LK	ppc64/tcg-target.c	403;"	d	file:
+LOWREGMASK	i386/tcg-target.c	225;"	d	file:
+LOWREGMASK	i386/tcg-target.c	227;"	d	file:
+LR	ppc/tcg-target.c	385;"	d	file:
+LR	ppc64/tcg-target.c	377;"	d	file:
+LR_OFFSET	ppc/tcg-target.c	29;"	d	file:
+LR_OFFSET	ppc/tcg-target.c	32;"	d	file:
+LR_OFFSET	ppc/tcg-target.c	35;"	d	file:
+LWA	ppc64/tcg-target.c	299;"	d	file:
+LWAX	ppc64/tcg-target.c	300;"	d	file:
+LWBRX	ppc/tcg-target.c	361;"	d	file:
+LWBRX	ppc64/tcg-target.c	351;"	d	file:
+LWZ	ppc/tcg-target.c	309;"	d	file:
+LWZ	ppc64/tcg-target.c	287;"	d	file:
+LWZU	ppc/tcg-target.c	328;"	d	file:
+LWZU	ppc64/tcg-target.c	315;"	d	file:
+LWZX	ppc/tcg-target.c	379;"	d	file:
+LWZX	ppc64/tcg-target.c	371;"	d	file:
+MAKE_TCGV_I32	tcg.h	153;"	d
+MAKE_TCGV_I32	tcg.h	168;"	d
+MAKE_TCGV_I64	tcg.h	155;"	d
+MAKE_TCGV_I64	tcg.h	169;"	d
+MB	ppc/tcg-target.c	401;"	d	file:
+MB	ppc64/tcg-target.c	398;"	d	file:
+MB64	ppc64/tcg-target.c	401;"	d	file:
+ME	ppc/tcg-target.c	402;"	d	file:
+ME	ppc64/tcg-target.c	399;"	d	file:
+MFCR	ppc/tcg-target.c	368;"	d	file:
+MFCR	ppc64/tcg-target.c	358;"	d	file:
+MFSPR	ppc/tcg-target.c	364;"	d	file:
+MFSPR	ppc64/tcg-target.c	354;"	d	file:
+MOVCC_ICC	sparc/tcg-target.c	221;"	d	file:
+MOVCC_XCC	sparc/tcg-target.c	222;"	d	file:
+MTSPR	ppc/tcg-target.c	365;"	d	file:
+MTSPR	ppc64/tcg-target.c	355;"	d	file:
+MULHD	ppc64/tcg-target.c	363;"	d	file:
+MULHDU	ppc64/tcg-target.c	364;"	d	file:
+MULHWU	ppc/tcg-target.c	355;"	d	file:
+MULHWU	ppc64/tcg-target.c	345;"	d	file:
+MULLD	ppc64/tcg-target.c	362;"	d	file:
+MULLI	ppc/tcg-target.c	323;"	d	file:
+MULLI	ppc64/tcg-target.c	311;"	d	file:
+MULLW	ppc/tcg-target.c	354;"	d	file:
+MULLW	ppc64/tcg-target.c	344;"	d	file:
+MmI	ia64/tcg-target.c	/^    MmI = 0x0b,$/;"	e	enum:__anon9	file:
+Mmi	ia64/tcg-target.c	/^    Mmi = 0x0a,$/;"	e	enum:__anon9	file:
+NAND	ppc/tcg-target.c	374;"	d	file:
+NB_OPS	tcg.h	/^    NB_OPS,$/;"	e	enum:TCGOpcode
+NDEBUG	tcg.c	32;"	d	file:
+NEG	ppc/tcg-target.c	367;"	d	file:
+NEG	ppc64/tcg-target.c	357;"	d	file:
+NOR	ppc/tcg-target.c	370;"	d	file:
+NO_CPU_IO_DEFS	tcg.c	55;"	d	file:
+OPCD	ppc/tcg-target.c	300;"	d	file:
+OPCD	ppc64/tcg-target.c	275;"	d	file:
+OPC_ADDIU	mips/tcg-target.c	/^    OPC_ADDIU    = 0x09 << 26,$/;"	e	enum:__anon12	file:
+OPC_ADDL_A5	ia64/tcg-target.c	/^    OPC_ADDL_A5               = 0x12000000000ull,$/;"	e	enum:__anon10	file:
+OPC_ADDS_A4	ia64/tcg-target.c	/^    OPC_ADDS_A4               = 0x10800000000ull,$/;"	e	enum:__anon10	file:
+OPC_ADDU	mips/tcg-target.c	/^    OPC_ADDU     = OPC_SPECIAL | 0x21,$/;"	e	enum:__anon12	file:
+OPC_ADD_A1	ia64/tcg-target.c	/^    OPC_ADD_A1                = 0x10000000000ull,$/;"	e	enum:__anon10	file:
+OPC_ADD_GvEv	i386/tcg-target.c	247;"	d	file:
+OPC_ALLOC_M34	ia64/tcg-target.c	/^    OPC_ALLOC_M34             = 0x02c00000000ull,$/;"	e	enum:__anon10	file:
+OPC_AND	mips/tcg-target.c	/^    OPC_AND      = OPC_SPECIAL | 0x24,$/;"	e	enum:__anon12	file:
+OPC_ANDCM_A1	ia64/tcg-target.c	/^    OPC_ANDCM_A1              = 0x10068000000ull,$/;"	e	enum:__anon10	file:
+OPC_ANDCM_A3	ia64/tcg-target.c	/^    OPC_ANDCM_A3              = 0x10168000000ull,$/;"	e	enum:__anon10	file:
+OPC_ANDI	mips/tcg-target.c	/^    OPC_ANDI     = 0x0C << 26,$/;"	e	enum:__anon12	file:
+OPC_AND_A1	ia64/tcg-target.c	/^    OPC_AND_A1                = 0x10060000000ull,$/;"	e	enum:__anon10	file:
+OPC_AND_A3	ia64/tcg-target.c	/^    OPC_AND_A3                = 0x10160000000ull,$/;"	e	enum:__anon10	file:
+OPC_ARITH_EvIb	i386/tcg-target.c	245;"	d	file:
+OPC_ARITH_EvIz	i386/tcg-target.c	244;"	d	file:
+OPC_ARITH_GvEv	i386/tcg-target.c	246;"	d	file:
+OPC_BEQ	mips/tcg-target.c	/^    OPC_BEQ      = 0x04 << 26,$/;"	e	enum:__anon12	file:
+OPC_BNE	mips/tcg-target.c	/^    OPC_BNE      = 0x05 << 26,$/;"	e	enum:__anon12	file:
+OPC_BRL_SPTK_MANY_X3	ia64/tcg-target.c	/^    OPC_BRL_SPTK_MANY_X3      = 0x18000001000ull,$/;"	e	enum:__anon10	file:
+OPC_BR_CALL_SPTK_MANY_B5	ia64/tcg-target.c	/^    OPC_BR_CALL_SPTK_MANY_B5  = 0x02100001000ull,$/;"	e	enum:__anon10	file:
+OPC_BR_DPTK_FEW_B1	ia64/tcg-target.c	/^    OPC_BR_DPTK_FEW_B1        = 0x08400000000ull,$/;"	e	enum:__anon10	file:
+OPC_BR_RET_SPTK_MANY_B4	ia64/tcg-target.c	/^    OPC_BR_RET_SPTK_MANY_B4   = 0x00108001100ull,$/;"	e	enum:__anon10	file:
+OPC_BR_SPTK_MANY_B1	ia64/tcg-target.c	/^    OPC_BR_SPTK_MANY_B1       = 0x08000001000ull,$/;"	e	enum:__anon10	file:
+OPC_BR_SPTK_MANY_B4	ia64/tcg-target.c	/^    OPC_BR_SPTK_MANY_B4       = 0x00100001000ull,$/;"	e	enum:__anon10	file:
+OPC_BSWAP	i386/tcg-target.c	248;"	d	file:
+OPC_CALL_Jz	i386/tcg-target.c	249;"	d	file:
+OPC_CMP4_EQ_A6	ia64/tcg-target.c	/^    OPC_CMP4_EQ_A6            = 0x1c400000000ull,$/;"	e	enum:__anon10	file:
+OPC_CMP4_LTU_A6	ia64/tcg-target.c	/^    OPC_CMP4_LTU_A6           = 0x1a400000000ull,$/;"	e	enum:__anon10	file:
+OPC_CMP4_LT_A6	ia64/tcg-target.c	/^    OPC_CMP4_LT_A6            = 0x18400000000ull,$/;"	e	enum:__anon10	file:
+OPC_CMP_EQ_A6	ia64/tcg-target.c	/^    OPC_CMP_EQ_A6             = 0x1c000000000ull,$/;"	e	enum:__anon10	file:
+OPC_CMP_GvEv	i386/tcg-target.c	250;"	d	file:
+OPC_CMP_LTU_A6	ia64/tcg-target.c	/^    OPC_CMP_LTU_A6            = 0x1a000000000ull,$/;"	e	enum:__anon10	file:
+OPC_CMP_LT_A6	ia64/tcg-target.c	/^    OPC_CMP_LT_A6             = 0x18000000000ull,$/;"	e	enum:__anon10	file:
+OPC_DEC_r32	i386/tcg-target.c	251;"	d	file:
+OPC_DEP_Z_I12	ia64/tcg-target.c	/^    OPC_DEP_Z_I12             = 0x0a600000000ull,$/;"	e	enum:__anon10	file:
+OPC_DIV	mips/tcg-target.c	/^    OPC_DIV      = OPC_SPECIAL | 0x1A,$/;"	e	enum:__anon12	file:
+OPC_DIVU	mips/tcg-target.c	/^    OPC_DIVU     = OPC_SPECIAL | 0x1B,$/;"	e	enum:__anon12	file:
+OPC_EXTR_I11	ia64/tcg-target.c	/^    OPC_EXTR_I11              = 0x0a400002000ull,$/;"	e	enum:__anon10	file:
+OPC_EXTR_U_I11	ia64/tcg-target.c	/^    OPC_EXTR_U_I11            = 0x0a400000000ull,$/;"	e	enum:__anon10	file:
+OPC_FCVT_FXU_TRUNC_S1_F10	ia64/tcg-target.c	/^    OPC_FCVT_FXU_TRUNC_S1_F10 = 0x004d8000000ull,$/;"	e	enum:__anon10	file:
+OPC_FCVT_FX_TRUNC_S1_F10	ia64/tcg-target.c	/^    OPC_FCVT_FX_TRUNC_S1_F10  = 0x004d0000000ull,$/;"	e	enum:__anon10	file:
+OPC_FCVT_XF_F11	ia64/tcg-target.c	/^    OPC_FCVT_XF_F11           = 0x000e0000000ull,$/;"	e	enum:__anon10	file:
+OPC_FMA_S1_F1	ia64/tcg-target.c	/^    OPC_FMA_S1_F1             = 0x10400000000ull,$/;"	e	enum:__anon10	file:
+OPC_FNMA_S1_F1	ia64/tcg-target.c	/^    OPC_FNMA_S1_F1            = 0x18400000000ull,$/;"	e	enum:__anon10	file:
+OPC_FRCPA_S1_F6	ia64/tcg-target.c	/^    OPC_FRCPA_S1_F6           = 0x00600000000ull,$/;"	e	enum:__anon10	file:
+OPC_GETF_SIG_M19	ia64/tcg-target.c	/^    OPC_GETF_SIG_M19          = 0x08708000000ull,$/;"	e	enum:__anon10	file:
+OPC_GRP3_Ev	i386/tcg-target.c	283;"	d	file:
+OPC_GRP5	i386/tcg-target.c	284;"	d	file:
+OPC_IMUL_GvEv	i386/tcg-target.c	252;"	d	file:
+OPC_IMUL_GvEvIb	i386/tcg-target.c	253;"	d	file:
+OPC_IMUL_GvEvIz	i386/tcg-target.c	254;"	d	file:
+OPC_INC_r32	i386/tcg-target.c	255;"	d	file:
+OPC_JALR	mips/tcg-target.c	/^    OPC_JALR     = OPC_SPECIAL | 0x09,$/;"	e	enum:__anon12	file:
+OPC_JCC_long	i386/tcg-target.c	256;"	d	file:
+OPC_JCC_short	i386/tcg-target.c	257;"	d	file:
+OPC_JMP_long	i386/tcg-target.c	258;"	d	file:
+OPC_JMP_short	i386/tcg-target.c	259;"	d	file:
+OPC_JR	mips/tcg-target.c	/^    OPC_JR       = OPC_SPECIAL | 0x08,$/;"	e	enum:__anon12	file:
+OPC_LB	mips/tcg-target.c	/^    OPC_LB       = 0x20 << 26,$/;"	e	enum:__anon12	file:
+OPC_LBU	mips/tcg-target.c	/^    OPC_LBU      = 0x24 << 26,$/;"	e	enum:__anon12	file:
+OPC_LD1_M1	ia64/tcg-target.c	/^    OPC_LD1_M1                = 0x08000000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD1_M3	ia64/tcg-target.c	/^    OPC_LD1_M3                = 0x0a000000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD2_M1	ia64/tcg-target.c	/^    OPC_LD2_M1                = 0x08040000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD2_M3	ia64/tcg-target.c	/^    OPC_LD2_M3                = 0x0a040000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD4_M1	ia64/tcg-target.c	/^    OPC_LD4_M1                = 0x08080000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD4_M3	ia64/tcg-target.c	/^    OPC_LD4_M3                = 0x0a080000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD8_M1	ia64/tcg-target.c	/^    OPC_LD8_M1                = 0x080c0000000ull,$/;"	e	enum:__anon10	file:
+OPC_LD8_M3	ia64/tcg-target.c	/^    OPC_LD8_M3                = 0x0a0c0000000ull,$/;"	e	enum:__anon10	file:
+OPC_LEA	i386/tcg-target.c	260;"	d	file:
+OPC_LH	mips/tcg-target.c	/^    OPC_LH       = 0x21 << 26,$/;"	e	enum:__anon12	file:
+OPC_LHU	mips/tcg-target.c	/^    OPC_LHU      = 0x25 << 26,$/;"	e	enum:__anon12	file:
+OPC_LUI	mips/tcg-target.c	/^    OPC_LUI      = 0x0F << 26,$/;"	e	enum:__anon12	file:
+OPC_LW	mips/tcg-target.c	/^    OPC_LW       = 0x23 << 26,$/;"	e	enum:__anon12	file:
+OPC_LWU	mips/tcg-target.c	/^    OPC_LWU      = 0x27 << 26,$/;"	e	enum:__anon12	file:
+OPC_MFHI	mips/tcg-target.c	/^    OPC_MFHI     = OPC_SPECIAL | 0x10,$/;"	e	enum:__anon12	file:
+OPC_MFLO	mips/tcg-target.c	/^    OPC_MFLO     = OPC_SPECIAL | 0x12,$/;"	e	enum:__anon12	file:
+OPC_MOVB_EvGv	i386/tcg-target.c	261;"	d	file:
+OPC_MOVL_EvGv	i386/tcg-target.c	262;"	d	file:
+OPC_MOVL_EvIz	i386/tcg-target.c	264;"	d	file:
+OPC_MOVL_GvEv	i386/tcg-target.c	263;"	d	file:
+OPC_MOVL_Iv	i386/tcg-target.c	265;"	d	file:
+OPC_MOVL_X2	ia64/tcg-target.c	/^    OPC_MOVL_X2               = 0x0c000000000ull,$/;"	e	enum:__anon10	file:
+OPC_MOVSBL	i386/tcg-target.c	266;"	d	file:
+OPC_MOVSLQ	i386/tcg-target.c	268;"	d	file:
+OPC_MOVSWL	i386/tcg-target.c	267;"	d	file:
+OPC_MOVZBL	i386/tcg-target.c	269;"	d	file:
+OPC_MOVZWL	i386/tcg-target.c	270;"	d	file:
+OPC_MOV_I21	ia64/tcg-target.c	/^    OPC_MOV_I21               = 0x00e00100000ull,$/;"	e	enum:__anon10	file:
+OPC_MOV_I22	ia64/tcg-target.c	/^    OPC_MOV_I22               = 0x00188000000ull,$/;"	e	enum:__anon10	file:
+OPC_MOV_I_I26	ia64/tcg-target.c	/^    OPC_MOV_I_I26             = 0x00150000000ull,$/;"	e	enum:__anon10	file:
+OPC_MOV_RET_I21	ia64/tcg-target.c	/^    OPC_MOV_RET_I21           = 0x00e00500000ull,$/;"	e	enum:__anon10	file:
+OPC_MULT	mips/tcg-target.c	/^    OPC_MULT     = OPC_SPECIAL | 0x18,$/;"	e	enum:__anon12	file:
+OPC_MULTU	mips/tcg-target.c	/^    OPC_MULTU    = OPC_SPECIAL | 0x19,$/;"	e	enum:__anon12	file:
+OPC_MUX1_I3	ia64/tcg-target.c	/^    OPC_MUX1_I3               = 0x0eca0000000ull,$/;"	e	enum:__anon10	file:
+OPC_NOP_B9	ia64/tcg-target.c	/^    OPC_NOP_B9                = 0x04008000000ull,$/;"	e	enum:__anon10	file:
+OPC_NOP_F16	ia64/tcg-target.c	/^    OPC_NOP_F16               = 0x00008000000ull,$/;"	e	enum:__anon10	file:
+OPC_NOP_I18	ia64/tcg-target.c	/^    OPC_NOP_I18               = 0x00008000000ull,$/;"	e	enum:__anon10	file:
+OPC_NOP_M48	ia64/tcg-target.c	/^    OPC_NOP_M48               = 0x00008000000ull,$/;"	e	enum:__anon10	file:
+OPC_NOR	mips/tcg-target.c	/^    OPC_NOR      = OPC_SPECIAL | 0x27,$/;"	e	enum:__anon12	file:
+OPC_OR	mips/tcg-target.c	/^    OPC_OR       = OPC_SPECIAL | 0x25,$/;"	e	enum:__anon12	file:
+OPC_ORI	mips/tcg-target.c	/^    OPC_ORI      = 0x0D << 26,$/;"	e	enum:__anon12	file:
+OPC_OR_A1	ia64/tcg-target.c	/^    OPC_OR_A1                 = 0x10070000000ull,$/;"	e	enum:__anon10	file:
+OPC_POP_r32	i386/tcg-target.c	271;"	d	file:
+OPC_PUSH_Ib	i386/tcg-target.c	274;"	d	file:
+OPC_PUSH_Iv	i386/tcg-target.c	273;"	d	file:
+OPC_PUSH_r32	i386/tcg-target.c	272;"	d	file:
+OPC_RET	i386/tcg-target.c	275;"	d	file:
+OPC_SB	mips/tcg-target.c	/^    OPC_SB       = 0x28 << 26,$/;"	e	enum:__anon12	file:
+OPC_SEB	mips/tcg-target.c	/^    OPC_SEB      = OPC_SPECIAL3 | 0x420,$/;"	e	enum:__anon12	file:
+OPC_SEH	mips/tcg-target.c	/^    OPC_SEH      = OPC_SPECIAL3 | 0x620,$/;"	e	enum:__anon12	file:
+OPC_SETCC	i386/tcg-target.c	276;"	d	file:
+OPC_SETF_EXP_M18	ia64/tcg-target.c	/^    OPC_SETF_EXP_M18          = 0x0c748000000ull,$/;"	e	enum:__anon10	file:
+OPC_SETF_SIG_M18	ia64/tcg-target.c	/^    OPC_SETF_SIG_M18          = 0x0c708000000ull,$/;"	e	enum:__anon10	file:
+OPC_SH	mips/tcg-target.c	/^    OPC_SH       = 0x29 << 26,$/;"	e	enum:__anon12	file:
+OPC_SHIFT_1	i386/tcg-target.c	277;"	d	file:
+OPC_SHIFT_Ib	i386/tcg-target.c	278;"	d	file:
+OPC_SHIFT_cl	i386/tcg-target.c	279;"	d	file:
+OPC_SHL_I7	ia64/tcg-target.c	/^    OPC_SHL_I7                = 0x0f240000000ull,$/;"	e	enum:__anon10	file:
+OPC_SHRP_I10	ia64/tcg-target.c	/^    OPC_SHRP_I10              = 0x0ac00000000ull,$/;"	e	enum:__anon10	file:
+OPC_SHR_I5	ia64/tcg-target.c	/^    OPC_SHR_I5                = 0x0f220000000ull,$/;"	e	enum:__anon10	file:
+OPC_SHR_U_I5	ia64/tcg-target.c	/^    OPC_SHR_U_I5              = 0x0f200000000ull,$/;"	e	enum:__anon10	file:
+OPC_SLL	mips/tcg-target.c	/^    OPC_SLL      = OPC_SPECIAL | 0x00,$/;"	e	enum:__anon12	file:
+OPC_SLLV	mips/tcg-target.c	/^    OPC_SLLV     = OPC_SPECIAL | 0x04,$/;"	e	enum:__anon12	file:
+OPC_SLT	mips/tcg-target.c	/^    OPC_SLT      = OPC_SPECIAL | 0x2A,$/;"	e	enum:__anon12	file:
+OPC_SLTI	mips/tcg-target.c	/^    OPC_SLTI     = 0x0A << 26,$/;"	e	enum:__anon12	file:
+OPC_SLTIU	mips/tcg-target.c	/^    OPC_SLTIU    = 0x0B << 26,$/;"	e	enum:__anon12	file:
+OPC_SLTU	mips/tcg-target.c	/^    OPC_SLTU     = OPC_SPECIAL | 0x2B,$/;"	e	enum:__anon12	file:
+OPC_SPECIAL	mips/tcg-target.c	/^    OPC_SPECIAL  = 0x00 << 26,$/;"	e	enum:__anon12	file:
+OPC_SPECIAL3	mips/tcg-target.c	/^    OPC_SPECIAL3 = 0x1f << 26,$/;"	e	enum:__anon12	file:
+OPC_SRA	mips/tcg-target.c	/^    OPC_SRA      = OPC_SPECIAL | 0x03,$/;"	e	enum:__anon12	file:
+OPC_SRAV	mips/tcg-target.c	/^    OPC_SRAV     = OPC_SPECIAL | 0x07,$/;"	e	enum:__anon12	file:
+OPC_SRL	mips/tcg-target.c	/^    OPC_SRL      = OPC_SPECIAL | 0x02,$/;"	e	enum:__anon12	file:
+OPC_SRLV	mips/tcg-target.c	/^    OPC_SRLV     = OPC_SPECIAL | 0x06,$/;"	e	enum:__anon12	file:
+OPC_ST1_M4	ia64/tcg-target.c	/^    OPC_ST1_M4                = 0x08c00000000ull,$/;"	e	enum:__anon10	file:
+OPC_ST2_M4	ia64/tcg-target.c	/^    OPC_ST2_M4                = 0x08c40000000ull,$/;"	e	enum:__anon10	file:
+OPC_ST4_M4	ia64/tcg-target.c	/^    OPC_ST4_M4                = 0x08c80000000ull,$/;"	e	enum:__anon10	file:
+OPC_ST8_M4	ia64/tcg-target.c	/^    OPC_ST8_M4                = 0x08cc0000000ull,$/;"	e	enum:__anon10	file:
+OPC_SUBU	mips/tcg-target.c	/^    OPC_SUBU     = OPC_SPECIAL | 0x23,$/;"	e	enum:__anon12	file:
+OPC_SUB_A1	ia64/tcg-target.c	/^    OPC_SUB_A1                = 0x10028000000ull,$/;"	e	enum:__anon10	file:
+OPC_SUB_A3	ia64/tcg-target.c	/^    OPC_SUB_A3                = 0x10128000000ull,$/;"	e	enum:__anon10	file:
+OPC_SW	mips/tcg-target.c	/^    OPC_SW       = 0x2B << 26,$/;"	e	enum:__anon12	file:
+OPC_SXT1_I29	ia64/tcg-target.c	/^    OPC_SXT1_I29              = 0x000a0000000ull,$/;"	e	enum:__anon10	file:
+OPC_SXT2_I29	ia64/tcg-target.c	/^    OPC_SXT2_I29              = 0x000a8000000ull,$/;"	e	enum:__anon10	file:
+OPC_SXT4_I29	ia64/tcg-target.c	/^    OPC_SXT4_I29              = 0x000b0000000ull,$/;"	e	enum:__anon10	file:
+OPC_TESTL	i386/tcg-target.c	280;"	d	file:
+OPC_UNPACK4_L_I2	ia64/tcg-target.c	/^    OPC_UNPACK4_L_I2          = 0x0f860000000ull,$/;"	e	enum:__anon10	file:
+OPC_XCHG_ax_r32	i386/tcg-target.c	281;"	d	file:
+OPC_XMA_L_F2	ia64/tcg-target.c	/^    OPC_XMA_L_F2              = 0x1d000000000ull,$/;"	e	enum:__anon10	file:
+OPC_XOR	mips/tcg-target.c	/^    OPC_XOR      = OPC_SPECIAL | 0x26,$/;"	e	enum:__anon12	file:
+OPC_XORI	mips/tcg-target.c	/^    OPC_XORI     = 0x0E << 26,$/;"	e	enum:__anon12	file:
+OPC_XOR_A1	ia64/tcg-target.c	/^    OPC_XOR_A1                = 0x10078000000ull,$/;"	e	enum:__anon10	file:
+OPC_ZXT1_I29	ia64/tcg-target.c	/^    OPC_ZXT1_I29              = 0x00080000000ull,$/;"	e	enum:__anon10	file:
+OPC_ZXT2_I29	ia64/tcg-target.c	/^    OPC_ZXT2_I29              = 0x00088000000ull,$/;"	e	enum:__anon10	file:
+OPC_ZXT4_I29	ia64/tcg-target.c	/^    OPC_ZXT4_I29              = 0x00090000000ull,$/;"	e	enum:__anon10	file:
+OP_32_64	i386/tcg-target.c	1436;"	d	file:
+OP_32_64	i386/tcg-target.c	1752;"	d	file:
+OP_32_64	s390/tcg-target.c	1607;"	d	file:
+OP_32_64	s390/tcg-target.c	1611;"	d	file:
+OP_32_64	sparc/tcg-target.c	1176;"	d	file:
+OR	ppc/tcg-target.c	352;"	d	file:
+OR	ppc64/tcg-target.c	342;"	d	file:
+ORC	ppc/tcg-target.c	372;"	d	file:
+ORI	ppc/tcg-target.c	317;"	d	file:
+ORI	ppc64/tcg-target.c	305;"	d	file:
+ORIS	ppc/tcg-target.c	318;"	d	file:
+ORIS	ppc64/tcg-target.c	306;"	d	file:
+P_ADDR32	i386/tcg-target.c	233;"	d	file:
+P_ADDR32	i386/tcg-target.c	238;"	d	file:
+P_DATA16	i386/tcg-target.c	231;"	d	file:
+P_EXT	i386/tcg-target.c	230;"	d	file:
+P_REXB_R	i386/tcg-target.c	235;"	d	file:
+P_REXB_R	i386/tcg-target.c	240;"	d	file:
+P_REXB_RM	i386/tcg-target.c	236;"	d	file:
+P_REXB_RM	i386/tcg-target.c	241;"	d	file:
+P_REXW	i386/tcg-target.c	234;"	d	file:
+P_REXW	i386/tcg-target.c	239;"	d	file:
+RA	ppc/tcg-target.c	397;"	d	file:
+RA	ppc64/tcg-target.c	394;"	d	file:
+RB	ppc/tcg-target.c	398;"	d	file:
+RB	ppc64/tcg-target.c	395;"	d	file:
+RDY	sparc/tcg-target.c	252;"	d	file:
+RESTORE	sparc/tcg-target.c	256;"	d	file:
+RIE_CGIJ	s390/tcg-target.c	/^    RIE_CGIJ    = 0xec7c,$/;"	e	enum:S390Opcode	file:
+RIE_CGRJ	s390/tcg-target.c	/^    RIE_CGRJ    = 0xec64,$/;"	e	enum:S390Opcode	file:
+RIE_CIJ	s390/tcg-target.c	/^    RIE_CIJ     = 0xec7e,$/;"	e	enum:S390Opcode	file:
+RIE_CLGIJ	s390/tcg-target.c	/^    RIE_CLGIJ   = 0xec7d,$/;"	e	enum:S390Opcode	file:
+RIE_CLGRJ	s390/tcg-target.c	/^    RIE_CLGRJ   = 0xec65,$/;"	e	enum:S390Opcode	file:
+RIE_CLIJ	s390/tcg-target.c	/^    RIE_CLIJ    = 0xec7f,$/;"	e	enum:S390Opcode	file:
+RIE_CLRJ	s390/tcg-target.c	/^    RIE_CLRJ    = 0xec77,$/;"	e	enum:S390Opcode	file:
+RIE_CRJ	s390/tcg-target.c	/^    RIE_CRJ     = 0xec76,$/;"	e	enum:S390Opcode	file:
+RIL_AFI	s390/tcg-target.c	/^    RIL_AFI     = 0xc209,$/;"	e	enum:S390Opcode	file:
+RIL_AGFI	s390/tcg-target.c	/^    RIL_AGFI    = 0xc208,$/;"	e	enum:S390Opcode	file:
+RIL_ALGFI	s390/tcg-target.c	/^    RIL_ALGFI   = 0xc20a,$/;"	e	enum:S390Opcode	file:
+RIL_BRASL	s390/tcg-target.c	/^    RIL_BRASL   = 0xc005,$/;"	e	enum:S390Opcode	file:
+RIL_BRCL	s390/tcg-target.c	/^    RIL_BRCL    = 0xc004,$/;"	e	enum:S390Opcode	file:
+RIL_CFI	s390/tcg-target.c	/^    RIL_CFI     = 0xc20d,$/;"	e	enum:S390Opcode	file:
+RIL_CGFI	s390/tcg-target.c	/^    RIL_CGFI    = 0xc20c,$/;"	e	enum:S390Opcode	file:
+RIL_CLFI	s390/tcg-target.c	/^    RIL_CLFI    = 0xc20f,$/;"	e	enum:S390Opcode	file:
+RIL_CLGFI	s390/tcg-target.c	/^    RIL_CLGFI   = 0xc20e,$/;"	e	enum:S390Opcode	file:
+RIL_IIHF	s390/tcg-target.c	/^    RIL_IIHF    = 0xc008,$/;"	e	enum:S390Opcode	file:
+RIL_IILF	s390/tcg-target.c	/^    RIL_IILF    = 0xc009,$/;"	e	enum:S390Opcode	file:
+RIL_LARL	s390/tcg-target.c	/^    RIL_LARL    = 0xc000,$/;"	e	enum:S390Opcode	file:
+RIL_LGFI	s390/tcg-target.c	/^    RIL_LGFI    = 0xc001,$/;"	e	enum:S390Opcode	file:
+RIL_LGRL	s390/tcg-target.c	/^    RIL_LGRL    = 0xc408,$/;"	e	enum:S390Opcode	file:
+RIL_LLIHF	s390/tcg-target.c	/^    RIL_LLIHF   = 0xc00e,$/;"	e	enum:S390Opcode	file:
+RIL_LLILF	s390/tcg-target.c	/^    RIL_LLILF   = 0xc00f,$/;"	e	enum:S390Opcode	file:
+RIL_LRL	s390/tcg-target.c	/^    RIL_LRL     = 0xc40d,$/;"	e	enum:S390Opcode	file:
+RIL_MSFI	s390/tcg-target.c	/^    RIL_MSFI    = 0xc201,$/;"	e	enum:S390Opcode	file:
+RIL_MSGFI	s390/tcg-target.c	/^    RIL_MSGFI   = 0xc200,$/;"	e	enum:S390Opcode	file:
+RIL_NIHF	s390/tcg-target.c	/^    RIL_NIHF    = 0xc00a,$/;"	e	enum:S390Opcode	file:
+RIL_NILF	s390/tcg-target.c	/^    RIL_NILF    = 0xc00b,$/;"	e	enum:S390Opcode	file:
+RIL_OIHF	s390/tcg-target.c	/^    RIL_OIHF    = 0xc00c,$/;"	e	enum:S390Opcode	file:
+RIL_OILF	s390/tcg-target.c	/^    RIL_OILF    = 0xc00d,$/;"	e	enum:S390Opcode	file:
+RIL_XIHF	s390/tcg-target.c	/^    RIL_XIHF    = 0xc006,$/;"	e	enum:S390Opcode	file:
+RIL_XILF	s390/tcg-target.c	/^    RIL_XILF    = 0xc007,$/;"	e	enum:S390Opcode	file:
+RI_AGHI	s390/tcg-target.c	/^    RI_AGHI     = 0xa70b,$/;"	e	enum:S390Opcode	file:
+RI_AHI	s390/tcg-target.c	/^    RI_AHI      = 0xa70a,$/;"	e	enum:S390Opcode	file:
+RI_BRC	s390/tcg-target.c	/^    RI_BRC      = 0xa704,$/;"	e	enum:S390Opcode	file:
+RI_IIHH	s390/tcg-target.c	/^    RI_IIHH     = 0xa500,$/;"	e	enum:S390Opcode	file:
+RI_IIHL	s390/tcg-target.c	/^    RI_IIHL     = 0xa501,$/;"	e	enum:S390Opcode	file:
+RI_IILH	s390/tcg-target.c	/^    RI_IILH     = 0xa502,$/;"	e	enum:S390Opcode	file:
+RI_IILL	s390/tcg-target.c	/^    RI_IILL     = 0xa503,$/;"	e	enum:S390Opcode	file:
+RI_LGHI	s390/tcg-target.c	/^    RI_LGHI     = 0xa709,$/;"	e	enum:S390Opcode	file:
+RI_LLIHH	s390/tcg-target.c	/^    RI_LLIHH    = 0xa50c,$/;"	e	enum:S390Opcode	file:
+RI_LLIHL	s390/tcg-target.c	/^    RI_LLIHL    = 0xa50d,$/;"	e	enum:S390Opcode	file:
+RI_LLILH	s390/tcg-target.c	/^    RI_LLILH    = 0xa50e,$/;"	e	enum:S390Opcode	file:
+RI_LLILL	s390/tcg-target.c	/^    RI_LLILL    = 0xa50f,$/;"	e	enum:S390Opcode	file:
+RI_MGHI	s390/tcg-target.c	/^    RI_MGHI     = 0xa70d,$/;"	e	enum:S390Opcode	file:
+RI_MHI	s390/tcg-target.c	/^    RI_MHI      = 0xa70c,$/;"	e	enum:S390Opcode	file:
+RI_NIHH	s390/tcg-target.c	/^    RI_NIHH     = 0xa504,$/;"	e	enum:S390Opcode	file:
+RI_NIHL	s390/tcg-target.c	/^    RI_NIHL     = 0xa505,$/;"	e	enum:S390Opcode	file:
+RI_NILH	s390/tcg-target.c	/^    RI_NILH     = 0xa506,$/;"	e	enum:S390Opcode	file:
+RI_NILL	s390/tcg-target.c	/^    RI_NILL     = 0xa507,$/;"	e	enum:S390Opcode	file:
+RI_OIHH	s390/tcg-target.c	/^    RI_OIHH     = 0xa508,$/;"	e	enum:S390Opcode	file:
+RI_OIHL	s390/tcg-target.c	/^    RI_OIHL     = 0xa509,$/;"	e	enum:S390Opcode	file:
+RI_OILH	s390/tcg-target.c	/^    RI_OILH     = 0xa50a,$/;"	e	enum:S390Opcode	file:
+RI_OILL	s390/tcg-target.c	/^    RI_OILL     = 0xa50b,$/;"	e	enum:S390Opcode	file:
+RLDICL	ppc64/tcg-target.c	320;"	d	file:
+RLDICR	ppc64/tcg-target.c	321;"	d	file:
+RLDIMI	ppc64/tcg-target.c	322;"	d	file:
+RLWIMI	ppc/tcg-target.c	331;"	d	file:
+RLWINM	ppc/tcg-target.c	332;"	d	file:
+RLWINM	ppc64/tcg-target.c	318;"	d	file:
+RLWNM	ppc/tcg-target.c	333;"	d	file:
+RRE_AGR	s390/tcg-target.c	/^    RRE_AGR     = 0xb908,$/;"	e	enum:S390Opcode	file:
+RRE_CGR	s390/tcg-target.c	/^    RRE_CGR     = 0xb920,$/;"	e	enum:S390Opcode	file:
+RRE_CLGR	s390/tcg-target.c	/^    RRE_CLGR    = 0xb921,$/;"	e	enum:S390Opcode	file:
+RRE_DLGR	s390/tcg-target.c	/^    RRE_DLGR    = 0xb987,$/;"	e	enum:S390Opcode	file:
+RRE_DLR	s390/tcg-target.c	/^    RRE_DLR     = 0xb997,$/;"	e	enum:S390Opcode	file:
+RRE_DSGFR	s390/tcg-target.c	/^    RRE_DSGFR   = 0xb91d,$/;"	e	enum:S390Opcode	file:
+RRE_DSGR	s390/tcg-target.c	/^    RRE_DSGR    = 0xb90d,$/;"	e	enum:S390Opcode	file:
+RRE_LCGR	s390/tcg-target.c	/^    RRE_LCGR    = 0xb903,$/;"	e	enum:S390Opcode	file:
+RRE_LGBR	s390/tcg-target.c	/^    RRE_LGBR    = 0xb906,$/;"	e	enum:S390Opcode	file:
+RRE_LGFR	s390/tcg-target.c	/^    RRE_LGFR    = 0xb914,$/;"	e	enum:S390Opcode	file:
+RRE_LGHR	s390/tcg-target.c	/^    RRE_LGHR    = 0xb907,$/;"	e	enum:S390Opcode	file:
+RRE_LGR	s390/tcg-target.c	/^    RRE_LGR     = 0xb904,$/;"	e	enum:S390Opcode	file:
+RRE_LLGCR	s390/tcg-target.c	/^    RRE_LLGCR   = 0xb984,$/;"	e	enum:S390Opcode	file:
+RRE_LLGFR	s390/tcg-target.c	/^    RRE_LLGFR   = 0xb916,$/;"	e	enum:S390Opcode	file:
+RRE_LLGHR	s390/tcg-target.c	/^    RRE_LLGHR   = 0xb985,$/;"	e	enum:S390Opcode	file:
+RRE_LRVGR	s390/tcg-target.c	/^    RRE_LRVGR   = 0xb90f,$/;"	e	enum:S390Opcode	file:
+RRE_LRVR	s390/tcg-target.c	/^    RRE_LRVR    = 0xb91f,$/;"	e	enum:S390Opcode	file:
+RRE_LTGR	s390/tcg-target.c	/^    RRE_LTGR    = 0xb902,$/;"	e	enum:S390Opcode	file:
+RRE_MSGR	s390/tcg-target.c	/^    RRE_MSGR    = 0xb90c,$/;"	e	enum:S390Opcode	file:
+RRE_MSR	s390/tcg-target.c	/^    RRE_MSR     = 0xb252,$/;"	e	enum:S390Opcode	file:
+RRE_NGR	s390/tcg-target.c	/^    RRE_NGR     = 0xb980,$/;"	e	enum:S390Opcode	file:
+RRE_OGR	s390/tcg-target.c	/^    RRE_OGR     = 0xb981,$/;"	e	enum:S390Opcode	file:
+RRE_SGR	s390/tcg-target.c	/^    RRE_SGR     = 0xb909,$/;"	e	enum:S390Opcode	file:
+RRE_XGR	s390/tcg-target.c	/^    RRE_XGR     = 0xb982,$/;"	e	enum:S390Opcode	file:
+RR_AR	s390/tcg-target.c	/^    RR_AR       = 0x1a,$/;"	e	enum:S390Opcode	file:
+RR_BASR	s390/tcg-target.c	/^    RR_BASR     = 0x0d,$/;"	e	enum:S390Opcode	file:
+RR_BCR	s390/tcg-target.c	/^    RR_BCR      = 0x07,$/;"	e	enum:S390Opcode	file:
+RR_CLR	s390/tcg-target.c	/^    RR_CLR      = 0x15,$/;"	e	enum:S390Opcode	file:
+RR_CR	s390/tcg-target.c	/^    RR_CR       = 0x19,$/;"	e	enum:S390Opcode	file:
+RR_DR	s390/tcg-target.c	/^    RR_DR       = 0x1d,$/;"	e	enum:S390Opcode	file:
+RR_LCR	s390/tcg-target.c	/^    RR_LCR      = 0x13,$/;"	e	enum:S390Opcode	file:
+RR_LR	s390/tcg-target.c	/^    RR_LR       = 0x18,$/;"	e	enum:S390Opcode	file:
+RR_LTR	s390/tcg-target.c	/^    RR_LTR      = 0x12,$/;"	e	enum:S390Opcode	file:
+RR_NR	s390/tcg-target.c	/^    RR_NR       = 0x14,$/;"	e	enum:S390Opcode	file:
+RR_OR	s390/tcg-target.c	/^    RR_OR       = 0x16,$/;"	e	enum:S390Opcode	file:
+RR_SR	s390/tcg-target.c	/^    RR_SR       = 0x1b,$/;"	e	enum:S390Opcode	file:
+RR_XR	s390/tcg-target.c	/^    RR_XR       = 0x17,$/;"	e	enum:S390Opcode	file:
+RS	ppc/tcg-target.c	396;"	d	file:
+RS	ppc64/tcg-target.c	393;"	d	file:
+RSY_RLL	s390/tcg-target.c	/^    RSY_RLL     = 0xeb1d,$/;"	e	enum:S390Opcode	file:
+RSY_RLLG	s390/tcg-target.c	/^    RSY_RLLG    = 0xeb1c,$/;"	e	enum:S390Opcode	file:
+RSY_SLLG	s390/tcg-target.c	/^    RSY_SLLG    = 0xeb0d,$/;"	e	enum:S390Opcode	file:
+RSY_SRAG	s390/tcg-target.c	/^    RSY_SRAG    = 0xeb0a,$/;"	e	enum:S390Opcode	file:
+RSY_SRLG	s390/tcg-target.c	/^    RSY_SRLG    = 0xeb0c,$/;"	e	enum:S390Opcode	file:
+RS_SLL	s390/tcg-target.c	/^    RS_SLL      = 0x89,$/;"	e	enum:S390Opcode	file:
+RS_SRA	s390/tcg-target.c	/^    RS_SRA      = 0x8a,$/;"	e	enum:S390Opcode	file:
+RS_SRL	s390/tcg-target.c	/^    RS_SRL      = 0x88,$/;"	e	enum:S390Opcode	file:
+RT	ppc/tcg-target.c	395;"	d	file:
+RT	ppc64/tcg-target.c	392;"	d	file:
+RXY_AG	s390/tcg-target.c	/^    RXY_AG      = 0xe308,$/;"	e	enum:S390Opcode	file:
+RXY_AY	s390/tcg-target.c	/^    RXY_AY      = 0xe35a,$/;"	e	enum:S390Opcode	file:
+RXY_CG	s390/tcg-target.c	/^    RXY_CG      = 0xe320,$/;"	e	enum:S390Opcode	file:
+RXY_CY	s390/tcg-target.c	/^    RXY_CY      = 0xe359,$/;"	e	enum:S390Opcode	file:
+RXY_LB	s390/tcg-target.c	/^    RXY_LB      = 0xe376,$/;"	e	enum:S390Opcode	file:
+RXY_LG	s390/tcg-target.c	/^    RXY_LG      = 0xe304,$/;"	e	enum:S390Opcode	file:
+RXY_LGB	s390/tcg-target.c	/^    RXY_LGB     = 0xe377,$/;"	e	enum:S390Opcode	file:
+RXY_LGF	s390/tcg-target.c	/^    RXY_LGF     = 0xe314,$/;"	e	enum:S390Opcode	file:
+RXY_LGH	s390/tcg-target.c	/^    RXY_LGH     = 0xe315,$/;"	e	enum:S390Opcode	file:
+RXY_LHY	s390/tcg-target.c	/^    RXY_LHY     = 0xe378,$/;"	e	enum:S390Opcode	file:
+RXY_LLGC	s390/tcg-target.c	/^    RXY_LLGC    = 0xe390,$/;"	e	enum:S390Opcode	file:
+RXY_LLGF	s390/tcg-target.c	/^    RXY_LLGF    = 0xe316,$/;"	e	enum:S390Opcode	file:
+RXY_LLGH	s390/tcg-target.c	/^    RXY_LLGH    = 0xe391,$/;"	e	enum:S390Opcode	file:
+RXY_LMG	s390/tcg-target.c	/^    RXY_LMG     = 0xeb04,$/;"	e	enum:S390Opcode	file:
+RXY_LRV	s390/tcg-target.c	/^    RXY_LRV     = 0xe31e,$/;"	e	enum:S390Opcode	file:
+RXY_LRVG	s390/tcg-target.c	/^    RXY_LRVG    = 0xe30f,$/;"	e	enum:S390Opcode	file:
+RXY_LRVH	s390/tcg-target.c	/^    RXY_LRVH    = 0xe31f,$/;"	e	enum:S390Opcode	file:
+RXY_LY	s390/tcg-target.c	/^    RXY_LY      = 0xe358,$/;"	e	enum:S390Opcode	file:
+RXY_STCY	s390/tcg-target.c	/^    RXY_STCY    = 0xe372,$/;"	e	enum:S390Opcode	file:
+RXY_STG	s390/tcg-target.c	/^    RXY_STG     = 0xe324,$/;"	e	enum:S390Opcode	file:
+RXY_STHY	s390/tcg-target.c	/^    RXY_STHY    = 0xe370,$/;"	e	enum:S390Opcode	file:
+RXY_STMG	s390/tcg-target.c	/^    RXY_STMG    = 0xeb24,$/;"	e	enum:S390Opcode	file:
+RXY_STRV	s390/tcg-target.c	/^    RXY_STRV    = 0xe33e,$/;"	e	enum:S390Opcode	file:
+RXY_STRVG	s390/tcg-target.c	/^    RXY_STRVG   = 0xe32f,$/;"	e	enum:S390Opcode	file:
+RXY_STRVH	s390/tcg-target.c	/^    RXY_STRVH   = 0xe33f,$/;"	e	enum:S390Opcode	file:
+RXY_STY	s390/tcg-target.c	/^    RXY_STY     = 0xe350,$/;"	e	enum:S390Opcode	file:
+RX_A	s390/tcg-target.c	/^    RX_A        = 0x5a,$/;"	e	enum:S390Opcode	file:
+RX_C	s390/tcg-target.c	/^    RX_C        = 0x59,$/;"	e	enum:S390Opcode	file:
+RX_L	s390/tcg-target.c	/^    RX_L        = 0x58,$/;"	e	enum:S390Opcode	file:
+RX_LH	s390/tcg-target.c	/^    RX_LH       = 0x48,$/;"	e	enum:S390Opcode	file:
+RX_ST	s390/tcg-target.c	/^    RX_ST       = 0x50,$/;"	e	enum:S390Opcode	file:
+RX_STC	s390/tcg-target.c	/^    RX_STC      = 0x42,$/;"	e	enum:S390Opcode	file:
+RX_STH	s390/tcg-target.c	/^    RX_STH      = 0x40,$/;"	e	enum:S390Opcode	file:
+R_PARISC_PCREL12F	hppa/tcg-target.c	145;"	d	file:
+S390Opcode	s390/tcg-target.c	/^typedef enum S390Opcode {$/;"	g	file:
+S390Opcode	s390/tcg-target.c	/^} S390Opcode;$/;"	t	typeref:enum:S390Opcode	file:
+S390_CC_ALWAYS	s390/tcg-target.c	266;"	d	file:
+S390_CC_EQ	s390/tcg-target.c	258;"	d	file:
+S390_CC_GE	s390/tcg-target.c	264;"	d	file:
+S390_CC_GT	s390/tcg-target.c	260;"	d	file:
+S390_CC_LE	s390/tcg-target.c	263;"	d	file:
+S390_CC_LT	s390/tcg-target.c	259;"	d	file:
+S390_CC_NE	s390/tcg-target.c	262;"	d	file:
+S390_CC_NEVER	s390/tcg-target.c	265;"	d	file:
+S390_CC_OV	s390/tcg-target.c	261;"	d	file:
+SAB	ppc/tcg-target.c	408;"	d	file:
+SAB	ppc64/tcg-target.c	406;"	d	file:
+SAVE	sparc/tcg-target.c	255;"	d	file:
+SETHI	sparc/tcg-target.c	257;"	d	file:
+SH	ppc/tcg-target.c	400;"	d	file:
+SH	ppc64/tcg-target.c	397;"	d	file:
+SHIFT_IMM_ASR	arm/tcg-target.c	291;"	d	file:
+SHIFT_IMM_LSL	arm/tcg-target.c	289;"	d	file:
+SHIFT_IMM_LSR	arm/tcg-target.c	290;"	d	file:
+SHIFT_IMM_ROR	arm/tcg-target.c	292;"	d	file:
+SHIFT_REG_ASR	arm/tcg-target.c	295;"	d	file:
+SHIFT_REG_LSL	arm/tcg-target.c	293;"	d	file:
+SHIFT_REG_LSR	arm/tcg-target.c	294;"	d	file:
+SHIFT_REG_ROR	arm/tcg-target.c	296;"	d	file:
+SHIFT_ROL	i386/tcg-target.c	298;"	d	file:
+SHIFT_ROR	i386/tcg-target.c	299;"	d	file:
+SHIFT_SAR	i386/tcg-target.c	302;"	d	file:
+SHIFT_SHL	i386/tcg-target.c	300;"	d	file:
+SHIFT_SHR	i386/tcg-target.c	301;"	d	file:
+SHIFT_SLL	sparc/tcg-target.c	244;"	d	file:
+SHIFT_SLLX	sparc/tcg-target.c	248;"	d	file:
+SHIFT_SRA	sparc/tcg-target.c	246;"	d	file:
+SHIFT_SRAX	sparc/tcg-target.c	250;"	d	file:
+SHIFT_SRL	sparc/tcg-target.c	245;"	d	file:
+SHIFT_SRLX	sparc/tcg-target.c	249;"	d	file:
+SLD	ppc64/tcg-target.c	384;"	d	file:
+SLW	ppc/tcg-target.c	388;"	d	file:
+SLW	ppc64/tcg-target.c	380;"	d	file:
+SPR	ppc/tcg-target.c	384;"	d	file:
+SPR	ppc64/tcg-target.c	376;"	d	file:
+SRAD	ppc64/tcg-target.c	386;"	d	file:
+SRADI	ppc64/tcg-target.c	387;"	d	file:
+SRAW	ppc/tcg-target.c	390;"	d	file:
+SRAW	ppc64/tcg-target.c	382;"	d	file:
+SRAWI	ppc/tcg-target.c	366;"	d	file:
+SRAWI	ppc64/tcg-target.c	356;"	d	file:
+SRD	ppc64/tcg-target.c	385;"	d	file:
+SRW	ppc/tcg-target.c	389;"	d	file:
+SRW	ppc64/tcg-target.c	381;"	d	file:
+STACK_DIR	tcg.c	1772;"	d	file:
+STACK_DIR	tcg.c	1774;"	d	file:
+STACK_TEMP_OFS	hppa/tcg-target.c	35;"	d	file:
+STB	ppc/tcg-target.c	310;"	d	file:
+STB	ppc64/tcg-target.c	288;"	d	file:
+STB	sparc/tcg-target.c	266;"	d	file:
+STBA	sparc/tcg-target.c	277;"	d	file:
+STBX	ppc/tcg-target.c	380;"	d	file:
+STBX	ppc64/tcg-target.c	372;"	d	file:
+STD	ppc64/tcg-target.c	292;"	d	file:
+STDU	ppc64/tcg-target.c	293;"	d	file:
+STDX	ppc64/tcg-target.c	294;"	d	file:
+STH	ppc/tcg-target.c	311;"	d	file:
+STH	ppc64/tcg-target.c	289;"	d	file:
+STH	sparc/tcg-target.c	267;"	d	file:
+STHA	sparc/tcg-target.c	278;"	d	file:
+STHBRX	ppc/tcg-target.c	362;"	d	file:
+STHBRX	ppc64/tcg-target.c	352;"	d	file:
+STHX	ppc/tcg-target.c	381;"	d	file:
+STHX	ppc64/tcg-target.c	373;"	d	file:
+STW	ppc/tcg-target.c	312;"	d	file:
+STW	ppc64/tcg-target.c	290;"	d	file:
+STW	sparc/tcg-target.c	268;"	d	file:
+STWA	sparc/tcg-target.c	279;"	d	file:
+STWBRX	ppc/tcg-target.c	363;"	d	file:
+STWBRX	ppc64/tcg-target.c	353;"	d	file:
+STWU	ppc/tcg-target.c	329;"	d	file:
+STWU	ppc64/tcg-target.c	316;"	d	file:
+STWX	ppc/tcg-target.c	382;"	d	file:
+STWX	ppc64/tcg-target.c	374;"	d	file:
+STX	sparc/tcg-target.c	269;"	d	file:
+STXA	sparc/tcg-target.c	280;"	d	file:
+SUBF	ppc/tcg-target.c	349;"	d	file:
+SUBF	ppc64/tcg-target.c	339;"	d	file:
+SUBFC	ppc/tcg-target.c	350;"	d	file:
+SUBFC	ppc64/tcg-target.c	340;"	d	file:
+SUBFE	ppc/tcg-target.c	351;"	d	file:
+SUBFE	ppc64/tcg-target.c	341;"	d	file:
+SUBFIC	ppc/tcg-target.c	326;"	d	file:
+TAB	ppc/tcg-target.c	407;"	d	file:
+TAB	ppc64/tcg-target.c	405;"	d	file:
+TARGET_ADDEND_LD_OP	sparc/tcg-target.c	730;"	d	file:
+TARGET_ADDEND_LD_OP	sparc/tcg-target.c	732;"	d	file:
+TARGET_LD_OP	sparc/tcg-target.c	723;"	d	file:
+TARGET_LD_OP	sparc/tcg-target.c	725;"	d	file:
+TCGArg	tcg.h	/^typedef tcg_target_ulong TCGArg;$/;"	t
+TCGArgConstraint	tcg.h	/^typedef struct TCGArgConstraint {$/;"	s
+TCGArgConstraint	tcg.h	/^} TCGArgConstraint;$/;"	t	typeref:struct:TCGArgConstraint
+TCGCond	tcg.h	/^} TCGCond;$/;"	t	typeref:enum:__anon23
+TCGContext	tcg.h	/^struct TCGContext {$/;"	s
+TCGContext	tcg.h	/^typedef struct TCGContext TCGContext;$/;"	t	typeref:struct:TCGContext
+TCGHelperInfo	tcg.h	/^typedef struct TCGHelperInfo {$/;"	s
+TCGHelperInfo	tcg.h	/^} TCGHelperInfo;$/;"	t	typeref:struct:TCGHelperInfo
+TCGLabel	tcg.h	/^typedef struct TCGLabel {$/;"	s
+TCGLabel	tcg.h	/^} TCGLabel;$/;"	t	typeref:struct:TCGLabel
+TCGOpDef	tcg.h	/^typedef struct TCGOpDef {$/;"	s
+TCGOpDef	tcg.h	/^} TCGOpDef;$/;"	t	typeref:struct:TCGOpDef
+TCGOpcode	tcg.h	/^typedef enum TCGOpcode {$/;"	g
+TCGOpcode	tcg.h	/^} TCGOpcode;$/;"	t	typeref:enum:TCGOpcode
+TCGPool	tcg.h	/^typedef struct TCGPool {$/;"	s
+TCGPool	tcg.h	/^} TCGPool;$/;"	t	typeref:struct:TCGPool
+TCGReg	s390/tcg-target.h	/^typedef enum TCGReg {$/;"	g
+TCGReg	s390/tcg-target.h	/^} TCGReg;$/;"	t	typeref:enum:TCGReg
+TCGRegSet	tcg.h	/^typedef uint32_t TCGRegSet;$/;"	t
+TCGRegSet	tcg.h	/^typedef uint64_t TCGRegSet;$/;"	t
+TCGRelocation	tcg.h	/^typedef struct TCGRelocation {$/;"	s
+TCGRelocation	tcg.h	/^} TCGRelocation; $/;"	t	typeref:struct:TCGRelocation
+TCGTargetOpDef	tcg.h	/^typedef struct TCGTargetOpDef {$/;"	s
+TCGTargetOpDef	tcg.h	/^} TCGTargetOpDef;$/;"	t	typeref:struct:TCGTargetOpDef
+TCGTemp	tcg.h	/^typedef struct TCGTemp {$/;"	s
+TCGTemp	tcg.h	/^} TCGTemp;$/;"	t	typeref:struct:TCGTemp
+TCGType	tcg.h	/^typedef enum TCGType {$/;"	g
+TCGType	tcg.h	/^} TCGType;$/;"	t	typeref:enum:TCGType
+TCGV_EQUAL	tcg-op.h	2092;"	d
+TCGV_EQUAL	tcg-op.h	2103;"	d
+TCGV_EQUAL_I32	tcg.h	180;"	d
+TCGV_EQUAL_I64	tcg.h	181;"	d
+TCGV_HIGH	tcg.h	161;"	d
+TCGV_HIGH	tcg.h	175;"	d
+TCGV_LOW	tcg.h	160;"	d
+TCGV_LOW	tcg.h	174;"	d
+TCGV_UNUSED	tcg-op.h	2091;"	d
+TCGV_UNUSED	tcg-op.h	2102;"	d
+TCGV_UNUSED_I32	tcg.h	184;"	d
+TCGV_UNUSED_I64	tcg.h	185;"	d
+TCG_AREG0	arm/tcg-target.h	/^    TCG_AREG0 = TCG_REG_R7,$/;"	e	enum:__anon2
+TCG_AREG0	hppa/tcg-target.h	106;"	d
+TCG_AREG0	i386/tcg-target.h	119;"	d
+TCG_AREG0	i386/tcg-target.h	121;"	d
+TCG_AREG0	ia64/tcg-target.h	142;"	d
+TCG_AREG0	mips/tcg-target.h	100;"	d
+TCG_AREG0	ppc/tcg-target.h	96;"	d
+TCG_AREG0	ppc64/tcg-target.h	106;"	d
+TCG_AREG0	s390/tcg-target.h	/^    TCG_AREG0 = TCG_REG_R10,$/;"	e	enum:__anon18
+TCG_AREG0	sparc/tcg-target.h	134;"	d
+TCG_AREG0	sparc/tcg-target.h	136;"	d
+TCG_AREG0	sparc/tcg-target.h	138;"	d
+TCG_CALL_CONST	tcg.h	200;"	d
+TCG_CALL_DUMMY_ARG	tcg.h	204;"	d
+TCG_CALL_DUMMY_TCGV	tcg.h	203;"	d
+TCG_CALL_PURE	tcg.h	196;"	d
+TCG_CALL_TYPE_MASK	tcg.h	188;"	d
+TCG_CALL_TYPE_REGPARM	tcg.h	192;"	d
+TCG_CALL_TYPE_REGPARM_1	tcg.h	190;"	d
+TCG_CALL_TYPE_REGPARM_2	tcg.h	191;"	d
+TCG_CALL_TYPE_STD	tcg.h	189;"	d
+TCG_COND_EQ	tcg.h	/^    TCG_COND_EQ,$/;"	e	enum:__anon23
+TCG_COND_GE	tcg.h	/^    TCG_COND_GE,$/;"	e	enum:__anon23
+TCG_COND_GEU	tcg.h	/^    TCG_COND_GEU,$/;"	e	enum:__anon23
+TCG_COND_GT	tcg.h	/^    TCG_COND_GT,$/;"	e	enum:__anon23
+TCG_COND_GTU	tcg.h	/^    TCG_COND_GTU,$/;"	e	enum:__anon23
+TCG_COND_LE	tcg.h	/^    TCG_COND_LE,$/;"	e	enum:__anon23
+TCG_COND_LEU	tcg.h	/^    TCG_COND_LEU,$/;"	e	enum:__anon23
+TCG_COND_LT	tcg.h	/^    TCG_COND_LT,$/;"	e	enum:__anon23
+TCG_COND_LTU	tcg.h	/^    TCG_COND_LTU,$/;"	e	enum:__anon23
+TCG_COND_NE	tcg.h	/^    TCG_COND_NE,$/;"	e	enum:__anon23
+TCG_CT_ALIAS	tcg.h	398;"	d
+TCG_CT_CONST	tcg.h	401;"	d
+TCG_CT_CONST_0	hppa/tcg-target.h	72;"	d
+TCG_CT_CONST_32	s390/tcg-target.c	32;"	d	file:
+TCG_CT_CONST_ADDI	s390/tcg-target.c	34;"	d	file:
+TCG_CT_CONST_AND	hppa/tcg-target.h	76;"	d
+TCG_CT_CONST_ANDI	s390/tcg-target.c	36;"	d	file:
+TCG_CT_CONST_ARM	arm/tcg-target.h	52;"	d
+TCG_CT_CONST_CMPI	s390/tcg-target.c	39;"	d	file:
+TCG_CT_CONST_MS11	hppa/tcg-target.h	75;"	d
+TCG_CT_CONST_MULI	s390/tcg-target.c	35;"	d	file:
+TCG_CT_CONST_NEG	s390/tcg-target.c	33;"	d	file:
+TCG_CT_CONST_OR	hppa/tcg-target.h	77;"	d
+TCG_CT_CONST_ORI	s390/tcg-target.c	37;"	d	file:
+TCG_CT_CONST_S11	hppa/tcg-target.h	74;"	d
+TCG_CT_CONST_S11	sparc/tcg-target.h	71;"	d
+TCG_CT_CONST_S13	sparc/tcg-target.h	72;"	d
+TCG_CT_CONST_S16	mips/tcg-target.h	72;"	d
+TCG_CT_CONST_S22	ia64/tcg-target.h	99;"	d
+TCG_CT_CONST_S32	i386/tcg-target.h	69;"	d
+TCG_CT_CONST_S5	hppa/tcg-target.h	73;"	d
+TCG_CT_CONST_U16	mips/tcg-target.h	71;"	d
+TCG_CT_CONST_U32	i386/tcg-target.h	70;"	d
+TCG_CT_CONST_U32	ppc64/tcg-target.c	25;"	d	file:
+TCG_CT_CONST_XORI	s390/tcg-target.c	38;"	d	file:
+TCG_CT_CONST_ZERO	ia64/tcg-target.h	98;"	d
+TCG_CT_CONST_ZERO	mips/tcg-target.h	70;"	d
+TCG_CT_IALIAS	tcg.h	399;"	d
+TCG_CT_REG	tcg.h	400;"	d
+TCG_GUEST_BASE_REG	hppa/tcg-target.c	38;"	d	file:
+TCG_GUEST_BASE_REG	hppa/tcg-target.c	40;"	d	file:
+TCG_GUEST_BASE_REG	ia64/tcg-target.c	44;"	d	file:
+TCG_GUEST_BASE_REG	ia64/tcg-target.c	46;"	d	file:
+TCG_GUEST_BASE_REG	ppc/tcg-target.c	45;"	d	file:
+TCG_GUEST_BASE_REG	ppc/tcg-target.c	47;"	d	file:
+TCG_GUEST_BASE_REG	ppc64/tcg-target.c	44;"	d	file:
+TCG_GUEST_BASE_REG	ppc64/tcg-target.c	46;"	d	file:
+TCG_GUEST_BASE_REG	s390/tcg-target.c	49;"	d	file:
+TCG_GUEST_BASE_REG	s390/tcg-target.c	51;"	d	file:
+TCG_MAX_LABELS	tcg.h	91;"	d
+TCG_MAX_OP_ARGS	tcg.h	411;"	d
+TCG_MAX_TEMPS	tcg.h	93;"	d
+TCG_NEED_BSWAP	mips/tcg-target.c	28;"	d	file:
+TCG_NEED_BSWAP	mips/tcg-target.c	30;"	d	file:
+TCG_OPF_BB_END	tcg.h	413;"	d
+TCG_OPF_CALL_CLOBBER	tcg.h	415;"	d
+TCG_OPF_SIDE_EFFECTS	tcg.h	417;"	d
+TCG_POOL_CHUNK_SIZE	tcg.h	89;"	d
+TCG_PRIld	tcg.h	32;"	d
+TCG_PRIld	tcg.h	37;"	d
+TCG_PRIlx	tcg.h	31;"	d
+TCG_PRIlx	tcg.h	36;"	d
+TCG_REG_A0	mips/tcg-target.h	/^    TCG_REG_A0,$/;"	e	enum:__anon13
+TCG_REG_A1	mips/tcg-target.h	/^    TCG_REG_A1,$/;"	e	enum:__anon13
+TCG_REG_A2	mips/tcg-target.h	/^    TCG_REG_A2,$/;"	e	enum:__anon13
+TCG_REG_A3	mips/tcg-target.h	/^    TCG_REG_A3,$/;"	e	enum:__anon13
+TCG_REG_AT	mips/tcg-target.h	/^    TCG_REG_AT,$/;"	e	enum:__anon13
+TCG_REG_B0	ia64/tcg-target.c	/^    TCG_REG_B0 = 0,$/;"	e	enum:__anon5	file:
+TCG_REG_B1	ia64/tcg-target.c	/^    TCG_REG_B1,$/;"	e	enum:__anon5	file:
+TCG_REG_B2	ia64/tcg-target.c	/^    TCG_REG_B2,$/;"	e	enum:__anon5	file:
+TCG_REG_B3	ia64/tcg-target.c	/^    TCG_REG_B3,$/;"	e	enum:__anon5	file:
+TCG_REG_B4	ia64/tcg-target.c	/^    TCG_REG_B4,$/;"	e	enum:__anon5	file:
+TCG_REG_B5	ia64/tcg-target.c	/^    TCG_REG_B5,$/;"	e	enum:__anon5	file:
+TCG_REG_B6	ia64/tcg-target.c	/^    TCG_REG_B6,$/;"	e	enum:__anon5	file:
+TCG_REG_B7	ia64/tcg-target.c	/^    TCG_REG_B7,$/;"	e	enum:__anon5	file:
+TCG_REG_CALL_STACK	arm/tcg-target.h	55;"	d
+TCG_REG_CALL_STACK	hppa/tcg-target.h	80;"	d
+TCG_REG_CALL_STACK	i386/tcg-target.h	73;"	d
+TCG_REG_CALL_STACK	ia64/tcg-target.h	102;"	d
+TCG_REG_CALL_STACK	mips/tcg-target.h	75;"	d
+TCG_REG_CALL_STACK	ppc/tcg-target.h	66;"	d
+TCG_REG_CALL_STACK	ppc64/tcg-target.h	66;"	d
+TCG_REG_CALL_STACK	s390/tcg-target.h	96;"	d
+TCG_REG_CALL_STACK	sparc/tcg-target.h	75;"	d
+TCG_REG_DP	hppa/tcg-target.h	/^    TCG_REG_DP,$/;"	e	enum:__anon3
+TCG_REG_EAX	i386/tcg-target.h	/^    TCG_REG_EAX = 0,$/;"	e	enum:__anon4
+TCG_REG_EBP	i386/tcg-target.h	/^    TCG_REG_EBP,$/;"	e	enum:__anon4
+TCG_REG_EBX	i386/tcg-target.h	/^    TCG_REG_EBX,$/;"	e	enum:__anon4
+TCG_REG_ECX	i386/tcg-target.h	/^    TCG_REG_ECX,$/;"	e	enum:__anon4
+TCG_REG_EDI	i386/tcg-target.h	/^    TCG_REG_EDI,$/;"	e	enum:__anon4
+TCG_REG_EDX	i386/tcg-target.h	/^    TCG_REG_EDX,$/;"	e	enum:__anon4
+TCG_REG_ESI	i386/tcg-target.h	/^    TCG_REG_ESI,$/;"	e	enum:__anon4
+TCG_REG_ESP	i386/tcg-target.h	/^    TCG_REG_ESP,$/;"	e	enum:__anon4
+TCG_REG_F0	ia64/tcg-target.c	/^    TCG_REG_F0 = 0,$/;"	e	enum:__anon6	file:
+TCG_REG_F1	ia64/tcg-target.c	/^    TCG_REG_F1,$/;"	e	enum:__anon6	file:
+TCG_REG_F10	ia64/tcg-target.c	/^    TCG_REG_F10,$/;"	e	enum:__anon6	file:
+TCG_REG_F11	ia64/tcg-target.c	/^    TCG_REG_F11,$/;"	e	enum:__anon6	file:
+TCG_REG_F12	ia64/tcg-target.c	/^    TCG_REG_F12,$/;"	e	enum:__anon6	file:
+TCG_REG_F13	ia64/tcg-target.c	/^    TCG_REG_F13,$/;"	e	enum:__anon6	file:
+TCG_REG_F14	ia64/tcg-target.c	/^    TCG_REG_F14,$/;"	e	enum:__anon6	file:
+TCG_REG_F15	ia64/tcg-target.c	/^    TCG_REG_F15,$/;"	e	enum:__anon6	file:
+TCG_REG_F2	ia64/tcg-target.c	/^    TCG_REG_F2,$/;"	e	enum:__anon6	file:
+TCG_REG_F3	ia64/tcg-target.c	/^    TCG_REG_F3,$/;"	e	enum:__anon6	file:
+TCG_REG_F4	ia64/tcg-target.c	/^    TCG_REG_F4,$/;"	e	enum:__anon6	file:
+TCG_REG_F5	ia64/tcg-target.c	/^    TCG_REG_F5,$/;"	e	enum:__anon6	file:
+TCG_REG_F6	ia64/tcg-target.c	/^    TCG_REG_F6,$/;"	e	enum:__anon6	file:
+TCG_REG_F7	ia64/tcg-target.c	/^    TCG_REG_F7,$/;"	e	enum:__anon6	file:
+TCG_REG_F8	ia64/tcg-target.c	/^    TCG_REG_F8,$/;"	e	enum:__anon6	file:
+TCG_REG_F9	ia64/tcg-target.c	/^    TCG_REG_F9,$/;"	e	enum:__anon6	file:
+TCG_REG_FP	mips/tcg-target.h	/^    TCG_REG_FP,$/;"	e	enum:__anon13
+TCG_REG_G0	sparc/tcg-target.h	/^    TCG_REG_G0 = 0,$/;"	e	enum:__anon19
+TCG_REG_G1	sparc/tcg-target.h	/^    TCG_REG_G1,$/;"	e	enum:__anon19
+TCG_REG_G2	sparc/tcg-target.h	/^    TCG_REG_G2,$/;"	e	enum:__anon19
+TCG_REG_G3	sparc/tcg-target.h	/^    TCG_REG_G3,$/;"	e	enum:__anon19
+TCG_REG_G4	sparc/tcg-target.h	/^    TCG_REG_G4,$/;"	e	enum:__anon19
+TCG_REG_G5	sparc/tcg-target.h	/^    TCG_REG_G5,$/;"	e	enum:__anon19
+TCG_REG_G6	sparc/tcg-target.h	/^    TCG_REG_G6,$/;"	e	enum:__anon19
+TCG_REG_G7	sparc/tcg-target.h	/^    TCG_REG_G7,$/;"	e	enum:__anon19
+TCG_REG_GP	mips/tcg-target.h	/^    TCG_REG_GP,$/;"	e	enum:__anon13
+TCG_REG_I0	sparc/tcg-target.h	/^    TCG_REG_I0,$/;"	e	enum:__anon19
+TCG_REG_I1	sparc/tcg-target.h	/^    TCG_REG_I1,$/;"	e	enum:__anon19
+TCG_REG_I2	sparc/tcg-target.h	/^    TCG_REG_I2,$/;"	e	enum:__anon19
+TCG_REG_I3	sparc/tcg-target.h	/^    TCG_REG_I3,$/;"	e	enum:__anon19
+TCG_REG_I4	sparc/tcg-target.h	/^    TCG_REG_I4,$/;"	e	enum:__anon19
+TCG_REG_I5	sparc/tcg-target.h	/^    TCG_REG_I5,$/;"	e	enum:__anon19
+TCG_REG_I6	sparc/tcg-target.h	/^    TCG_REG_I6,$/;"	e	enum:__anon19
+TCG_REG_I7	sparc/tcg-target.h	/^    TCG_REG_I7,$/;"	e	enum:__anon19
+TCG_REG_K0	mips/tcg-target.h	/^    TCG_REG_K0,$/;"	e	enum:__anon13
+TCG_REG_K1	mips/tcg-target.h	/^    TCG_REG_K1,$/;"	e	enum:__anon13
+TCG_REG_L0	sparc/tcg-target.h	/^    TCG_REG_L0,$/;"	e	enum:__anon19
+TCG_REG_L1	sparc/tcg-target.h	/^    TCG_REG_L1,$/;"	e	enum:__anon19
+TCG_REG_L2	sparc/tcg-target.h	/^    TCG_REG_L2,$/;"	e	enum:__anon19
+TCG_REG_L3	sparc/tcg-target.h	/^    TCG_REG_L3,$/;"	e	enum:__anon19
+TCG_REG_L4	sparc/tcg-target.h	/^    TCG_REG_L4,$/;"	e	enum:__anon19
+TCG_REG_L5	sparc/tcg-target.h	/^    TCG_REG_L5,$/;"	e	enum:__anon19
+TCG_REG_L6	sparc/tcg-target.h	/^    TCG_REG_L6,$/;"	e	enum:__anon19
+TCG_REG_L7	sparc/tcg-target.h	/^    TCG_REG_L7,$/;"	e	enum:__anon19
+TCG_REG_NONE	s390/tcg-target.c	43;"	d	file:
+TCG_REG_O0	sparc/tcg-target.h	/^    TCG_REG_O0,$/;"	e	enum:__anon19
+TCG_REG_O1	sparc/tcg-target.h	/^    TCG_REG_O1,$/;"	e	enum:__anon19
+TCG_REG_O2	sparc/tcg-target.h	/^    TCG_REG_O2,$/;"	e	enum:__anon19
+TCG_REG_O3	sparc/tcg-target.h	/^    TCG_REG_O3,$/;"	e	enum:__anon19
+TCG_REG_O4	sparc/tcg-target.h	/^    TCG_REG_O4,$/;"	e	enum:__anon19
+TCG_REG_O5	sparc/tcg-target.h	/^    TCG_REG_O5,$/;"	e	enum:__anon19
+TCG_REG_O6	sparc/tcg-target.h	/^    TCG_REG_O6,$/;"	e	enum:__anon19
+TCG_REG_O7	sparc/tcg-target.h	/^    TCG_REG_O7,$/;"	e	enum:__anon19
+TCG_REG_P0	ia64/tcg-target.c	/^    TCG_REG_P0 = 0,$/;"	e	enum:__anon7	file:
+TCG_REG_P1	ia64/tcg-target.c	/^    TCG_REG_P1,$/;"	e	enum:__anon7	file:
+TCG_REG_P10	ia64/tcg-target.c	/^    TCG_REG_P10,$/;"	e	enum:__anon7	file:
+TCG_REG_P11	ia64/tcg-target.c	/^    TCG_REG_P11,$/;"	e	enum:__anon7	file:
+TCG_REG_P12	ia64/tcg-target.c	/^    TCG_REG_P12,$/;"	e	enum:__anon7	file:
+TCG_REG_P13	ia64/tcg-target.c	/^    TCG_REG_P13,$/;"	e	enum:__anon7	file:
+TCG_REG_P14	ia64/tcg-target.c	/^    TCG_REG_P14,$/;"	e	enum:__anon7	file:
+TCG_REG_P15	ia64/tcg-target.c	/^    TCG_REG_P15,$/;"	e	enum:__anon7	file:
+TCG_REG_P2	ia64/tcg-target.c	/^    TCG_REG_P2,$/;"	e	enum:__anon7	file:
+TCG_REG_P3	ia64/tcg-target.c	/^    TCG_REG_P3,$/;"	e	enum:__anon7	file:
+TCG_REG_P4	ia64/tcg-target.c	/^    TCG_REG_P4,$/;"	e	enum:__anon7	file:
+TCG_REG_P5	ia64/tcg-target.c	/^    TCG_REG_P5,$/;"	e	enum:__anon7	file:
+TCG_REG_P6	ia64/tcg-target.c	/^    TCG_REG_P6,$/;"	e	enum:__anon7	file:
+TCG_REG_P7	ia64/tcg-target.c	/^    TCG_REG_P7,$/;"	e	enum:__anon7	file:
+TCG_REG_P8	ia64/tcg-target.c	/^    TCG_REG_P8,$/;"	e	enum:__anon7	file:
+TCG_REG_P9	ia64/tcg-target.c	/^    TCG_REG_P9,$/;"	e	enum:__anon7	file:
+TCG_REG_PC	arm/tcg-target.h	/^    TCG_REG_PC,$/;"	e	enum:__anon1
+TCG_REG_PFS	ia64/tcg-target.c	/^    TCG_REG_PFS = 64,$/;"	e	enum:__anon8	file:
+TCG_REG_R0	arm/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:__anon1
+TCG_REG_R0	hppa/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:__anon3
+TCG_REG_R0	ia64/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:__anon11
+TCG_REG_R0	ppc/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:__anon15
+TCG_REG_R0	ppc64/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:__anon17
+TCG_REG_R0	s390/tcg-target.h	/^    TCG_REG_R0 = 0,$/;"	e	enum:TCGReg
+TCG_REG_R1	arm/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:__anon1
+TCG_REG_R1	hppa/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:__anon3
+TCG_REG_R1	ia64/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:__anon11
+TCG_REG_R1	ppc/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:__anon15
+TCG_REG_R1	ppc64/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:__anon17
+TCG_REG_R1	s390/tcg-target.h	/^    TCG_REG_R1,$/;"	e	enum:TCGReg
+TCG_REG_R10	arm/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon1
+TCG_REG_R10	hppa/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon3
+TCG_REG_R10	i386/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon4
+TCG_REG_R10	ia64/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon11
+TCG_REG_R10	ppc/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon15
+TCG_REG_R10	ppc64/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:__anon17
+TCG_REG_R10	s390/tcg-target.h	/^    TCG_REG_R10,$/;"	e	enum:TCGReg
+TCG_REG_R11	arm/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon1
+TCG_REG_R11	hppa/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon3
+TCG_REG_R11	i386/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon4
+TCG_REG_R11	ia64/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon11
+TCG_REG_R11	ppc/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon15
+TCG_REG_R11	ppc64/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:__anon17
+TCG_REG_R11	s390/tcg-target.h	/^    TCG_REG_R11,$/;"	e	enum:TCGReg
+TCG_REG_R12	arm/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon1
+TCG_REG_R12	hppa/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon3
+TCG_REG_R12	i386/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon4
+TCG_REG_R12	ia64/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon11
+TCG_REG_R12	ppc/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon15
+TCG_REG_R12	ppc64/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:__anon17
+TCG_REG_R12	s390/tcg-target.h	/^    TCG_REG_R12,$/;"	e	enum:TCGReg
+TCG_REG_R13	arm/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon1
+TCG_REG_R13	hppa/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon3
+TCG_REG_R13	i386/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon4
+TCG_REG_R13	ia64/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon11
+TCG_REG_R13	ppc/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon15
+TCG_REG_R13	ppc64/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:__anon17
+TCG_REG_R13	s390/tcg-target.h	/^    TCG_REG_R13,$/;"	e	enum:TCGReg
+TCG_REG_R14	arm/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon1
+TCG_REG_R14	hppa/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon3
+TCG_REG_R14	i386/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon4
+TCG_REG_R14	ia64/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon11
+TCG_REG_R14	ppc/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon15
+TCG_REG_R14	ppc64/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:__anon17
+TCG_REG_R14	s390/tcg-target.h	/^    TCG_REG_R14,$/;"	e	enum:TCGReg
+TCG_REG_R15	hppa/tcg-target.h	/^    TCG_REG_R15,$/;"	e	enum:__anon3
+TCG_REG_R15	i386/tcg-target.h	/^    TCG_REG_R15,$/;"	e	enum:__anon4
+TCG_REG_R15	ia64/tcg-target.h	/^    TCG_REG_R15,$/;"	e	enum:__anon11
+TCG_REG_R15	ppc/tcg-target.h	/^    TCG_REG_R15,$/;"	e	enum:__anon15
+TCG_REG_R15	ppc64/tcg-target.h	/^    TCG_REG_R15,$/;"	e	enum:__anon17
+TCG_REG_R15	s390/tcg-target.h	/^    TCG_REG_R15$/;"	e	enum:TCGReg
+TCG_REG_R16	hppa/tcg-target.h	/^    TCG_REG_R16,$/;"	e	enum:__anon3
+TCG_REG_R16	ia64/tcg-target.h	/^    TCG_REG_R16,$/;"	e	enum:__anon11
+TCG_REG_R16	ppc/tcg-target.h	/^    TCG_REG_R16,$/;"	e	enum:__anon15
+TCG_REG_R16	ppc64/tcg-target.h	/^    TCG_REG_R16,$/;"	e	enum:__anon17
+TCG_REG_R17	hppa/tcg-target.h	/^    TCG_REG_R17,$/;"	e	enum:__anon3
+TCG_REG_R17	ia64/tcg-target.h	/^    TCG_REG_R17,$/;"	e	enum:__anon11
+TCG_REG_R17	ppc/tcg-target.h	/^    TCG_REG_R17,$/;"	e	enum:__anon15
+TCG_REG_R17	ppc64/tcg-target.h	/^    TCG_REG_R17,$/;"	e	enum:__anon17
+TCG_REG_R18	hppa/tcg-target.h	/^    TCG_REG_R18,$/;"	e	enum:__anon3
+TCG_REG_R18	ia64/tcg-target.h	/^    TCG_REG_R18,$/;"	e	enum:__anon11
+TCG_REG_R18	ppc/tcg-target.h	/^    TCG_REG_R18,$/;"	e	enum:__anon15
+TCG_REG_R18	ppc64/tcg-target.h	/^    TCG_REG_R18,$/;"	e	enum:__anon17
+TCG_REG_R19	hppa/tcg-target.h	/^    TCG_REG_R19,$/;"	e	enum:__anon3
+TCG_REG_R19	ia64/tcg-target.h	/^    TCG_REG_R19,$/;"	e	enum:__anon11
+TCG_REG_R19	ppc/tcg-target.h	/^    TCG_REG_R19,$/;"	e	enum:__anon15
+TCG_REG_R19	ppc64/tcg-target.h	/^    TCG_REG_R19,$/;"	e	enum:__anon17
+TCG_REG_R2	arm/tcg-target.h	/^    TCG_REG_R2,$/;"	e	enum:__anon1
+TCG_REG_R2	ia64/tcg-target.h	/^    TCG_REG_R2,$/;"	e	enum:__anon11
+TCG_REG_R2	ppc/tcg-target.h	/^    TCG_REG_R2,$/;"	e	enum:__anon15
+TCG_REG_R2	ppc64/tcg-target.h	/^    TCG_REG_R2,$/;"	e	enum:__anon17
+TCG_REG_R2	s390/tcg-target.h	/^    TCG_REG_R2,$/;"	e	enum:TCGReg
+TCG_REG_R20	hppa/tcg-target.h	/^    TCG_REG_R20,$/;"	e	enum:__anon3
+TCG_REG_R20	ia64/tcg-target.h	/^    TCG_REG_R20,$/;"	e	enum:__anon11
+TCG_REG_R20	ppc/tcg-target.h	/^    TCG_REG_R20,$/;"	e	enum:__anon15
+TCG_REG_R20	ppc64/tcg-target.h	/^    TCG_REG_R20,$/;"	e	enum:__anon17
+TCG_REG_R21	hppa/tcg-target.h	/^    TCG_REG_R21,$/;"	e	enum:__anon3
+TCG_REG_R21	ia64/tcg-target.h	/^    TCG_REG_R21,$/;"	e	enum:__anon11
+TCG_REG_R21	ppc/tcg-target.h	/^    TCG_REG_R21,$/;"	e	enum:__anon15
+TCG_REG_R21	ppc64/tcg-target.h	/^    TCG_REG_R21,$/;"	e	enum:__anon17
+TCG_REG_R22	hppa/tcg-target.h	/^    TCG_REG_R22,$/;"	e	enum:__anon3
+TCG_REG_R22	ia64/tcg-target.h	/^    TCG_REG_R22,$/;"	e	enum:__anon11
+TCG_REG_R22	ppc/tcg-target.h	/^    TCG_REG_R22,$/;"	e	enum:__anon15
+TCG_REG_R22	ppc64/tcg-target.h	/^    TCG_REG_R22,$/;"	e	enum:__anon17
+TCG_REG_R23	hppa/tcg-target.h	/^    TCG_REG_R23,$/;"	e	enum:__anon3
+TCG_REG_R23	ia64/tcg-target.h	/^    TCG_REG_R23,$/;"	e	enum:__anon11
+TCG_REG_R23	ppc/tcg-target.h	/^    TCG_REG_R23,$/;"	e	enum:__anon15
+TCG_REG_R23	ppc64/tcg-target.h	/^    TCG_REG_R23,$/;"	e	enum:__anon17
+TCG_REG_R24	hppa/tcg-target.h	/^    TCG_REG_R24,$/;"	e	enum:__anon3
+TCG_REG_R24	ia64/tcg-target.h	/^    TCG_REG_R24,$/;"	e	enum:__anon11
+TCG_REG_R24	ppc/tcg-target.h	/^    TCG_REG_R24,$/;"	e	enum:__anon15
+TCG_REG_R24	ppc64/tcg-target.h	/^    TCG_REG_R24,$/;"	e	enum:__anon17
+TCG_REG_R25	hppa/tcg-target.h	/^    TCG_REG_R25,$/;"	e	enum:__anon3
+TCG_REG_R25	ia64/tcg-target.h	/^    TCG_REG_R25,$/;"	e	enum:__anon11
+TCG_REG_R25	ppc/tcg-target.h	/^    TCG_REG_R25,$/;"	e	enum:__anon15
+TCG_REG_R25	ppc64/tcg-target.h	/^    TCG_REG_R25,$/;"	e	enum:__anon17
+TCG_REG_R26	hppa/tcg-target.h	/^    TCG_REG_R26,$/;"	e	enum:__anon3
+TCG_REG_R26	ia64/tcg-target.h	/^    TCG_REG_R26,$/;"	e	enum:__anon11
+TCG_REG_R26	ppc/tcg-target.h	/^    TCG_REG_R26,$/;"	e	enum:__anon15
+TCG_REG_R26	ppc64/tcg-target.h	/^    TCG_REG_R26,$/;"	e	enum:__anon17
+TCG_REG_R27	ia64/tcg-target.h	/^    TCG_REG_R27,$/;"	e	enum:__anon11
+TCG_REG_R27	ppc/tcg-target.h	/^    TCG_REG_R27,$/;"	e	enum:__anon15
+TCG_REG_R27	ppc64/tcg-target.h	/^    TCG_REG_R27,$/;"	e	enum:__anon17
+TCG_REG_R28	ia64/tcg-target.h	/^    TCG_REG_R28,$/;"	e	enum:__anon11
+TCG_REG_R28	ppc/tcg-target.h	/^    TCG_REG_R28,$/;"	e	enum:__anon15
+TCG_REG_R28	ppc64/tcg-target.h	/^    TCG_REG_R28,$/;"	e	enum:__anon17
+TCG_REG_R29	ia64/tcg-target.h	/^    TCG_REG_R29,$/;"	e	enum:__anon11
+TCG_REG_R29	ppc/tcg-target.h	/^    TCG_REG_R29,$/;"	e	enum:__anon15
+TCG_REG_R29	ppc64/tcg-target.h	/^    TCG_REG_R29,$/;"	e	enum:__anon17
+TCG_REG_R3	arm/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:__anon1
+TCG_REG_R3	hppa/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:__anon3
+TCG_REG_R3	ia64/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:__anon11
+TCG_REG_R3	ppc/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:__anon15
+TCG_REG_R3	ppc64/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:__anon17
+TCG_REG_R3	s390/tcg-target.h	/^    TCG_REG_R3,$/;"	e	enum:TCGReg
+TCG_REG_R30	ia64/tcg-target.h	/^    TCG_REG_R30,$/;"	e	enum:__anon11
+TCG_REG_R30	ppc/tcg-target.h	/^    TCG_REG_R30,$/;"	e	enum:__anon15
+TCG_REG_R30	ppc64/tcg-target.h	/^    TCG_REG_R30,$/;"	e	enum:__anon17
+TCG_REG_R31	hppa/tcg-target.h	/^    TCG_REG_R31,$/;"	e	enum:__anon3
+TCG_REG_R31	ia64/tcg-target.h	/^    TCG_REG_R31,$/;"	e	enum:__anon11
+TCG_REG_R31	ppc/tcg-target.h	/^    TCG_REG_R31$/;"	e	enum:__anon15
+TCG_REG_R31	ppc64/tcg-target.h	/^    TCG_REG_R31$/;"	e	enum:__anon17
+TCG_REG_R32	ia64/tcg-target.h	/^    TCG_REG_R32,$/;"	e	enum:__anon11
+TCG_REG_R33	ia64/tcg-target.h	/^    TCG_REG_R33,$/;"	e	enum:__anon11
+TCG_REG_R34	ia64/tcg-target.h	/^    TCG_REG_R34,$/;"	e	enum:__anon11
+TCG_REG_R35	ia64/tcg-target.h	/^    TCG_REG_R35,$/;"	e	enum:__anon11
+TCG_REG_R36	ia64/tcg-target.h	/^    TCG_REG_R36,$/;"	e	enum:__anon11
+TCG_REG_R37	ia64/tcg-target.h	/^    TCG_REG_R37,$/;"	e	enum:__anon11
+TCG_REG_R38	ia64/tcg-target.h	/^    TCG_REG_R38,$/;"	e	enum:__anon11
+TCG_REG_R39	ia64/tcg-target.h	/^    TCG_REG_R39,$/;"	e	enum:__anon11
+TCG_REG_R4	arm/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:__anon1
+TCG_REG_R4	hppa/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:__anon3
+TCG_REG_R4	ia64/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:__anon11
+TCG_REG_R4	ppc/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:__anon15
+TCG_REG_R4	ppc64/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:__anon17
+TCG_REG_R4	s390/tcg-target.h	/^    TCG_REG_R4,$/;"	e	enum:TCGReg
+TCG_REG_R40	ia64/tcg-target.h	/^    TCG_REG_R40,$/;"	e	enum:__anon11
+TCG_REG_R41	ia64/tcg-target.h	/^    TCG_REG_R41,$/;"	e	enum:__anon11
+TCG_REG_R42	ia64/tcg-target.h	/^    TCG_REG_R42,$/;"	e	enum:__anon11
+TCG_REG_R43	ia64/tcg-target.h	/^    TCG_REG_R43,$/;"	e	enum:__anon11
+TCG_REG_R44	ia64/tcg-target.h	/^    TCG_REG_R44,$/;"	e	enum:__anon11
+TCG_REG_R45	ia64/tcg-target.h	/^    TCG_REG_R45,$/;"	e	enum:__anon11
+TCG_REG_R46	ia64/tcg-target.h	/^    TCG_REG_R46,$/;"	e	enum:__anon11
+TCG_REG_R47	ia64/tcg-target.h	/^    TCG_REG_R47,$/;"	e	enum:__anon11
+TCG_REG_R48	ia64/tcg-target.h	/^    TCG_REG_R48,$/;"	e	enum:__anon11
+TCG_REG_R49	ia64/tcg-target.h	/^    TCG_REG_R49,$/;"	e	enum:__anon11
+TCG_REG_R5	arm/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:__anon1
+TCG_REG_R5	hppa/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:__anon3
+TCG_REG_R5	ia64/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:__anon11
+TCG_REG_R5	ppc/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:__anon15
+TCG_REG_R5	ppc64/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:__anon17
+TCG_REG_R5	s390/tcg-target.h	/^    TCG_REG_R5,$/;"	e	enum:TCGReg
+TCG_REG_R50	ia64/tcg-target.h	/^    TCG_REG_R50,$/;"	e	enum:__anon11
+TCG_REG_R51	ia64/tcg-target.h	/^    TCG_REG_R51,$/;"	e	enum:__anon11
+TCG_REG_R52	ia64/tcg-target.h	/^    TCG_REG_R52,$/;"	e	enum:__anon11
+TCG_REG_R53	ia64/tcg-target.h	/^    TCG_REG_R53,$/;"	e	enum:__anon11
+TCG_REG_R54	ia64/tcg-target.h	/^    TCG_REG_R54,$/;"	e	enum:__anon11
+TCG_REG_R55	ia64/tcg-target.h	/^    TCG_REG_R55,$/;"	e	enum:__anon11
+TCG_REG_R56	ia64/tcg-target.h	/^    TCG_REG_R56,$/;"	e	enum:__anon11
+TCG_REG_R57	ia64/tcg-target.h	/^    TCG_REG_R57,$/;"	e	enum:__anon11
+TCG_REG_R58	ia64/tcg-target.h	/^    TCG_REG_R58,$/;"	e	enum:__anon11
+TCG_REG_R59	ia64/tcg-target.h	/^    TCG_REG_R59,$/;"	e	enum:__anon11
+TCG_REG_R6	arm/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:__anon1
+TCG_REG_R6	hppa/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:__anon3
+TCG_REG_R6	ia64/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:__anon11
+TCG_REG_R6	ppc/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:__anon15
+TCG_REG_R6	ppc64/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:__anon17
+TCG_REG_R6	s390/tcg-target.h	/^    TCG_REG_R6,$/;"	e	enum:TCGReg
+TCG_REG_R60	ia64/tcg-target.h	/^    TCG_REG_R60,$/;"	e	enum:__anon11
+TCG_REG_R61	ia64/tcg-target.h	/^    TCG_REG_R61,$/;"	e	enum:__anon11
+TCG_REG_R62	ia64/tcg-target.h	/^    TCG_REG_R62,$/;"	e	enum:__anon11
+TCG_REG_R63	ia64/tcg-target.h	/^    TCG_REG_R63,$/;"	e	enum:__anon11
+TCG_REG_R7	arm/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:__anon1
+TCG_REG_R7	hppa/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:__anon3
+TCG_REG_R7	ia64/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:__anon11
+TCG_REG_R7	ppc/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:__anon15
+TCG_REG_R7	ppc64/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:__anon17
+TCG_REG_R7	s390/tcg-target.h	/^    TCG_REG_R7,$/;"	e	enum:TCGReg
+TCG_REG_R8	arm/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon1
+TCG_REG_R8	hppa/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon3
+TCG_REG_R8	i386/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon4
+TCG_REG_R8	ia64/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon11
+TCG_REG_R8	ppc/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon15
+TCG_REG_R8	ppc64/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:__anon17
+TCG_REG_R8	s390/tcg-target.h	/^    TCG_REG_R8,$/;"	e	enum:TCGReg
+TCG_REG_R9	arm/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon1
+TCG_REG_R9	hppa/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon3
+TCG_REG_R9	i386/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon4
+TCG_REG_R9	ia64/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon11
+TCG_REG_R9	ppc/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon15
+TCG_REG_R9	ppc64/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:__anon17
+TCG_REG_R9	s390/tcg-target.h	/^    TCG_REG_R9,$/;"	e	enum:TCGReg
+TCG_REG_RA	mips/tcg-target.h	/^    TCG_REG_RA,$/;"	e	enum:__anon13
+TCG_REG_RAX	i386/tcg-target.h	/^    TCG_REG_RAX = TCG_REG_EAX,$/;"	e	enum:__anon4
+TCG_REG_RBP	i386/tcg-target.h	/^    TCG_REG_RBP = TCG_REG_EBP,$/;"	e	enum:__anon4
+TCG_REG_RBX	i386/tcg-target.h	/^    TCG_REG_RBX = TCG_REG_EBX,$/;"	e	enum:__anon4
+TCG_REG_RCX	i386/tcg-target.h	/^    TCG_REG_RCX = TCG_REG_ECX,$/;"	e	enum:__anon4
+TCG_REG_RDI	i386/tcg-target.h	/^    TCG_REG_RDI = TCG_REG_EDI,$/;"	e	enum:__anon4
+TCG_REG_RDX	i386/tcg-target.h	/^    TCG_REG_RDX = TCG_REG_EDX,$/;"	e	enum:__anon4
+TCG_REG_RET0	hppa/tcg-target.h	/^    TCG_REG_RET0,$/;"	e	enum:__anon3
+TCG_REG_RET1	hppa/tcg-target.h	/^    TCG_REG_RET1,$/;"	e	enum:__anon3
+TCG_REG_RP	hppa/tcg-target.h	/^    TCG_REG_RP,$/;"	e	enum:__anon3
+TCG_REG_RSI	i386/tcg-target.h	/^    TCG_REG_RSI = TCG_REG_ESI,$/;"	e	enum:__anon4
+TCG_REG_RSP	i386/tcg-target.h	/^    TCG_REG_RSP = TCG_REG_ESP,$/;"	e	enum:__anon4
+TCG_REG_S0	mips/tcg-target.h	/^    TCG_REG_S0,$/;"	e	enum:__anon13
+TCG_REG_S1	mips/tcg-target.h	/^    TCG_REG_S1,$/;"	e	enum:__anon13
+TCG_REG_S2	mips/tcg-target.h	/^    TCG_REG_S2,$/;"	e	enum:__anon13
+TCG_REG_S3	mips/tcg-target.h	/^    TCG_REG_S3,$/;"	e	enum:__anon13
+TCG_REG_S4	mips/tcg-target.h	/^    TCG_REG_S4,$/;"	e	enum:__anon13
+TCG_REG_S5	mips/tcg-target.h	/^    TCG_REG_S5,$/;"	e	enum:__anon13
+TCG_REG_S6	mips/tcg-target.h	/^    TCG_REG_S6,$/;"	e	enum:__anon13
+TCG_REG_S7	mips/tcg-target.h	/^    TCG_REG_S7,$/;"	e	enum:__anon13
+TCG_REG_SP	hppa/tcg-target.h	/^    TCG_REG_SP,$/;"	e	enum:__anon3
+TCG_REG_SP	mips/tcg-target.h	/^    TCG_REG_SP,$/;"	e	enum:__anon13
+TCG_REG_T0	mips/tcg-target.h	/^    TCG_REG_T0,$/;"	e	enum:__anon13
+TCG_REG_T1	mips/tcg-target.h	/^    TCG_REG_T1,$/;"	e	enum:__anon13
+TCG_REG_T2	mips/tcg-target.h	/^    TCG_REG_T2,$/;"	e	enum:__anon13
+TCG_REG_T3	mips/tcg-target.h	/^    TCG_REG_T3,$/;"	e	enum:__anon13
+TCG_REG_T4	mips/tcg-target.h	/^    TCG_REG_T4,$/;"	e	enum:__anon13
+TCG_REG_T5	mips/tcg-target.h	/^    TCG_REG_T5,$/;"	e	enum:__anon13
+TCG_REG_T6	mips/tcg-target.h	/^    TCG_REG_T6,$/;"	e	enum:__anon13
+TCG_REG_T7	mips/tcg-target.h	/^    TCG_REG_T7,$/;"	e	enum:__anon13
+TCG_REG_T8	mips/tcg-target.h	/^    TCG_REG_T8,$/;"	e	enum:__anon13
+TCG_REG_T9	mips/tcg-target.h	/^    TCG_REG_T9,$/;"	e	enum:__anon13
+TCG_REG_V0	mips/tcg-target.h	/^    TCG_REG_V0,$/;"	e	enum:__anon13
+TCG_REG_V1	mips/tcg-target.h	/^    TCG_REG_V1,$/;"	e	enum:__anon13
+TCG_REG_ZERO	mips/tcg-target.h	/^    TCG_REG_ZERO = 0,$/;"	e	enum:__anon13
+TCG_RUNTIME_H	tcg-runtime.h	2;"	d
+TCG_STATIC_CALL_ARGS_SIZE	tcg.h	97;"	d
+TCG_TARGET_ARM	arm/tcg-target.h	25;"	d
+TCG_TARGET_CALL_ALIGN_ARGS	arm/tcg-target.h	57;"	d
+TCG_TARGET_CALL_ALIGN_ARGS	hppa/tcg-target.h	84;"	d
+TCG_TARGET_CALL_ALIGN_ARGS	mips/tcg-target.h	78;"	d
+TCG_TARGET_CALL_ALIGN_ARGS	ppc/tcg-target.h	73;"	d
+TCG_TARGET_CALL_STACK_OFFSET	arm/tcg-target.h	58;"	d
+TCG_TARGET_CALL_STACK_OFFSET	hppa/tcg-target.h	82;"	d
+TCG_TARGET_CALL_STACK_OFFSET	i386/tcg-target.h	75;"	d
+TCG_TARGET_CALL_STACK_OFFSET	ia64/tcg-target.h	104;"	d
+TCG_TARGET_CALL_STACK_OFFSET	mips/tcg-target.h	77;"	d
+TCG_TARGET_CALL_STACK_OFFSET	ppc/tcg-target.h	69;"	d
+TCG_TARGET_CALL_STACK_OFFSET	ppc/tcg-target.h	71;"	d
+TCG_TARGET_CALL_STACK_OFFSET	ppc/tcg-target.h	74;"	d
+TCG_TARGET_CALL_STACK_OFFSET	ppc64/tcg-target.h	68;"	d
+TCG_TARGET_CALL_STACK_OFFSET	s390/tcg-target.h	98;"	d
+TCG_TARGET_CALL_STACK_OFFSET	sparc/tcg-target.h	80;"	d
+TCG_TARGET_CALL_STACK_OFFSET	sparc/tcg-target.h	86;"	d
+TCG_TARGET_EXTEND_ARGS	ppc64/tcg-target.h	109;"	d
+TCG_TARGET_EXTEND_ARGS	s390/tcg-target.h	100;"	d
+TCG_TARGET_EXTEND_ARGS	sparc/tcg-target.h	91;"	d
+TCG_TARGET_HAS_GUEST_BASE	arm/tcg-target.h	76;"	d
+TCG_TARGET_HAS_GUEST_BASE	hppa/tcg-target.h	103;"	d
+TCG_TARGET_HAS_GUEST_BASE	i386/tcg-target.h	115;"	d
+TCG_TARGET_HAS_GUEST_BASE	ia64/tcg-target.h	145;"	d
+TCG_TARGET_HAS_GUEST_BASE	mips/tcg-target.h	103;"	d
+TCG_TARGET_HAS_GUEST_BASE	ppc/tcg-target.h	98;"	d
+TCG_TARGET_HAS_GUEST_BASE	ppc64/tcg-target.h	108;"	d
+TCG_TARGET_HAS_GUEST_BASE	s390/tcg-target.h	93;"	d
+TCG_TARGET_HAS_andc_i32	arm/tcg-target.h	70;"	d
+TCG_TARGET_HAS_andc_i32	hppa/tcg-target.h	95;"	d
+TCG_TARGET_HAS_andc_i32	ia64/tcg-target.h	107;"	d
+TCG_TARGET_HAS_andc_i32	mips/tcg-target.h	89;"	d
+TCG_TARGET_HAS_andc_i32	ppc/tcg-target.h	90;"	d
+TCG_TARGET_HAS_andc_i32	sparc/tcg-target.h	105;"	d
+TCG_TARGET_HAS_andc_i64	ia64/tcg-target.h	108;"	d
+TCG_TARGET_HAS_andc_i64	sparc/tcg-target.h	125;"	d
+TCG_TARGET_HAS_bswap16_i32	arm/tcg-target.h	65;"	d
+TCG_TARGET_HAS_bswap16_i32	hppa/tcg-target.h	92;"	d
+TCG_TARGET_HAS_bswap16_i32	i386/tcg-target.h	84;"	d
+TCG_TARGET_HAS_bswap16_i32	ia64/tcg-target.h	109;"	d
+TCG_TARGET_HAS_bswap16_i32	mips/tcg-target.h	88;"	d
+TCG_TARGET_HAS_bswap16_i32	ppc/tcg-target.h	86;"	d
+TCG_TARGET_HAS_bswap16_i32	s390/tcg-target.h	62;"	d
+TCG_TARGET_HAS_bswap16_i64	i386/tcg-target.h	103;"	d
+TCG_TARGET_HAS_bswap16_i64	ia64/tcg-target.h	110;"	d
+TCG_TARGET_HAS_bswap16_i64	s390/tcg-target.h	81;"	d
+TCG_TARGET_HAS_bswap32_i32	arm/tcg-target.h	66;"	d
+TCG_TARGET_HAS_bswap32_i32	hppa/tcg-target.h	93;"	d
+TCG_TARGET_HAS_bswap32_i32	i386/tcg-target.h	85;"	d
+TCG_TARGET_HAS_bswap32_i32	ia64/tcg-target.h	111;"	d
+TCG_TARGET_HAS_bswap32_i32	mips/tcg-target.h	87;"	d
+TCG_TARGET_HAS_bswap32_i32	ppc/tcg-target.h	87;"	d
+TCG_TARGET_HAS_bswap32_i32	s390/tcg-target.h	63;"	d
+TCG_TARGET_HAS_bswap32_i64	i386/tcg-target.h	104;"	d
+TCG_TARGET_HAS_bswap32_i64	ia64/tcg-target.h	112;"	d
+TCG_TARGET_HAS_bswap32_i64	s390/tcg-target.h	82;"	d
+TCG_TARGET_HAS_bswap64_i64	i386/tcg-target.h	105;"	d
+TCG_TARGET_HAS_bswap64_i64	ia64/tcg-target.h	113;"	d
+TCG_TARGET_HAS_bswap64_i64	s390/tcg-target.h	83;"	d
+TCG_TARGET_HAS_div2_i32	i386/tcg-target.h	78;"	d
+TCG_TARGET_HAS_div2_i32	s390/tcg-target.h	56;"	d
+TCG_TARGET_HAS_div2_i64	i386/tcg-target.h	95;"	d
+TCG_TARGET_HAS_div2_i64	s390/tcg-target.h	73;"	d
+TCG_TARGET_HAS_div_i32	mips/tcg-target.h	81;"	d
+TCG_TARGET_HAS_div_i32	ppc/tcg-target.h	80;"	d
+TCG_TARGET_HAS_div_i32	ppc64/tcg-target.h	71;"	d
+TCG_TARGET_HAS_div_i32	sparc/tcg-target.h	95;"	d
+TCG_TARGET_HAS_div_i64	ppc64/tcg-target.h	87;"	d
+TCG_TARGET_HAS_div_i64	sparc/tcg-target.h	112;"	d
+TCG_TARGET_HAS_eqv_i32	ia64/tcg-target.h	114;"	d
+TCG_TARGET_HAS_eqv_i32	mips/tcg-target.h	91;"	d
+TCG_TARGET_HAS_eqv_i32	ppc/tcg-target.h	92;"	d
+TCG_TARGET_HAS_eqv_i64	ia64/tcg-target.h	115;"	d
+TCG_TARGET_HAS_ext16s_i32	arm/tcg-target.h	62;"	d
+TCG_TARGET_HAS_ext16s_i32	hppa/tcg-target.h	91;"	d
+TCG_TARGET_HAS_ext16s_i32	i386/tcg-target.h	81;"	d
+TCG_TARGET_HAS_ext16s_i32	ia64/tcg-target.h	117;"	d
+TCG_TARGET_HAS_ext16s_i32	mips/tcg-target.h	86;"	d
+TCG_TARGET_HAS_ext16s_i32	ppc/tcg-target.h	83;"	d
+TCG_TARGET_HAS_ext16s_i32	ppc64/tcg-target.h	74;"	d
+TCG_TARGET_HAS_ext16s_i32	s390/tcg-target.h	59;"	d
+TCG_TARGET_HAS_ext16s_i64	i386/tcg-target.h	98;"	d
+TCG_TARGET_HAS_ext16s_i64	ia64/tcg-target.h	119;"	d
+TCG_TARGET_HAS_ext16s_i64	ppc64/tcg-target.h	90;"	d
+TCG_TARGET_HAS_ext16s_i64	s390/tcg-target.h	76;"	d
+TCG_TARGET_HAS_ext16u_i32	arm/tcg-target.h	64;"	d
+TCG_TARGET_HAS_ext16u_i32	hppa/tcg-target.h	101;"	d
+TCG_TARGET_HAS_ext16u_i32	i386/tcg-target.h	83;"	d
+TCG_TARGET_HAS_ext16u_i32	ia64/tcg-target.h	122;"	d
+TCG_TARGET_HAS_ext16u_i32	mips/tcg-target.h	97;"	d
+TCG_TARGET_HAS_ext16u_i32	ppc/tcg-target.h	85;"	d
+TCG_TARGET_HAS_ext16u_i32	s390/tcg-target.h	61;"	d
+TCG_TARGET_HAS_ext16u_i64	i386/tcg-target.h	101;"	d
+TCG_TARGET_HAS_ext16u_i64	ia64/tcg-target.h	124;"	d
+TCG_TARGET_HAS_ext16u_i64	s390/tcg-target.h	79;"	d
+TCG_TARGET_HAS_ext32s_i64	i386/tcg-target.h	99;"	d
+TCG_TARGET_HAS_ext32s_i64	ia64/tcg-target.h	120;"	d
+TCG_TARGET_HAS_ext32s_i64	ppc64/tcg-target.h	91;"	d
+TCG_TARGET_HAS_ext32s_i64	s390/tcg-target.h	77;"	d
+TCG_TARGET_HAS_ext32s_i64	sparc/tcg-target.h	116;"	d
+TCG_TARGET_HAS_ext32u_i64	i386/tcg-target.h	102;"	d
+TCG_TARGET_HAS_ext32u_i64	ia64/tcg-target.h	125;"	d
+TCG_TARGET_HAS_ext32u_i64	s390/tcg-target.h	80;"	d
+TCG_TARGET_HAS_ext32u_i64	sparc/tcg-target.h	119;"	d
+TCG_TARGET_HAS_ext8s_i32	arm/tcg-target.h	61;"	d
+TCG_TARGET_HAS_ext8s_i32	hppa/tcg-target.h	90;"	d
+TCG_TARGET_HAS_ext8s_i32	i386/tcg-target.h	80;"	d
+TCG_TARGET_HAS_ext8s_i32	ia64/tcg-target.h	116;"	d
+TCG_TARGET_HAS_ext8s_i32	mips/tcg-target.h	85;"	d
+TCG_TARGET_HAS_ext8s_i32	ppc/tcg-target.h	82;"	d
+TCG_TARGET_HAS_ext8s_i32	ppc64/tcg-target.h	73;"	d
+TCG_TARGET_HAS_ext8s_i32	s390/tcg-target.h	58;"	d
+TCG_TARGET_HAS_ext8s_i64	i386/tcg-target.h	97;"	d
+TCG_TARGET_HAS_ext8s_i64	ia64/tcg-target.h	118;"	d
+TCG_TARGET_HAS_ext8s_i64	ppc64/tcg-target.h	89;"	d
+TCG_TARGET_HAS_ext8s_i64	s390/tcg-target.h	75;"	d
+TCG_TARGET_HAS_ext8u_i32	arm/tcg-target.h	63;"	d
+TCG_TARGET_HAS_ext8u_i32	hppa/tcg-target.h	100;"	d
+TCG_TARGET_HAS_ext8u_i32	i386/tcg-target.h	82;"	d
+TCG_TARGET_HAS_ext8u_i32	ia64/tcg-target.h	121;"	d
+TCG_TARGET_HAS_ext8u_i32	mips/tcg-target.h	96;"	d
+TCG_TARGET_HAS_ext8u_i32	ppc/tcg-target.h	84;"	d
+TCG_TARGET_HAS_ext8u_i32	s390/tcg-target.h	60;"	d
+TCG_TARGET_HAS_ext8u_i64	i386/tcg-target.h	100;"	d
+TCG_TARGET_HAS_ext8u_i64	ia64/tcg-target.h	123;"	d
+TCG_TARGET_HAS_ext8u_i64	s390/tcg-target.h	78;"	d
+TCG_TARGET_HAS_nand_i32	ia64/tcg-target.h	126;"	d
+TCG_TARGET_HAS_nand_i32	mips/tcg-target.h	92;"	d
+TCG_TARGET_HAS_nand_i32	ppc/tcg-target.h	93;"	d
+TCG_TARGET_HAS_nand_i64	ia64/tcg-target.h	127;"	d
+TCG_TARGET_HAS_neg_i32	arm/tcg-target.h	68;"	d
+TCG_TARGET_HAS_neg_i32	hppa/tcg-target.h	99;"	d
+TCG_TARGET_HAS_neg_i32	i386/tcg-target.h	86;"	d
+TCG_TARGET_HAS_neg_i32	ia64/tcg-target.h	136;"	d
+TCG_TARGET_HAS_neg_i32	mips/tcg-target.h	95;"	d
+TCG_TARGET_HAS_neg_i32	ppc/tcg-target.h	89;"	d
+TCG_TARGET_HAS_neg_i32	ppc64/tcg-target.h	80;"	d
+TCG_TARGET_HAS_neg_i32	s390/tcg-target.h	65;"	d
+TCG_TARGET_HAS_neg_i32	sparc/tcg-target.h	103;"	d
+TCG_TARGET_HAS_neg_i64	i386/tcg-target.h	106;"	d
+TCG_TARGET_HAS_neg_i64	ia64/tcg-target.h	137;"	d
+TCG_TARGET_HAS_neg_i64	ppc64/tcg-target.h	99;"	d
+TCG_TARGET_HAS_neg_i64	s390/tcg-target.h	85;"	d
+TCG_TARGET_HAS_neg_i64	sparc/tcg-target.h	123;"	d
+TCG_TARGET_HAS_nor_i32	ia64/tcg-target.h	128;"	d
+TCG_TARGET_HAS_nor_i32	mips/tcg-target.h	83;"	d
+TCG_TARGET_HAS_nor_i32	ppc/tcg-target.h	94;"	d
+TCG_TARGET_HAS_nor_i64	ia64/tcg-target.h	129;"	d
+TCG_TARGET_HAS_not_i32	arm/tcg-target.h	67;"	d
+TCG_TARGET_HAS_not_i32	hppa/tcg-target.h	94;"	d
+TCG_TARGET_HAS_not_i32	i386/tcg-target.h	87;"	d
+TCG_TARGET_HAS_not_i32	ia64/tcg-target.h	138;"	d
+TCG_TARGET_HAS_not_i32	mips/tcg-target.h	82;"	d
+TCG_TARGET_HAS_not_i32	ppc/tcg-target.h	88;"	d
+TCG_TARGET_HAS_not_i32	sparc/tcg-target.h	104;"	d
+TCG_TARGET_HAS_not_i64	i386/tcg-target.h	107;"	d
+TCG_TARGET_HAS_not_i64	ia64/tcg-target.h	139;"	d
+TCG_TARGET_HAS_not_i64	sparc/tcg-target.h	124;"	d
+TCG_TARGET_HAS_orc_i32	ia64/tcg-target.h	130;"	d
+TCG_TARGET_HAS_orc_i32	mips/tcg-target.h	90;"	d
+TCG_TARGET_HAS_orc_i32	ppc/tcg-target.h	91;"	d
+TCG_TARGET_HAS_orc_i32	sparc/tcg-target.h	106;"	d
+TCG_TARGET_HAS_orc_i64	ia64/tcg-target.h	131;"	d
+TCG_TARGET_HAS_orc_i64	sparc/tcg-target.h	126;"	d
+TCG_TARGET_HAS_rot_i32	arm/tcg-target.h	69;"	d
+TCG_TARGET_HAS_rot_i32	hppa/tcg-target.h	89;"	d
+TCG_TARGET_HAS_rot_i32	i386/tcg-target.h	79;"	d
+TCG_TARGET_HAS_rot_i32	ia64/tcg-target.h	132;"	d
+TCG_TARGET_HAS_rot_i32	mips/tcg-target.h	84;"	d
+TCG_TARGET_HAS_rot_i32	ppc/tcg-target.h	81;"	d
+TCG_TARGET_HAS_rot_i32	s390/tcg-target.h	57;"	d
+TCG_TARGET_HAS_rot_i64	i386/tcg-target.h	96;"	d
+TCG_TARGET_HAS_rot_i64	ia64/tcg-target.h	133;"	d
+TCG_TARGET_HAS_rot_i64	s390/tcg-target.h	74;"	d
+TCG_TARGET_HPPA	hppa/tcg-target.h	25;"	d
+TCG_TARGET_I386	i386/tcg-target.h	24;"	d
+TCG_TARGET_IA64	ia64/tcg-target.h	25;"	d
+TCG_TARGET_MIPS	mips/tcg-target.h	26;"	d
+TCG_TARGET_NB_REGS	arm/tcg-target.h	50;"	d
+TCG_TARGET_NB_REGS	hppa/tcg-target.h	35;"	d
+TCG_TARGET_NB_REGS	i386/tcg-target.h	34;"	d
+TCG_TARGET_NB_REGS	i386/tcg-target.h	36;"	d
+TCG_TARGET_NB_REGS	ia64/tcg-target.h	30;"	d
+TCG_TARGET_NB_REGS	mips/tcg-target.h	33;"	d
+TCG_TARGET_NB_REGS	ppc/tcg-target.h	28;"	d
+TCG_TARGET_NB_REGS	ppc64/tcg-target.h	28;"	d
+TCG_TARGET_NB_REGS	s390/tcg-target.h	53;"	d
+TCG_TARGET_NB_REGS	sparc/tcg-target.h	34;"	d
+TCG_TARGET_PPC	ppc/tcg-target.h	24;"	d
+TCG_TARGET_PPC64	ppc64/tcg-target.h	24;"	d
+TCG_TARGET_REG_BITS	arm/tcg-target.h	27;"	d
+TCG_TARGET_REG_BITS	hppa/tcg-target.h	28;"	d
+TCG_TARGET_REG_BITS	i386/tcg-target.h	27;"	d
+TCG_TARGET_REG_BITS	i386/tcg-target.h	29;"	d
+TCG_TARGET_REG_BITS	ia64/tcg-target.h	27;"	d
+TCG_TARGET_REG_BITS	mips/tcg-target.h	28;"	d
+TCG_TARGET_REG_BITS	ppc/tcg-target.h	26;"	d
+TCG_TARGET_REG_BITS	ppc64/tcg-target.h	26;"	d
+TCG_TARGET_REG_BITS	s390/tcg-target.h	27;"	d
+TCG_TARGET_REG_BITS	s390/tcg-target.h	29;"	d
+TCG_TARGET_REG_BITS	sparc/tcg-target.h	27;"	d
+TCG_TARGET_REG_BITS	sparc/tcg-target.h	29;"	d
+TCG_TARGET_S390	s390/tcg-target.h	24;"	d
+TCG_TARGET_SPARC	sparc/tcg-target.h	24;"	d
+TCG_TARGET_STACK_ALIGN	arm/tcg-target.h	56;"	d
+TCG_TARGET_STACK_ALIGN	hppa/tcg-target.h	81;"	d
+TCG_TARGET_STACK_ALIGN	i386/tcg-target.h	74;"	d
+TCG_TARGET_STACK_ALIGN	ia64/tcg-target.h	103;"	d
+TCG_TARGET_STACK_ALIGN	mips/tcg-target.h	76;"	d
+TCG_TARGET_STACK_ALIGN	ppc/tcg-target.h	67;"	d
+TCG_TARGET_STACK_ALIGN	ppc64/tcg-target.h	67;"	d
+TCG_TARGET_STACK_ALIGN	s390/tcg-target.h	97;"	d
+TCG_TARGET_STACK_ALIGN	sparc/tcg-target.h	81;"	d
+TCG_TARGET_STACK_ALIGN	sparc/tcg-target.h	87;"	d
+TCG_TARGET_STACK_GROWSUP	arm/tcg-target.h	29;"	d
+TCG_TARGET_STACK_GROWSUP	hppa/tcg-target.h	85;"	d
+TCG_TARGET_STACK_MINFRAME	sparc/tcg-target.h	78;"	d
+TCG_TARGET_STACK_MINFRAME	sparc/tcg-target.h	84;"	d
+TCG_TARGET_STATIC_CALL_ARGS_SIZE	hppa/tcg-target.h	83;"	d
+TCG_TARGET_WORDS_BIGENDIAN	arm/tcg-target.h	28;"	d
+TCG_TARGET_WORDS_BIGENDIAN	hppa/tcg-target.h	33;"	d
+TCG_TARGET_WORDS_BIGENDIAN	mips/tcg-target.h	30;"	d
+TCG_TARGET_WORDS_BIGENDIAN	ppc/tcg-target.h	27;"	d
+TCG_TARGET_WORDS_BIGENDIAN	ppc64/tcg-target.h	27;"	d
+TCG_TARGET_WORDS_BIGENDIAN	s390/tcg-target.h	32;"	d
+TCG_TARGET_WORDS_BIGENDIAN	sparc/tcg-target.h	32;"	d
+TCG_TMP0	s390/tcg-target.c	46;"	d	file:
+TCG_TYPE_COUNT	tcg.h	/^    TCG_TYPE_COUNT, \/* number of different types *\/$/;"	e	enum:TCGType
+TCG_TYPE_I32	tcg.h	/^    TCG_TYPE_I32,$/;"	e	enum:TCGType
+TCG_TYPE_I64	tcg.h	/^    TCG_TYPE_I64,$/;"	e	enum:TCGType
+TCG_TYPE_PTR	tcg.h	/^    TCG_TYPE_PTR = TCG_TYPE_REG,$/;"	e	enum:TCGType
+TCG_TYPE_REG	tcg.h	/^    TCG_TYPE_REG = TCG_TYPE_I32,$/;"	e	enum:TCGType
+TCG_TYPE_TL	tcg.h	/^    TCG_TYPE_TL = TCG_TYPE_I64,$/;"	e	enum:TCGType
+TCGv	tcg-op.h	2083;"	d
+TCGv	tcg-op.h	2094;"	d
+TCGv_i32	tcg.h	/^typedef int TCGv_i32;$/;"	t
+TCGv_i32	tcg.h	/^} TCGv_i32;$/;"	t	typeref:struct:__anon21
+TCGv_i64	tcg.h	/^typedef int TCGv_i64;$/;"	t
+TCGv_i64	tcg.h	/^} TCGv_i64;$/;"	t	typeref:struct:__anon22
+TCGv_ptr	tcg.h	449;"	d
+TCGv_ptr	tcg.h	459;"	d
+TEMP_VAL_CONST	tcg.h	241;"	d
+TEMP_VAL_DEAD	tcg.h	238;"	d
+TEMP_VAL_MEM	tcg.h	240;"	d
+TEMP_VAL_REG	tcg.h	239;"	d
+TLB_SHIFT	arm/tcg-target.c	917;"	d	file:
+TO	ppc/tcg-target.c	399;"	d	file:
+TO	ppc64/tcg-target.c	396;"	d	file:
+TO_CPSR	arm/tcg-target.c	286;"	d	file:
+TRAP	ppc/tcg-target.c	393;"	d	file:
+TRAP	ppc64/tcg-target.c	390;"	d	file:
+TW	ppc/tcg-target.c	392;"	d	file:
+TW	ppc64/tcg-target.c	389;"	d	file:
+USE_ARMV5_INSTRUCTIONS	arm/tcg-target.c	46;"	d	file:
+USE_ARMV5_INSTRUCTIONS	arm/tcg-target.c	54;"	d	file:
+USE_ARMV6_INSTRUCTIONS	arm/tcg-target.c	39;"	d	file:
+USE_ARMV6_INSTRUCTIONS	arm/tcg-target.c	61;"	d	file:
+USE_ARMV7_INSTRUCTIONS	arm/tcg-target.c	30;"	d	file:
+USE_ARMV7_INSTRUCTIONS	arm/tcg-target.c	68;"	d	file:
+USE_LIVENESS_ANALYSIS	tcg.c	26;"	d	file:
+USE_LONG_BRANCHES	s390/tcg-target.c	30;"	d	file:
+WRY	sparc/tcg-target.c	253;"	d	file:
+XO19	ppc/tcg-target.c	302;"	d	file:
+XO19	ppc64/tcg-target.c	276;"	d	file:
+XO30	ppc64/tcg-target.c	277;"	d	file:
+XO31	ppc/tcg-target.c	301;"	d	file:
+XO31	ppc64/tcg-target.c	278;"	d	file:
+XO58	ppc64/tcg-target.c	279;"	d	file:
+XO62	ppc64/tcg-target.c	280;"	d	file:
+XOR	ppc/tcg-target.c	353;"	d	file:
+XOR	ppc64/tcg-target.c	343;"	d	file:
+XORI	ppc/tcg-target.c	319;"	d	file:
+XORI	ppc64/tcg-target.c	307;"	d	file:
+XORIS	ppc/tcg-target.c	320;"	d	file:
+XORIS	ppc64/tcg-target.c	308;"	d	file:
+addend	tcg.h	/^    tcg_target_long addend;$/;"	m	struct:TCGRelocation
+alias_index	tcg.h	/^    uint8_t alias_index;$/;"	m	struct:TCGArgConstraint
+allocated_helpers	tcg.h	/^    int allocated_helpers;$/;"	m	struct:TCGContext
+and_mask_p	hppa/tcg-target.c	/^static inline int and_mask_p(tcg_target_ulong mask)$/;"	f	file:
+args_ct	tcg.h	/^    TCGArgConstraint *args_ct;$/;"	m	struct:TCGOpDef
+args_ct_str	tcg.h	/^    const char *args_ct_str[TCG_MAX_OP_ARGS];$/;"	m	struct:TCGTargetOpDef
+arm_cond_code_e	arm/tcg-target.c	/^enum arm_cond_code_e {$/;"	g	file:
+arm_data_opc_e	arm/tcg-target.c	/^enum arm_data_opc_e {$/;"	g	file:
+arm_op_defs	arm/tcg-target.c	/^static const TCGTargetOpDef arm_op_defs[] = {$/;"	v	file:
+base_type	tcg.h	/^    TCGType base_type;$/;"	m	struct:TCGTemp
+bbB	ia64/tcg-target.c	/^    bbB = 0x17,$/;"	e	enum:__anon9	file:
+bbb	ia64/tcg-target.c	/^    bbb = 0x16,$/;"	e	enum:__anon9	file:
+check_fit_i32	sparc/tcg-target.c	/^static inline int check_fit_i32(uint32_t val, unsigned int bits)$/;"	f	file:
+check_fit_imm	arm/tcg-target.c	/^static inline int check_fit_imm(uint32_t imm)$/;"	f	file:
+check_fit_tl	hppa/tcg-target.c	/^static inline int check_fit_tl(tcg_target_long val, unsigned int bits)$/;"	f	file:
+check_fit_tl	sparc/tcg-target.c	/^static inline int check_fit_tl(tcg_target_long val, unsigned int bits)$/;"	f	file:
+check_regs	tcg.c	/^static void check_regs(TCGContext *s)$/;"	f	file:
+code_buf	tcg.h	/^    uint8_t *code_buf;$/;"	m	struct:TCGContext
+code_in_len	tcg.h	/^    int64_t code_in_len;$/;"	m	struct:TCGContext
+code_out_len	tcg.h	/^    int64_t code_out_len;$/;"	m	struct:TCGContext
+code_ptr	tcg.h	/^    uint8_t *code_ptr;$/;"	m	struct:TCGContext
+code_time	tcg.h	/^    int64_t code_time;$/;"	m	struct:TCGContext
+cond_name	tcg.c	/^static const char * const cond_name[] =$/;"	v	file:
+ct	tcg.h	/^    uint16_t ct;$/;"	m	struct:TCGArgConstraint
+current_frame_offset	tcg.h	/^    tcg_target_long current_frame_offset;$/;"	m	struct:TCGContext
+data	tcg.h	/^    uint8_t data[0] __attribute__ ((aligned));$/;"	m	struct:TCGPool
+del_op_count	tcg.h	/^    int64_t del_op_count;$/;"	m	struct:TCGContext
+dump_op_count	tcg.c	/^static void dump_op_count(void)$/;"	f	file:
+dump_regs	tcg.c	/^static void dump_regs(TCGContext *s)$/;"	f	file:
+encode_imm	arm/tcg-target.c	/^static inline int encode_imm(uint32_t imm)$/;"	f	file:
+facilities	s390/tcg-target.c	/^static uint64_t facilities;$/;"	v	file:
+first_free_temp	tcg.h	/^    int first_free_temp[TCG_TYPE_COUNT * 2]; $/;"	m	struct:TCGContext
+first_reloc	tcg.h	/^        TCGRelocation *first_reloc;$/;"	m	union:TCGLabel::__anon20
+fixed_reg	tcg.h	/^    unsigned int fixed_reg:1;$/;"	m	struct:TCGTemp
+flags	tcg.h	/^    uint8_t flags;$/;"	m	struct:TCGOpDef
+flush_icache_range	arm/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	hppa/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	i386/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	ia64/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	mips/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	s390/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+flush_icache_range	sparc/tcg-target.h	/^static inline void flush_icache_range(unsigned long start, unsigned long stop)$/;"	f
+frame_end	tcg.h	/^    tcg_target_long frame_end;$/;"	m	struct:TCGContext
+frame_reg	tcg.h	/^    int frame_reg;$/;"	m	struct:TCGContext
+frame_start	tcg.h	/^    tcg_target_long frame_start;$/;"	m	struct:TCGContext
+func	tcg.h	/^    tcg_target_ulong func;$/;"	m	struct:TCGHelperInfo
+gen_new_label	tcg.c	/^int gen_new_label(void)$/;"	f
+gen_opc_ptr	tcg.c	/^uint16_t *gen_opc_ptr;$/;"	v
+gen_opparam_ptr	tcg.c	/^TCGArg *gen_opparam_ptr;$/;"	v
+gen_set_label	tcg-op.h	/^static inline void gen_set_label(int n)$/;"	f
+get_constraint_priority	tcg.c	/^static int get_constraint_priority(const TCGOpDef *def, int k)$/;"	f	file:
+get_reloc_pcrel21b	ia64/tcg-target.c	/^static inline uint64_t get_reloc_pcrel21b (void *pc)$/;"	f	file:
+get_reloc_pcrel60b	ia64/tcg-target.c	/^static inline uint64_t get_reloc_pcrel60b (void *pc)$/;"	f	file:
+got_sigill	s390/tcg-target.c	/^static volatile sig_atomic_t got_sigill;$/;"	v	file:
+has_value	tcg.h	/^    int has_value;$/;"	m	struct:TCGLabel
+helper_cmp	tcg.c	/^static int helper_cmp(const void *p1, const void *p2)$/;"	f	file:
+helpers	tcg.h	/^    TCGHelperInfo *helpers;$/;"	m	struct:TCGContext
+helpers_sorted	tcg.h	/^    int helpers_sorted;$/;"	m	struct:TCGContext
+hppa_op_defs	hppa/tcg-target.c	/^static const TCGTargetOpDef hppa_op_defs[] = {$/;"	v	file:
+i32	tcg.h	/^    int i32;$/;"	m	struct:__anon21
+i64	tcg.h	/^    int i64;$/;"	m	struct:__anon22
+ia64_op_defs	ia64/tcg-target.c	/^static const TCGTargetOpDef ia64_op_defs[] = {$/;"	v	file:
+interm_time	tcg.h	/^    int64_t interm_time;$/;"	m	struct:TCGContext
+la_time	tcg.h	/^    int64_t la_time;$/;"	m	struct:TCGContext
+labels	tcg.h	/^    TCGLabel *labels;$/;"	m	struct:TCGContext
+low_sign_ext	hppa/tcg-target.c	/^static int low_sign_ext(int val, int len)$/;"	f	file:
+mII	ia64/tcg-target.c	/^    mII = 0x03,$/;"	e	enum:__anon9	file:
+mIi	ia64/tcg-target.c	/^    mIi = 0x02,$/;"	e	enum:__anon9	file:
+mLX	ia64/tcg-target.c	/^    mLX = 0x05,$/;"	e	enum:__anon9	file:
+mbB	ia64/tcg-target.c	/^    mbB = 0x13,$/;"	e	enum:__anon9	file:
+mbb	ia64/tcg-target.c	/^    mbb = 0x12,$/;"	e	enum:__anon9	file:
+mem_allocated	tcg.h	/^    unsigned int mem_allocated:1;$/;"	m	struct:TCGTemp
+mem_coherent	tcg.h	/^    unsigned int mem_coherent:1;$/;"	m	struct:TCGTemp
+mem_offset	tcg.h	/^    tcg_target_long mem_offset;$/;"	m	struct:TCGTemp
+mem_reg	tcg.h	/^    int mem_reg;$/;"	m	struct:TCGTemp
+mfB	ia64/tcg-target.c	/^    mfB = 0x1d,$/;"	e	enum:__anon9	file:
+mfI	ia64/tcg-target.c	/^    mfI = 0x0d,$/;"	e	enum:__anon9	file:
+mfb	ia64/tcg-target.c	/^    mfb = 0x1c,$/;"	e	enum:__anon9	file:
+mfi	ia64/tcg-target.c	/^    mfi = 0x0c,$/;"	e	enum:__anon9	file:
+miB	ia64/tcg-target.c	/^    miB = 0x11,$/;"	e	enum:__anon9	file:
+miI	ia64/tcg-target.c	/^    miI = 0x01,$/;"	e	enum:__anon9	file:
+mib	ia64/tcg-target.c	/^    mib = 0x10,$/;"	e	enum:__anon9	file:
+mii	ia64/tcg-target.c	/^    mii = 0x00,$/;"	e	enum:__anon9	file:
+mips_op_defs	mips/tcg-target.c	/^static const TCGTargetOpDef mips_op_defs[] = {$/;"	v	file:
+mlx	ia64/tcg-target.c	/^    mlx = 0x04,$/;"	e	enum:__anon9	file:
+mmB	ia64/tcg-target.c	/^    mmB = 0x19,$/;"	e	enum:__anon9	file:
+mmF	ia64/tcg-target.c	/^    mmF = 0x0f,$/;"	e	enum:__anon9	file:
+mmI	ia64/tcg-target.c	/^    mmI = 0x09,$/;"	e	enum:__anon9	file:
+mmb	ia64/tcg-target.c	/^    mmb = 0x18,$/;"	e	enum:__anon9	file:
+mmf	ia64/tcg-target.c	/^    mmf = 0x0e,$/;"	e	enum:__anon9	file:
+mmi	ia64/tcg-target.c	/^    mmi = 0x08,$/;"	e	enum:__anon9	file:
+name	tcg.h	/^    const char *name;$/;"	m	struct:TCGHelperInfo
+name	tcg.h	/^    const char *name;$/;"	m	struct:TCGOpDef
+name	tcg.h	/^    const char *name;$/;"	m	struct:TCGTemp
+nb_args	tcg.h	/^    uint8_t nb_oargs, nb_iargs, nb_cargs, nb_args;$/;"	m	struct:TCGOpDef
+nb_cargs	tcg.h	/^    uint8_t nb_oargs, nb_iargs, nb_cargs, nb_args;$/;"	m	struct:TCGOpDef
+nb_globals	tcg.h	/^    int nb_globals;$/;"	m	struct:TCGContext
+nb_helpers	tcg.h	/^    int nb_helpers;$/;"	m	struct:TCGContext
+nb_iargs	tcg.h	/^    uint8_t nb_oargs, nb_iargs, nb_cargs, nb_args;$/;"	m	struct:TCGOpDef
+nb_labels	tcg.h	/^    int nb_labels;$/;"	m	struct:TCGContext
+nb_oargs	tcg.h	/^    uint8_t nb_oargs, nb_iargs, nb_cargs, nb_args;$/;"	m	struct:TCGOpDef
+nb_temps	tcg.h	/^    int nb_temps;$/;"	m	struct:TCGContext
+next	tcg.h	/^    struct TCGPool *next;$/;"	m	struct:TCGPool	typeref:struct:TCGPool::TCGPool
+next	tcg.h	/^    struct TCGRelocation *next;$/;"	m	struct:TCGRelocation	typeref:struct:TCGRelocation::TCGRelocation
+next_free_temp	tcg.h	/^    int next_free_temp;$/;"	m	struct:TCGTemp
+op	tcg.h	/^    TCGOpcode op;$/;"	m	struct:TCGTargetOpDef
+op_count	tcg.h	/^    int64_t op_count; \/* total insn count *\/$/;"	m	struct:TCGContext
+op_count_max	tcg.h	/^    int op_count_max; \/* max insn per TB *\/$/;"	m	struct:TCGContext
+op_dead_iargs	tcg.h	/^    uint16_t *op_dead_iargs; \/* for each operation, each bit tells if the$/;"	m	struct:TCGContext
+or_mask_p	hppa/tcg-target.c	/^static inline int or_mask_p(tcg_target_ulong mask)$/;"	f	file:
+patch_reloc	arm/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	hppa/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	i386/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	ia64/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	mips/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	ppc/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	ppc64/tcg-target.c	/^static void patch_reloc (uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	s390/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+patch_reloc	sparc/tcg-target.c	/^static void patch_reloc(uint8_t *code_ptr, int type,$/;"	f	file:
+pool_cur	tcg.h	/^    uint8_t *pool_cur, *pool_end;$/;"	m	struct:TCGContext
+pool_current	tcg.h	/^    TCGPool *pool_first, *pool_current;$/;"	m	struct:TCGContext
+pool_end	tcg.h	/^    uint8_t *pool_cur, *pool_end;$/;"	m	struct:TCGContext
+pool_first	tcg.h	/^    TCGPool *pool_first, *pool_current;$/;"	m	struct:TCGContext
+ppc_addi	ppc/tcg-target.c	/^static void ppc_addi (TCGContext *s, int rt, int ra, tcg_target_long si)$/;"	f	file:
+ppc_addi32	ppc64/tcg-target.c	/^static void ppc_addi32 (TCGContext *s, int rt, int ra, tcg_target_long si)$/;"	f	file:
+ppc_addi64	ppc64/tcg-target.c	/^static void ppc_addi64 (TCGContext *s, int rt, int ra, tcg_target_long si)$/;"	f	file:
+ppc_op_defs	ppc/tcg-target.c	/^static const TCGTargetOpDef ppc_op_defs[] = {$/;"	v	file:
+ppc_op_defs	ppc64/tcg-target.c	/^static const TCGTargetOpDef ppc_op_defs[] = {$/;"	v	file:
+ppc_tb_set_jmp_target	ppc/tcg-target.c	/^void ppc_tb_set_jmp_target (unsigned long jmp_addr, unsigned long addr)$/;"	f
+ppc_tb_set_jmp_target	ppc64/tcg-target.c	/^void ppc_tb_set_jmp_target (unsigned long jmp_addr, unsigned long addr)$/;"	f
+ptr	tcg.h	/^    uint8_t *ptr;$/;"	m	struct:TCGRelocation
+qemu_ld_helpers	arm/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	hppa/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	i386/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	ia64/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	mips/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	ppc/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	ppc64/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	s390/tcg-target.c	/^static void *qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_ld_helpers	sparc/tcg-target.c	/^static const void * const qemu_ld_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	arm/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	hppa/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	i386/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	ia64/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	mips/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	ppc/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	ppc64/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	s390/tcg-target.c	/^static void *qemu_st_helpers[4] = {$/;"	v	file:
+qemu_st_helpers	sparc/tcg-target.c	/^static const void * const qemu_st_helpers[4] = {$/;"	v	file:
+query_facilities	s390/tcg-target.c	/^static void query_facilities(void)$/;"	f	file:
+reassemble_12	hppa/tcg-target.c	/^static int reassemble_12(int as12)$/;"	f	file:
+reassemble_17	hppa/tcg-target.c	/^static int reassemble_17(int as17)$/;"	f	file:
+reassemble_21	hppa/tcg-target.c	/^static int reassemble_21(int as21)$/;"	f	file:
+reg	tcg.h	/^    int reg;$/;"	m	struct:TCGTemp
+reg_to_temp	tcg.h	/^    int reg_to_temp[TCG_TARGET_NB_REGS];$/;"	m	struct:TCGContext
+regs	tcg.h	/^        TCGRegSet regs;$/;"	m	union:TCGArgConstraint::__anon24
+reloc_26_val	mips/tcg-target.c	/^static inline uint32_t reloc_26_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_hi16	mips/tcg-target.c	/^static inline void reloc_hi16 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_hi16_val	mips/tcg-target.c	/^static inline uint32_t reloc_hi16_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_lo16	mips/tcg-target.c	/^static inline void reloc_lo16 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_lo16_val	mips/tcg-target.c	/^static inline uint32_t reloc_lo16_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc14	ppc/tcg-target.c	/^static void reloc_pc14 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc14	ppc64/tcg-target.c	/^static void reloc_pc14 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc14_val	ppc/tcg-target.c	/^static uint16_t reloc_pc14_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc14_val	ppc64/tcg-target.c	/^static uint16_t reloc_pc14_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc16	mips/tcg-target.c	/^static inline void reloc_pc16 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc16_val	mips/tcg-target.c	/^static inline uint32_t reloc_pc16_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc24	ppc/tcg-target.c	/^static void reloc_pc24 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc24	ppc64/tcg-target.c	/^static void reloc_pc24 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc24_val	ppc/tcg-target.c	/^static uint32_t reloc_pc24_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc24_val	ppc64/tcg-target.c	/^static uint32_t reloc_pc24_val (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pc26	mips/tcg-target.c	/^static inline void reloc_pc26 (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pcrel21b	ia64/tcg-target.c	/^static inline void reloc_pcrel21b (void *pc, tcg_target_long target)$/;"	f	file:
+reloc_pcrel60b	ia64/tcg-target.c	/^static inline void reloc_pcrel60b (void *pc, tcg_target_long target)$/;"	f	file:
+reserved_regs	tcg.h	/^    TCGRegSet reserved_regs;$/;"	m	struct:TCGContext
+restore_count	tcg.h	/^    int64_t restore_count;$/;"	m	struct:TCGContext
+restore_time	tcg.h	/^    int64_t restore_time;$/;"	m	struct:TCGContext
+rotl	arm/tcg-target.c	/^static inline uint32_t rotl(uint32_t val, int n)$/;"	f	file:
+s390_op_defs	s390/tcg-target.c	/^static const TCGTargetOpDef s390_op_defs[] = {$/;"	v	file:
+save_globals	tcg.c	/^static void save_globals(TCGContext *s, TCGRegSet allocated_regs)$/;"	f	file:
+sigill_handler	s390/tcg-target.c	/^static void sigill_handler(int sig)$/;"	f	file:
+size	tcg.h	/^    int size;$/;"	m	struct:TCGPool
+sort_constraints	tcg.c	/^static void sort_constraints(TCGOpDef *def, int start, int n)$/;"	f	file:
+sorted_args	tcg.h	/^    int *sorted_args;$/;"	m	struct:TCGOpDef
+sparc_op_defs	sparc/tcg-target.c	/^static const TCGTargetOpDef sparc_op_defs[] = {$/;"	v	file:
+static_temps	tcg.h	/^    TCGTemp static_temps[TCG_MAX_TEMPS];$/;"	m	struct:TCGContext
+target_parse_constraint	arm/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	hppa/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	i386/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	ia64/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	mips/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	ppc/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	ppc64/tcg-target.c	/^static int target_parse_constraint (TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	s390/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+target_parse_constraint	sparc/tcg-target.c	/^static int target_parse_constraint(TCGArgConstraint *ct, const char **pct_str)$/;"	f	file:
+tb_count	tcg.h	/^    int64_t tb_count;$/;"	m	struct:TCGContext
+tb_count1	tcg.h	/^    int64_t tb_count1;$/;"	m	struct:TCGContext
+tb_jmp_offset	tcg.h	/^    uint16_t *tb_jmp_offset; \/* != NULL if USE_DIRECT_JUMP *\/$/;"	m	struct:TCGContext
+tb_next	tcg.h	/^    unsigned long *tb_next;$/;"	m	struct:TCGContext
+tb_next_offset	tcg.h	/^    uint16_t *tb_next_offset;$/;"	m	struct:TCGContext
+tb_ret_addr	arm/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	i386/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	ia64/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	mips/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	ppc/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	ppc64/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tb_ret_addr	s390/tcg-target.c	/^static uint8_t *tb_ret_addr;$/;"	v	file:
+tcg_abort	tcg.h	437;"	d
+tcg_add_ptr	tcg.h	447;"	d
+tcg_add_ptr	tcg.h	457;"	d
+tcg_add_target_add_op_defs	tcg.c	/^void tcg_add_target_add_op_defs(const TCGTargetOpDef *tdefs)$/;"	f
+tcg_cond_to_arm_cond	arm/tcg-target.c	/^static const uint8_t tcg_cond_to_arm_cond[10] = {$/;"	v	file:
+tcg_cond_to_bcond	sparc/tcg-target.c	/^static const uint8_t tcg_cond_to_bcond[10] = {$/;"	v	file:
+tcg_cond_to_cmp_cond	hppa/tcg-target.c	/^static const uint8_t tcg_cond_to_cmp_cond[10] =$/;"	v	file:
+tcg_cond_to_jcc	i386/tcg-target.c	/^static const uint8_t tcg_cond_to_jcc[10] = {$/;"	v	file:
+tcg_cond_to_ltr_cond	s390/tcg-target.c	/^static const uint8_t tcg_cond_to_ltr_cond[10] = {$/;"	v	file:
+tcg_cond_to_s390_cond	s390/tcg-target.c	/^static const uint8_t tcg_cond_to_s390_cond[10] = {$/;"	v	file:
+tcg_const_i32	tcg.c	/^TCGv_i32 tcg_const_i32(int32_t val)$/;"	f
+tcg_const_i64	tcg.c	/^TCGv_i64 tcg_const_i64(int64_t val)$/;"	f
+tcg_const_local_i32	tcg.c	/^TCGv_i32 tcg_const_local_i32(int32_t val)$/;"	f
+tcg_const_local_i64	tcg.c	/^TCGv_i64 tcg_const_local_i64(int64_t val)$/;"	f
+tcg_const_local_tl	tcg-op.h	2389;"	d
+tcg_const_local_tl	tcg-op.h	2459;"	d
+tcg_const_ptr	tcg.h	446;"	d
+tcg_const_ptr	tcg.h	456;"	d
+tcg_const_tl	tcg-op.h	2388;"	d
+tcg_const_tl	tcg-op.h	2458;"	d
+tcg_context_init	tcg.c	/^void tcg_context_init(TCGContext *s)$/;"	f
+tcg_dump_info	tcg.c	/^void tcg_dump_info(FILE *f,$/;"	f
+tcg_dump_ops	tcg.c	/^void tcg_dump_ops(TCGContext *s, FILE *outfile)$/;"	f
+tcg_find_helper	tcg.c	/^static TCGHelperInfo *tcg_find_helper(TCGContext *s, tcg_target_ulong val)$/;"	f	file:
+tcg_finish_qemu_ldst	s390/tcg-target.c	/^static void tcg_finish_qemu_ldst(TCGContext* s, uint16_t *label2_ptr)$/;"	f	file:
+tcg_func_start	tcg.c	/^void tcg_func_start(TCGContext *s)$/;"	f
+tcg_gen_add_i32	tcg-op.h	/^static inline void tcg_gen_add_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_add_i64	tcg-op.h	/^static inline void tcg_gen_add_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_add_ptr	tcg-op.h	2463;"	d
+tcg_gen_add_ptr	tcg-op.h	2467;"	d
+tcg_gen_add_tl	tcg-op.h	2333;"	d
+tcg_gen_add_tl	tcg-op.h	2404;"	d
+tcg_gen_addi_i32	tcg-op.h	/^static inline void tcg_gen_addi_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_addi_i64	tcg-op.h	/^static inline void tcg_gen_addi_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_addi_ptr	tcg-op.h	2464;"	d
+tcg_gen_addi_ptr	tcg-op.h	2468;"	d
+tcg_gen_addi_tl	tcg-op.h	2334;"	d
+tcg_gen_addi_tl	tcg-op.h	2405;"	d
+tcg_gen_and_i32	tcg-op.h	/^static inline void tcg_gen_and_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_and_i64	tcg-op.h	/^static inline void tcg_gen_and_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_and_tl	tcg-op.h	2339;"	d
+tcg_gen_and_tl	tcg-op.h	2410;"	d
+tcg_gen_andc_i32	tcg-op.h	/^static inline void tcg_gen_andc_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_andc_i64	tcg-op.h	/^static inline void tcg_gen_andc_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_andc_tl	tcg-op.h	2379;"	d
+tcg_gen_andc_tl	tcg-op.h	2449;"	d
+tcg_gen_andi_i32	tcg-op.h	/^static inline void tcg_gen_andi_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_andi_i64	tcg-op.h	/^static inline void tcg_gen_andi_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_andi_tl	tcg-op.h	2340;"	d
+tcg_gen_andi_tl	tcg-op.h	2411;"	d
+tcg_gen_br	tcg-op.h	/^static inline void tcg_gen_br(int label)$/;"	f
+tcg_gen_brcond_i32	tcg-op.h	/^static inline void tcg_gen_brcond_i32(TCGCond cond, TCGv_i32 arg1,$/;"	f
+tcg_gen_brcond_i64	tcg-op.h	/^static inline void tcg_gen_brcond_i64(TCGCond cond, TCGv_i64 arg1,$/;"	f
+tcg_gen_brcond_tl	tcg-op.h	2352;"	d
+tcg_gen_brcond_tl	tcg-op.h	2423;"	d
+tcg_gen_brcondi_i32	tcg-op.h	/^static inline void tcg_gen_brcondi_i32(TCGCond cond, TCGv_i32 arg1,$/;"	f
+tcg_gen_brcondi_i64	tcg-op.h	/^static inline void tcg_gen_brcondi_i64(TCGCond cond, TCGv_i64 arg1,$/;"	f
+tcg_gen_brcondi_tl	tcg-op.h	2353;"	d
+tcg_gen_brcondi_tl	tcg-op.h	2424;"	d
+tcg_gen_bswap16_i32	tcg-op.h	/^static inline void tcg_gen_bswap16_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_bswap16_i64	tcg-op.h	/^static inline void tcg_gen_bswap16_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_bswap16_tl	tcg-op.h	2375;"	d
+tcg_gen_bswap16_tl	tcg-op.h	2446;"	d
+tcg_gen_bswap32_i32	tcg-op.h	/^static inline void tcg_gen_bswap32_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_bswap32_i64	tcg-op.h	/^static inline void tcg_gen_bswap32_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_bswap32_tl	tcg-op.h	2376;"	d
+tcg_gen_bswap32_tl	tcg-op.h	2447;"	d
+tcg_gen_bswap64_i64	tcg-op.h	/^static inline void tcg_gen_bswap64_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_bswap64_tl	tcg-op.h	2377;"	d
+tcg_gen_callN	tcg.c	/^void tcg_gen_callN(TCGContext *s, TCGv_ptr func, unsigned int flags,$/;"	f
+tcg_gen_code	tcg.c	/^int tcg_gen_code(TCGContext *s, uint8_t *gen_code_buf)$/;"	f
+tcg_gen_code_common	tcg.c	/^static inline int tcg_gen_code_common(TCGContext *s, uint8_t *gen_code_buf,$/;"	f	file:
+tcg_gen_code_search_pc	tcg.c	/^int tcg_gen_code_search_pc(TCGContext *s, uint8_t *gen_code_buf, long offset)$/;"	f
+tcg_gen_concat32_i64	tcg-op.h	/^static inline void tcg_gen_concat32_i64(TCGv_i64 dest, TCGv_i64 low, TCGv_i64 high)$/;"	f
+tcg_gen_concat_i32_i64	tcg-op.h	/^static inline void tcg_gen_concat_i32_i64(TCGv_i64 dest, TCGv_i32 low, TCGv_i32 high)$/;"	f
+tcg_gen_concat_tl_i64	tcg-op.h	2378;"	d
+tcg_gen_concat_tl_i64	tcg-op.h	2448;"	d
+tcg_gen_debug_insn_start	tcg-op.h	/^static inline void tcg_gen_debug_insn_start(uint64_t pc)$/;"	f
+tcg_gen_discard_i32	tcg-op.h	/^static inline void tcg_gen_discard_i32(TCGv_i32 arg)$/;"	f
+tcg_gen_discard_i64	tcg-op.h	/^static inline void tcg_gen_discard_i64(TCGv_i64 arg)$/;"	f
+tcg_gen_discard_ptr	tcg-op.h	2247;"	d
+tcg_gen_discard_ptr	tcg-op.h	2315;"	d
+tcg_gen_discard_tl	tcg-op.h	2362;"	d
+tcg_gen_discard_tl	tcg-op.h	2433;"	d
+tcg_gen_div_i32	tcg-op.h	/^static inline void tcg_gen_div_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_div_i64	tcg-op.h	/^static inline void tcg_gen_div_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_div_tl	tcg-op.h	2358;"	d
+tcg_gen_div_tl	tcg-op.h	2429;"	d
+tcg_gen_divu_i32	tcg-op.h	/^static inline void tcg_gen_divu_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_divu_i64	tcg-op.h	/^static inline void tcg_gen_divu_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_divu_tl	tcg-op.h	2360;"	d
+tcg_gen_divu_tl	tcg-op.h	2431;"	d
+tcg_gen_eqv_i32	tcg-op.h	/^static inline void tcg_gen_eqv_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_eqv_i64	tcg-op.h	/^static inline void tcg_gen_eqv_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_eqv_tl	tcg-op.h	2380;"	d
+tcg_gen_eqv_tl	tcg-op.h	2450;"	d
+tcg_gen_exit_tb	tcg-op.h	/^static inline void tcg_gen_exit_tb(tcg_target_long val)$/;"	f
+tcg_gen_ext16s_i32	tcg-op.h	/^static inline void tcg_gen_ext16s_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_ext16s_i64	tcg-op.h	/^static inline void tcg_gen_ext16s_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext16s_tl	tcg-op.h	2372;"	d
+tcg_gen_ext16s_tl	tcg-op.h	2443;"	d
+tcg_gen_ext16u_i32	tcg-op.h	/^static inline void tcg_gen_ext16u_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_ext16u_i64	tcg-op.h	/^static inline void tcg_gen_ext16u_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext16u_tl	tcg-op.h	2371;"	d
+tcg_gen_ext16u_tl	tcg-op.h	2442;"	d
+tcg_gen_ext32s_i64	tcg-op.h	/^static inline void tcg_gen_ext32s_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext32s_tl	tcg-op.h	2374;"	d
+tcg_gen_ext32s_tl	tcg-op.h	2445;"	d
+tcg_gen_ext32u_i64	tcg-op.h	/^static inline void tcg_gen_ext32u_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext32u_tl	tcg-op.h	2373;"	d
+tcg_gen_ext32u_tl	tcg-op.h	2444;"	d
+tcg_gen_ext8s_i32	tcg-op.h	/^static inline void tcg_gen_ext8s_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_ext8s_i64	tcg-op.h	/^static inline void tcg_gen_ext8s_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext8s_tl	tcg-op.h	2370;"	d
+tcg_gen_ext8s_tl	tcg-op.h	2441;"	d
+tcg_gen_ext8u_i32	tcg-op.h	/^static inline void tcg_gen_ext8u_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_ext8u_i64	tcg-op.h	/^static inline void tcg_gen_ext8u_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_ext8u_tl	tcg-op.h	2369;"	d
+tcg_gen_ext8u_tl	tcg-op.h	2440;"	d
+tcg_gen_ext_i32_i64	tcg-op.h	/^static inline void tcg_gen_ext_i32_i64(TCGv_i64 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_ext_i32_ptr	tcg-op.h	2465;"	d
+tcg_gen_ext_i32_ptr	tcg-op.h	2469;"	d
+tcg_gen_ext_i32_tl	tcg-op.h	2366;"	d
+tcg_gen_ext_i32_tl	tcg-op.h	2437;"	d
+tcg_gen_ext_tl_i64	tcg-op.h	2368;"	d
+tcg_gen_ext_tl_i64	tcg-op.h	2439;"	d
+tcg_gen_extu_i32_i64	tcg-op.h	/^static inline void tcg_gen_extu_i32_i64(TCGv_i64 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_extu_i32_tl	tcg-op.h	2365;"	d
+tcg_gen_extu_i32_tl	tcg-op.h	2436;"	d
+tcg_gen_extu_tl_i64	tcg-op.h	2367;"	d
+tcg_gen_extu_tl_i64	tcg-op.h	2438;"	d
+tcg_gen_goto_tb	tcg-op.h	/^static inline void tcg_gen_goto_tb(int idx)$/;"	f
+tcg_gen_helper32	tcg-op.h	/^static inline void tcg_gen_helper32(void *func, int sizemask, TCGv_i32 ret,$/;"	f
+tcg_gen_helper64	tcg-op.h	/^static inline void tcg_gen_helper64(void *func, int sizemask, TCGv_i64 ret,$/;"	f
+tcg_gen_helperN	tcg-op.h	/^static inline void tcg_gen_helperN(void *func, int flags, int sizemask,$/;"	f
+tcg_gen_ld16s_i32	tcg-op.h	/^static inline void tcg_gen_ld16s_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld16s_i64	tcg-op.h	/^static inline void tcg_gen_ld16s_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld16s_i64	tcg-op.h	/^static inline void tcg_gen_ld16s_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld16s_tl	tcg-op.h	2325;"	d
+tcg_gen_ld16s_tl	tcg-op.h	2396;"	d
+tcg_gen_ld16u_i32	tcg-op.h	/^static inline void tcg_gen_ld16u_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld16u_i64	tcg-op.h	/^static inline void tcg_gen_ld16u_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld16u_i64	tcg-op.h	/^static inline void tcg_gen_ld16u_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld16u_tl	tcg-op.h	2324;"	d
+tcg_gen_ld16u_tl	tcg-op.h	2395;"	d
+tcg_gen_ld32s_i64	tcg-op.h	/^static inline void tcg_gen_ld32s_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld32s_i64	tcg-op.h	/^static inline void tcg_gen_ld32s_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld32s_tl	tcg-op.h	2327;"	d
+tcg_gen_ld32s_tl	tcg-op.h	2398;"	d
+tcg_gen_ld32u_i64	tcg-op.h	/^static inline void tcg_gen_ld32u_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld32u_i64	tcg-op.h	/^static inline void tcg_gen_ld32u_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld32u_tl	tcg-op.h	2326;"	d
+tcg_gen_ld32u_tl	tcg-op.h	2397;"	d
+tcg_gen_ld8s_i32	tcg-op.h	/^static inline void tcg_gen_ld8s_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld8s_i64	tcg-op.h	/^static inline void tcg_gen_ld8s_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld8s_i64	tcg-op.h	/^static inline void tcg_gen_ld8s_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld8s_tl	tcg-op.h	2323;"	d
+tcg_gen_ld8s_tl	tcg-op.h	2394;"	d
+tcg_gen_ld8u_i32	tcg-op.h	/^static inline void tcg_gen_ld8u_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld8u_i64	tcg-op.h	/^static inline void tcg_gen_ld8u_i64(TCGv_i64 ret, TCGv_i64 arg2,$/;"	f
+tcg_gen_ld8u_i64	tcg-op.h	/^static inline void tcg_gen_ld8u_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld8u_tl	tcg-op.h	2322;"	d
+tcg_gen_ld8u_tl	tcg-op.h	2393;"	d
+tcg_gen_ld_i32	tcg-op.h	/^static inline void tcg_gen_ld_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld_i64	tcg-op.h	/^static inline void tcg_gen_ld_i64(TCGv_i64 ret, TCGv_i64 arg2, tcg_target_long offset)$/;"	f
+tcg_gen_ld_i64	tcg-op.h	/^static inline void tcg_gen_ld_i64(TCGv_i64 ret, TCGv_ptr arg2,$/;"	f
+tcg_gen_ld_ptr	tcg-op.h	2246;"	d
+tcg_gen_ld_ptr	tcg-op.h	2314;"	d
+tcg_gen_ld_tl	tcg-op.h	2328;"	d
+tcg_gen_ld_tl	tcg-op.h	2399;"	d
+tcg_gen_ldst_op_i32	tcg-op.h	/^static inline void tcg_gen_ldst_op_i32(TCGOpcode opc, TCGv_i32 val,$/;"	f
+tcg_gen_ldst_op_i64	tcg-op.h	/^static inline void tcg_gen_ldst_op_i64(TCGOpcode opc, TCGv_i64 val,$/;"	f
+tcg_gen_mov_i32	tcg-op.h	/^static inline void tcg_gen_mov_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_mov_i64	tcg-op.h	/^static inline void tcg_gen_mov_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_mov_tl	tcg-op.h	2321;"	d
+tcg_gen_mov_tl	tcg-op.h	2392;"	d
+tcg_gen_movi_i32	tcg-op.h	/^static inline void tcg_gen_movi_i32(TCGv_i32 ret, int32_t arg)$/;"	f
+tcg_gen_movi_i64	tcg-op.h	/^static inline void tcg_gen_movi_i64(TCGv_i64 ret, int64_t arg)$/;"	f
+tcg_gen_movi_tl	tcg-op.h	2320;"	d
+tcg_gen_movi_tl	tcg-op.h	2391;"	d
+tcg_gen_mul_i32	tcg-op.h	/^static inline void tcg_gen_mul_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_mul_i64	tcg-op.h	/^static inline void tcg_gen_mul_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_mul_tl	tcg-op.h	2356;"	d
+tcg_gen_mul_tl	tcg-op.h	2427;"	d
+tcg_gen_muli_i32	tcg-op.h	/^static inline void tcg_gen_muli_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_muli_i64	tcg-op.h	/^static inline void tcg_gen_muli_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_muli_tl	tcg-op.h	2357;"	d
+tcg_gen_muli_tl	tcg-op.h	2428;"	d
+tcg_gen_nand_i32	tcg-op.h	/^static inline void tcg_gen_nand_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_nand_i64	tcg-op.h	/^static inline void tcg_gen_nand_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_nand_tl	tcg-op.h	2381;"	d
+tcg_gen_nand_tl	tcg-op.h	2451;"	d
+tcg_gen_neg_i32	tcg-op.h	/^static inline void tcg_gen_neg_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_neg_i64	tcg-op.h	/^static inline void tcg_gen_neg_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_neg_tl	tcg-op.h	2336;"	d
+tcg_gen_neg_tl	tcg-op.h	2407;"	d
+tcg_gen_nor_i32	tcg-op.h	/^static inline void tcg_gen_nor_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_nor_i64	tcg-op.h	/^static inline void tcg_gen_nor_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_nor_tl	tcg-op.h	2382;"	d
+tcg_gen_nor_tl	tcg-op.h	2452;"	d
+tcg_gen_not_i32	tcg-op.h	/^static inline void tcg_gen_not_i32(TCGv_i32 ret, TCGv_i32 arg)$/;"	f
+tcg_gen_not_i64	tcg-op.h	/^static inline void tcg_gen_not_i64(TCGv_i64 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_not_tl	tcg-op.h	2345;"	d
+tcg_gen_not_tl	tcg-op.h	2416;"	d
+tcg_gen_op1_i32	tcg-op.h	/^static inline void tcg_gen_op1_i32(TCGOpcode opc, TCGv_i32 arg1)$/;"	f
+tcg_gen_op1_i64	tcg-op.h	/^static inline void tcg_gen_op1_i64(TCGOpcode opc, TCGv_i64 arg1)$/;"	f
+tcg_gen_op1i	tcg-op.h	/^static inline void tcg_gen_op1i(TCGOpcode opc, TCGArg arg1)$/;"	f
+tcg_gen_op2_i32	tcg-op.h	/^static inline void tcg_gen_op2_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_op2_i64	tcg-op.h	/^static inline void tcg_gen_op2_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_op2i_i32	tcg-op.h	/^static inline void tcg_gen_op2i_i32(TCGOpcode opc, TCGv_i32 arg1, TCGArg arg2)$/;"	f
+tcg_gen_op2i_i64	tcg-op.h	/^static inline void tcg_gen_op2i_i64(TCGOpcode opc, TCGv_i64 arg1, TCGArg arg2)$/;"	f
+tcg_gen_op2ii	tcg-op.h	/^static inline void tcg_gen_op2ii(TCGOpcode opc, TCGArg arg1, TCGArg arg2)$/;"	f
+tcg_gen_op3_i32	tcg-op.h	/^static inline void tcg_gen_op3_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op3_i64	tcg-op.h	/^static inline void tcg_gen_op3_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op3i_i32	tcg-op.h	/^static inline void tcg_gen_op3i_i32(TCGOpcode opc, TCGv_i32 arg1,$/;"	f
+tcg_gen_op3i_i64	tcg-op.h	/^static inline void tcg_gen_op3i_i64(TCGOpcode opc, TCGv_i64 arg1,$/;"	f
+tcg_gen_op4_i32	tcg-op.h	/^static inline void tcg_gen_op4_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op4_i64	tcg-op.h	/^static inline void tcg_gen_op4_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op4i_i32	tcg-op.h	/^static inline void tcg_gen_op4i_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op4i_i64	tcg-op.h	/^static inline void tcg_gen_op4i_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op4ii_i32	tcg-op.h	/^static inline void tcg_gen_op4ii_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op4ii_i64	tcg-op.h	/^static inline void tcg_gen_op4ii_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op5_i32	tcg-op.h	/^static inline void tcg_gen_op5_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op5_i64	tcg-op.h	/^static inline void tcg_gen_op5_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op5i_i32	tcg-op.h	/^static inline void tcg_gen_op5i_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op5i_i64	tcg-op.h	/^static inline void tcg_gen_op5i_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op6_i32	tcg-op.h	/^static inline void tcg_gen_op6_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op6_i64	tcg-op.h	/^static inline void tcg_gen_op6_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op6i_i32	tcg-op.h	/^static inline void tcg_gen_op6i_i32(TCGOpcode opc, TCGv_i32 arg1, TCGv_i32 arg2,$/;"	f
+tcg_gen_op6i_i64	tcg-op.h	/^static inline void tcg_gen_op6i_i64(TCGOpcode opc, TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_op6ii_i32	tcg-op.h	/^static inline void tcg_gen_op6ii_i32(TCGOpcode opc, TCGv_i32 arg1,$/;"	f
+tcg_gen_op6ii_i64	tcg-op.h	/^static inline void tcg_gen_op6ii_i64(TCGOpcode opc, TCGv_i64 arg1,$/;"	f
+tcg_gen_or_i32	tcg-op.h	/^static inline void tcg_gen_or_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_or_i64	tcg-op.h	/^static inline void tcg_gen_or_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_or_tl	tcg-op.h	2341;"	d
+tcg_gen_or_tl	tcg-op.h	2412;"	d
+tcg_gen_orc_i32	tcg-op.h	/^static inline void tcg_gen_orc_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_orc_i64	tcg-op.h	/^static inline void tcg_gen_orc_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_orc_tl	tcg-op.h	2383;"	d
+tcg_gen_orc_tl	tcg-op.h	2453;"	d
+tcg_gen_ori_i32	tcg-op.h	/^static inline void tcg_gen_ori_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_ori_i64	tcg-op.h	/^static inline void tcg_gen_ori_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_ori_tl	tcg-op.h	2342;"	d
+tcg_gen_ori_tl	tcg-op.h	2413;"	d
+tcg_gen_qemu_ld16s	tcg-op.h	/^static inline void tcg_gen_qemu_ld16s(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld16u	tcg-op.h	/^static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld32s	tcg-op.h	/^static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld32u	tcg-op.h	/^static inline void tcg_gen_qemu_ld32u(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld64	tcg-op.h	/^static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld8s	tcg-op.h	/^static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ld8u	tcg-op.h	/^static inline void tcg_gen_qemu_ld8u(TCGv ret, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_ldst_op	tcg-op.h	2089;"	d
+tcg_gen_qemu_ldst_op	tcg-op.h	2100;"	d
+tcg_gen_qemu_ldst_op_i64	tcg-op.h	2090;"	d
+tcg_gen_qemu_ldst_op_i64	tcg-op.h	2101;"	d
+tcg_gen_qemu_ldst_op_i64_i32	tcg-op.h	/^static inline void tcg_gen_qemu_ldst_op_i64_i32(TCGOpcode opc, TCGv_i64 val,$/;"	f
+tcg_gen_qemu_ldst_op_i64_i64	tcg-op.h	/^static inline void tcg_gen_qemu_ldst_op_i64_i64(TCGOpcode opc, TCGv_i64 val,$/;"	f
+tcg_gen_qemu_st16	tcg-op.h	/^static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_st32	tcg-op.h	/^static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_st64	tcg-op.h	/^static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)$/;"	f
+tcg_gen_qemu_st8	tcg-op.h	/^static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)$/;"	f
+tcg_gen_rem_i32	tcg-op.h	/^static inline void tcg_gen_rem_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_rem_i64	tcg-op.h	/^static inline void tcg_gen_rem_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_rem_tl	tcg-op.h	2359;"	d
+tcg_gen_rem_tl	tcg-op.h	2430;"	d
+tcg_gen_remu_i32	tcg-op.h	/^static inline void tcg_gen_remu_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_remu_i64	tcg-op.h	/^static inline void tcg_gen_remu_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_remu_tl	tcg-op.h	2361;"	d
+tcg_gen_remu_tl	tcg-op.h	2432;"	d
+tcg_gen_rotl_i32	tcg-op.h	/^static inline void tcg_gen_rotl_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_rotl_i64	tcg-op.h	/^static inline void tcg_gen_rotl_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_rotl_tl	tcg-op.h	2384;"	d
+tcg_gen_rotl_tl	tcg-op.h	2454;"	d
+tcg_gen_rotli_i32	tcg-op.h	/^static inline void tcg_gen_rotli_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_rotli_i64	tcg-op.h	/^static inline void tcg_gen_rotli_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_rotli_tl	tcg-op.h	2385;"	d
+tcg_gen_rotli_tl	tcg-op.h	2455;"	d
+tcg_gen_rotr_i32	tcg-op.h	/^static inline void tcg_gen_rotr_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_rotr_i64	tcg-op.h	/^static inline void tcg_gen_rotr_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_rotr_tl	tcg-op.h	2386;"	d
+tcg_gen_rotr_tl	tcg-op.h	2456;"	d
+tcg_gen_rotri_i32	tcg-op.h	/^static inline void tcg_gen_rotri_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_rotri_i64	tcg-op.h	/^static inline void tcg_gen_rotri_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_rotri_tl	tcg-op.h	2387;"	d
+tcg_gen_rotri_tl	tcg-op.h	2457;"	d
+tcg_gen_sar_i32	tcg-op.h	/^static inline void tcg_gen_sar_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_sar_i64	tcg-op.h	/^static inline void tcg_gen_sar_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_sar_tl	tcg-op.h	2350;"	d
+tcg_gen_sar_tl	tcg-op.h	2421;"	d
+tcg_gen_sari_i32	tcg-op.h	/^static inline void tcg_gen_sari_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_sari_i64	tcg-op.h	/^static inline void tcg_gen_sari_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_sari_tl	tcg-op.h	2351;"	d
+tcg_gen_sari_tl	tcg-op.h	2422;"	d
+tcg_gen_setcond_i32	tcg-op.h	/^static inline void tcg_gen_setcond_i32(TCGCond cond, TCGv_i32 ret,$/;"	f
+tcg_gen_setcond_i64	tcg-op.h	/^static inline void tcg_gen_setcond_i64(TCGCond cond, TCGv_i64 ret,$/;"	f
+tcg_gen_setcond_tl	tcg-op.h	2354;"	d
+tcg_gen_setcond_tl	tcg-op.h	2425;"	d
+tcg_gen_setcondi_i32	tcg-op.h	/^static inline void tcg_gen_setcondi_i32(TCGCond cond, TCGv_i32 ret,$/;"	f
+tcg_gen_setcondi_i64	tcg-op.h	/^static inline void tcg_gen_setcondi_i64(TCGCond cond, TCGv_i64 ret,$/;"	f
+tcg_gen_setcondi_tl	tcg-op.h	2355;"	d
+tcg_gen_setcondi_tl	tcg-op.h	2426;"	d
+tcg_gen_shifti_i64	tcg.c	/^void tcg_gen_shifti_i64(TCGv_i64 ret, TCGv_i64 arg1,$/;"	f
+tcg_gen_shl_i32	tcg-op.h	/^static inline void tcg_gen_shl_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_shl_i64	tcg-op.h	/^static inline void tcg_gen_shl_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_shl_tl	tcg-op.h	2346;"	d
+tcg_gen_shl_tl	tcg-op.h	2417;"	d
+tcg_gen_shli_i32	tcg-op.h	/^static inline void tcg_gen_shli_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_shli_i64	tcg-op.h	/^static inline void tcg_gen_shli_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_shli_tl	tcg-op.h	2347;"	d
+tcg_gen_shli_tl	tcg-op.h	2418;"	d
+tcg_gen_shr_i32	tcg-op.h	/^static inline void tcg_gen_shr_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_shr_i64	tcg-op.h	/^static inline void tcg_gen_shr_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_shr_tl	tcg-op.h	2348;"	d
+tcg_gen_shr_tl	tcg-op.h	2419;"	d
+tcg_gen_shri_i32	tcg-op.h	/^static inline void tcg_gen_shri_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_shri_i64	tcg-op.h	/^static inline void tcg_gen_shri_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_shri_tl	tcg-op.h	2349;"	d
+tcg_gen_shri_tl	tcg-op.h	2420;"	d
+tcg_gen_sizemask	tcg-op.h	/^static inline int tcg_gen_sizemask(int n, int is_64bit, int is_signed)$/;"	f
+tcg_gen_st16_i32	tcg-op.h	/^static inline void tcg_gen_st16_i32(TCGv_i32 arg1, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_st16_i64	tcg-op.h	/^static inline void tcg_gen_st16_i64(TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_st16_i64	tcg-op.h	/^static inline void tcg_gen_st16_i64(TCGv_i64 arg1, TCGv_ptr arg2,$/;"	f
+tcg_gen_st16_tl	tcg-op.h	2330;"	d
+tcg_gen_st16_tl	tcg-op.h	2401;"	d
+tcg_gen_st32_i64	tcg-op.h	/^static inline void tcg_gen_st32_i64(TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_st32_i64	tcg-op.h	/^static inline void tcg_gen_st32_i64(TCGv_i64 arg1, TCGv_ptr arg2,$/;"	f
+tcg_gen_st32_tl	tcg-op.h	2331;"	d
+tcg_gen_st32_tl	tcg-op.h	2402;"	d
+tcg_gen_st8_i32	tcg-op.h	/^static inline void tcg_gen_st8_i32(TCGv_i32 arg1, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_st8_i64	tcg-op.h	/^static inline void tcg_gen_st8_i64(TCGv_i64 arg1, TCGv_i64 arg2,$/;"	f
+tcg_gen_st8_i64	tcg-op.h	/^static inline void tcg_gen_st8_i64(TCGv_i64 arg1, TCGv_ptr arg2,$/;"	f
+tcg_gen_st8_tl	tcg-op.h	2329;"	d
+tcg_gen_st8_tl	tcg-op.h	2400;"	d
+tcg_gen_st_i32	tcg-op.h	/^static inline void tcg_gen_st_i32(TCGv_i32 arg1, TCGv_ptr arg2, tcg_target_long offset)$/;"	f
+tcg_gen_st_i64	tcg-op.h	/^static inline void tcg_gen_st_i64(TCGv_i64 arg1, TCGv_i64 arg2, tcg_target_long offset)$/;"	f
+tcg_gen_st_i64	tcg-op.h	/^static inline void tcg_gen_st_i64(TCGv_i64 arg1, TCGv_ptr arg2,$/;"	f
+tcg_gen_st_tl	tcg-op.h	2332;"	d
+tcg_gen_st_tl	tcg-op.h	2403;"	d
+tcg_gen_sub_i32	tcg-op.h	/^static inline void tcg_gen_sub_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_sub_i64	tcg-op.h	/^static inline void tcg_gen_sub_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_sub_tl	tcg-op.h	2335;"	d
+tcg_gen_sub_tl	tcg-op.h	2406;"	d
+tcg_gen_subfi_i32	tcg-op.h	/^static inline void tcg_gen_subfi_i32(TCGv_i32 ret, int32_t arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_subfi_i64	tcg-op.h	/^static inline void tcg_gen_subfi_i64(TCGv_i64 ret, int64_t arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_subfi_tl	tcg-op.h	2337;"	d
+tcg_gen_subfi_tl	tcg-op.h	2408;"	d
+tcg_gen_subi_i32	tcg-op.h	/^static inline void tcg_gen_subi_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_subi_i64	tcg-op.h	/^static inline void tcg_gen_subi_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_subi_tl	tcg-op.h	2338;"	d
+tcg_gen_subi_tl	tcg-op.h	2409;"	d
+tcg_gen_trunc_i64_i32	tcg-op.h	/^static inline void tcg_gen_trunc_i64_i32(TCGv_i32 ret, TCGv_i64 arg)$/;"	f
+tcg_gen_trunc_i64_tl	tcg-op.h	2364;"	d
+tcg_gen_trunc_i64_tl	tcg-op.h	2435;"	d
+tcg_gen_trunc_tl_i32	tcg-op.h	2363;"	d
+tcg_gen_trunc_tl_i32	tcg-op.h	2434;"	d
+tcg_gen_xor_i32	tcg-op.h	/^static inline void tcg_gen_xor_i32(TCGv_i32 ret, TCGv_i32 arg1, TCGv_i32 arg2)$/;"	f
+tcg_gen_xor_i64	tcg-op.h	/^static inline void tcg_gen_xor_i64(TCGv_i64 ret, TCGv_i64 arg1, TCGv_i64 arg2)$/;"	f
+tcg_gen_xor_tl	tcg-op.h	2343;"	d
+tcg_gen_xor_tl	tcg-op.h	2414;"	d
+tcg_gen_xori_i32	tcg-op.h	/^static inline void tcg_gen_xori_i32(TCGv_i32 ret, TCGv_i32 arg1, int32_t arg2)$/;"	f
+tcg_gen_xori_i64	tcg-op.h	/^static inline void tcg_gen_xori_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)$/;"	f
+tcg_gen_xori_tl	tcg-op.h	2344;"	d
+tcg_gen_xori_tl	tcg-op.h	2415;"	d
+tcg_get_arg_str_i32	tcg.c	/^char *tcg_get_arg_str_i32(TCGContext *s, char *buf, int buf_size, TCGv_i32 arg)$/;"	f
+tcg_get_arg_str_i64	tcg.c	/^char *tcg_get_arg_str_i64(TCGContext *s, char *buf, int buf_size, TCGv_i64 arg)$/;"	f
+tcg_get_arg_str_idx	tcg.c	/^static char *tcg_get_arg_str_idx(TCGContext *s, char *buf, int buf_size,$/;"	f	file:
+tcg_global_mem_new	tcg-op.h	2086;"	d
+tcg_global_mem_new	tcg-op.h	2097;"	d
+tcg_global_mem_new_i32	tcg.c	/^TCGv_i32 tcg_global_mem_new_i32(int reg, tcg_target_long offset,$/;"	f
+tcg_global_mem_new_i64	tcg.c	/^TCGv_i64 tcg_global_mem_new_i64(int reg, tcg_target_long offset,$/;"	f
+tcg_global_mem_new_internal	tcg.c	/^static inline int tcg_global_mem_new_internal(TCGType type, int reg,$/;"	f	file:
+tcg_global_mem_new_ptr	tcg.h	452;"	d
+tcg_global_mem_new_ptr	tcg.h	462;"	d
+tcg_global_reg_new	tcg-op.h	2085;"	d
+tcg_global_reg_new	tcg-op.h	2096;"	d
+tcg_global_reg_new_i32	tcg.c	/^TCGv_i32 tcg_global_reg_new_i32(int reg, const char *name)$/;"	f
+tcg_global_reg_new_i64	tcg.c	/^TCGv_i64 tcg_global_reg_new_i64(int reg, const char *name)$/;"	f
+tcg_global_reg_new_internal	tcg.c	/^static inline int tcg_global_reg_new_internal(TCGType type, int reg,$/;"	f	file:
+tcg_global_reg_new_ptr	tcg.h	451;"	d
+tcg_global_reg_new_ptr	tcg.h	461;"	d
+tcg_invert_cond	tcg.h	/^static inline TCGCond tcg_invert_cond(TCGCond c)$/;"	f
+tcg_la_bb_end	tcg.c	/^static inline void tcg_la_bb_end(TCGContext *s, uint8_t *dead_temps)$/;"	f	file:
+tcg_la_func_end	tcg.c	/^static inline void tcg_la_func_end(TCGContext *s, uint8_t *dead_temps)$/;"	f	file:
+tcg_liveness_analysis	tcg.c	/^static void tcg_liveness_analysis(TCGContext *s)$/;"	f	file:
+tcg_malloc	tcg.h	/^static inline void *tcg_malloc(int size)$/;"	f
+tcg_malloc_internal	tcg.c	/^void *tcg_malloc_internal(TCGContext *s, int size)$/;"	f
+tcg_match_andi	s390/tcg-target.c	/^static int tcg_match_andi(int ct, tcg_target_ulong val)$/;"	f	file:
+tcg_match_cmpi	s390/tcg-target.c	/^static int tcg_match_cmpi(int ct, tcg_target_long val)$/;"	f	file:
+tcg_match_ori	s390/tcg-target.c	/^static int tcg_match_ori(int ct, tcg_target_long val)$/;"	f	file:
+tcg_match_xori	s390/tcg-target.c	/^static int tcg_match_xori(int ct, tcg_target_long val)$/;"	f	file:
+tcg_op_defs	tcg.c	/^static TCGOpDef tcg_op_defs[] = {$/;"	v	file:
+tcg_opc_a1	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_a1(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_a3	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_a3(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_a4	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_a4(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_a5	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_a5(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_a6	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_a6(int qp, uint64_t opc, int p1,$/;"	f	file:
+tcg_opc_b1	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_b1(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_opc_b4	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_b4(int qp, uint64_t opc, int b2)$/;"	f	file:
+tcg_opc_b5	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_b5(int qp, uint64_t opc, int b1, int b2)$/;"	f	file:
+tcg_opc_b9	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_b9(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_opc_cmp_a	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_cmp_a(int qp, TCGCond cond, TCGArg arg1,$/;"	f	file:
+tcg_opc_f1	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f1(int qp, uint64_t opc, int f1,$/;"	f	file:
+tcg_opc_f10	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f10(int qp, uint64_t opc, int f1, int f2)$/;"	f	file:
+tcg_opc_f11	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f11(int qp, uint64_t opc, int f1, int f2)$/;"	f	file:
+tcg_opc_f16	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f16(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_opc_f2	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f2(int qp, uint64_t opc, int f1,$/;"	f	file:
+tcg_opc_f6	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_f6(int qp, uint64_t opc, int f1,$/;"	f	file:
+tcg_opc_i10	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i10(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i11	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i11(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i12	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i12(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i18	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i18(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_opc_i2	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i2(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i21	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i21(int qp, uint64_t opc, int b1,$/;"	f	file:
+tcg_opc_i22	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i22(int qp, uint64_t opc, int r1, int b2)$/;"	f	file:
+tcg_opc_i26	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i26(int qp, uint64_t opc, int ar3, int r2)$/;"	f	file:
+tcg_opc_i29	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i29(int qp, uint64_t opc, int r1, int r3)$/;"	f	file:
+tcg_opc_i3	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i3(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i5	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i5(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_i7	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_i7(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_l2	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_l2(uint64_t imm)$/;"	f	file:
+tcg_opc_l3	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_l3(uint64_t imm)$/;"	f	file:
+tcg_opc_m1	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m1(int qp, uint64_t opc, int r1, int r3)$/;"	f	file:
+tcg_opc_m18	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m18(int qp, uint64_t opc, int f1, int r2)$/;"	f	file:
+tcg_opc_m19	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m19(int qp, uint64_t opc, int r1, int f2)$/;"	f	file:
+tcg_opc_m3	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m3(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_m34	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m34(int qp, uint64_t opc, int r1,$/;"	f	file:
+tcg_opc_m4	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m4(int qp, uint64_t opc, int r2, int r3)$/;"	f	file:
+tcg_opc_m48	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_m48(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_opc_x2	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_x2(int qp, uint64_t opc,$/;"	f	file:
+tcg_opc_x3	ia64/tcg-target.c	/^static inline uint64_t tcg_opc_x3(int qp, uint64_t opc, uint64_t imm)$/;"	f	file:
+tcg_out16	tcg.c	/^static inline void tcg_out16(TCGContext *s, uint16_t v)$/;"	f	file:
+tcg_out32	tcg.c	/^static inline void tcg_out32(TCGContext *s, uint32_t v)$/;"	f	file:
+tcg_out8	tcg.c	/^static inline void tcg_out8(TCGContext *s, uint8_t v)$/;"	f	file:
+tcg_out_add2	hppa/tcg-target.c	/^static void tcg_out_add2(TCGContext *s, int destl, int desth,$/;"	f	file:
+tcg_out_addi	arm/tcg-target.c	/^static void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	hppa/tcg-target.c	/^static inline void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	i386/tcg-target.c	/^static void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	ia64/tcg-target.c	/^static inline void tcg_out_addi(TCGContext *s, TCGArg reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	mips/tcg-target.c	/^static inline void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	ppc/tcg-target.c	/^static void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	ppc64/tcg-target.c	/^static void tcg_out_addi (TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	s390/tcg-target.c	/^static inline void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi	sparc/tcg-target.c	/^static inline void tcg_out_addi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_addi2	hppa/tcg-target.c	/^static inline void tcg_out_addi2(TCGContext *s, int ret, int arg1,$/;"	f	file:
+tcg_out_alu	ia64/tcg-target.c	/^static inline void tcg_out_alu(TCGContext *s, uint64_t opc_a1, TCGArg ret,$/;"	f	file:
+tcg_out_andi	hppa/tcg-target.c	/^static void tcg_out_andi(TCGContext *s, int ret, int arg, tcg_target_ulong m)$/;"	f	file:
+tcg_out_andi	sparc/tcg-target.c	/^static inline void tcg_out_andi(TCGContext *s, int reg, tcg_target_long val)$/;"	f	file:
+tcg_out_arith	hppa/tcg-target.c	/^static inline void tcg_out_arith(TCGContext *s, int t, int r1, int r2, int op)$/;"	f	file:
+tcg_out_arith	sparc/tcg-target.c	/^static inline void tcg_out_arith(TCGContext *s, int rd, int rs1, int rs2,$/;"	f	file:
+tcg_out_arithc	sparc/tcg-target.c	/^static void tcg_out_arithc(TCGContext *s, int rd, int rs1,$/;"	f	file:
+tcg_out_arithi	hppa/tcg-target.c	/^static inline void tcg_out_arithi(TCGContext *s, int t, int r1,$/;"	f	file:
+tcg_out_arithi	sparc/tcg-target.c	/^static inline void tcg_out_arithi(TCGContext *s, int rd, int rs1,$/;"	f	file:
+tcg_out_b	arm/tcg-target.c	/^static inline void tcg_out_b(TCGContext *s, int cond, int32_t offset)$/;"	f	file:
+tcg_out_b	ppc/tcg-target.c	/^static void tcg_out_b (TCGContext *s, int mask, tcg_target_long target)$/;"	f	file:
+tcg_out_b	ppc64/tcg-target.c	/^static void tcg_out_b (TCGContext *s, int mask, tcg_target_long target)$/;"	f	file:
+tcg_out_b_noaddr	arm/tcg-target.c	/^static inline void tcg_out_b_noaddr(TCGContext *s, int cond)$/;"	f	file:
+tcg_out_bc	ppc/tcg-target.c	/^static void tcg_out_bc (TCGContext *s, int bc, int label_index)$/;"	f	file:
+tcg_out_bc	ppc64/tcg-target.c	/^static void tcg_out_bc (TCGContext *s, int bc, int label_index)$/;"	f	file:
+tcg_out_bl	arm/tcg-target.c	/^static inline void tcg_out_bl(TCGContext *s, int cond, int32_t offset)$/;"	f	file:
+tcg_out_blx	arm/tcg-target.c	/^static inline void tcg_out_blx(TCGContext *s, int cond, int rn)$/;"	f	file:
+tcg_out_br	ia64/tcg-target.c	/^static void tcg_out_br(TCGContext *s, int label_index)$/;"	f	file:
+tcg_out_branch	hppa/tcg-target.c	/^static void tcg_out_branch(TCGContext *s, int label_index, int nul)$/;"	f	file:
+tcg_out_branch	i386/tcg-target.c	/^static void tcg_out_branch(TCGContext *s, int call, tcg_target_long dest)$/;"	f	file:
+tcg_out_branch_i32	sparc/tcg-target.c	/^static void tcg_out_branch_i32(TCGContext *s, int opc, int label_index)$/;"	f	file:
+tcg_out_branch_i64	sparc/tcg-target.c	/^static void tcg_out_branch_i64(TCGContext *s, int opc, int label_index)$/;"	f	file:
+tcg_out_brcond	hppa/tcg-target.c	/^static void tcg_out_brcond(TCGContext *s, int cond, TCGArg c1,$/;"	f	file:
+tcg_out_brcond	ia64/tcg-target.c	/^static inline void tcg_out_brcond(TCGContext *s, TCGCond cond, TCGArg arg1,$/;"	f	file:
+tcg_out_brcond	mips/tcg-target.c	/^static void tcg_out_brcond(TCGContext *s, TCGCond cond, int arg1,$/;"	f	file:
+tcg_out_brcond	ppc/tcg-target.c	/^static void tcg_out_brcond (TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond	ppc64/tcg-target.c	/^static void tcg_out_brcond (TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond2	hppa/tcg-target.c	/^static void tcg_out_brcond2(TCGContext *s, int cond, TCGArg al, TCGArg ah,$/;"	f	file:
+tcg_out_brcond2	i386/tcg-target.c	/^static void tcg_out_brcond2(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_brcond2	mips/tcg-target.c	/^static void tcg_out_brcond2(TCGContext *s, TCGCond cond, int arg1,$/;"	f	file:
+tcg_out_brcond2	ppc/tcg-target.c	/^static void tcg_out_brcond2 (TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_brcond2_i32	sparc/tcg-target.c	/^static void tcg_out_brcond2_i32(TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond32	i386/tcg-target.c	/^static void tcg_out_brcond32(TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond64	i386/tcg-target.c	/^static void tcg_out_brcond64(TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond_i32	sparc/tcg-target.c	/^static void tcg_out_brcond_i32(TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_brcond_i64	sparc/tcg-target.c	/^static void tcg_out_brcond_i64(TCGContext *s, TCGCond cond,$/;"	f	file:
+tcg_out_bswap16	arm/tcg-target.c	/^static inline void tcg_out_bswap16(TCGContext *s, int cond, int rd, int rn)$/;"	f	file:
+tcg_out_bswap16	hppa/tcg-target.c	/^static void tcg_out_bswap16(TCGContext *s, int ret, int arg, int sign)$/;"	f	file:
+tcg_out_bswap16	ia64/tcg-target.c	/^static inline void tcg_out_bswap16(TCGContext *s, TCGArg ret, TCGArg arg)$/;"	f	file:
+tcg_out_bswap16	mips/tcg-target.c	/^static inline void tcg_out_bswap16(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_bswap16s	arm/tcg-target.c	/^static inline void tcg_out_bswap16s(TCGContext *s, int cond, int rd, int rn)$/;"	f	file:
+tcg_out_bswap16s	mips/tcg-target.c	/^static inline void tcg_out_bswap16s(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_bswap32	arm/tcg-target.c	/^static inline void tcg_out_bswap32(TCGContext *s, int cond, int rd, int rn)$/;"	f	file:
+tcg_out_bswap32	hppa/tcg-target.c	/^static void tcg_out_bswap32(TCGContext *s, int ret, int arg, int temp)$/;"	f	file:
+tcg_out_bswap32	i386/tcg-target.c	/^static inline void tcg_out_bswap32(TCGContext *s, int reg)$/;"	f	file:
+tcg_out_bswap32	ia64/tcg-target.c	/^static inline void tcg_out_bswap32(TCGContext *s, TCGArg ret, TCGArg arg)$/;"	f	file:
+tcg_out_bswap32	mips/tcg-target.c	/^static inline void tcg_out_bswap32(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_bswap64	i386/tcg-target.c	/^static inline void tcg_out_bswap64(TCGContext *s, int reg)$/;"	f	file:
+tcg_out_bswap64	ia64/tcg-target.c	/^static inline void tcg_out_bswap64(TCGContext *s, TCGArg ret, TCGArg arg)$/;"	f	file:
+tcg_out_bundle	ia64/tcg-target.c	/^static inline void tcg_out_bundle(TCGContext *s, int template,$/;"	f	file:
+tcg_out_bx	arm/tcg-target.c	/^static inline void tcg_out_bx(TCGContext *s, int cond, int rn)$/;"	f	file:
+tcg_out_call	arm/tcg-target.c	/^static inline void tcg_out_call(TCGContext *s, int cond, uint32_t addr)$/;"	f	file:
+tcg_out_call	hppa/tcg-target.c	/^static void tcg_out_call(TCGContext *s, void *func)$/;"	f	file:
+tcg_out_call	ia64/tcg-target.c	/^static inline void tcg_out_call(TCGContext *s, TCGArg addr)$/;"	f	file:
+tcg_out_call	ppc/tcg-target.c	/^static void tcg_out_call (TCGContext *s, tcg_target_long arg, int const_arg)$/;"	f	file:
+tcg_out_call	ppc64/tcg-target.c	/^static void tcg_out_call (TCGContext *s, tcg_target_long arg, int const_arg)$/;"	f	file:
+tcg_out_calli	i386/tcg-target.c	/^static inline void tcg_out_calli(TCGContext *s, tcg_target_long dest)$/;"	f	file:
+tcg_out_callr	arm/tcg-target.c	/^static inline void tcg_out_callr(TCGContext *s, int cond, int arg)$/;"	f	file:
+tcg_out_cmp	i386/tcg-target.c	/^static void tcg_out_cmp(TCGContext *s, TCGArg arg1, TCGArg arg2,$/;"	f	file:
+tcg_out_cmp	ppc/tcg-target.c	/^static void tcg_out_cmp (TCGContext *s, int cond, TCGArg arg1, TCGArg arg2,$/;"	f	file:
+tcg_out_cmp	ppc64/tcg-target.c	/^static void tcg_out_cmp (TCGContext *s, int cond, TCGArg arg1, TCGArg arg2,$/;"	f	file:
+tcg_out_cmp	sparc/tcg-target.c	/^static void tcg_out_cmp(TCGContext *s, TCGArg c1, TCGArg c2, int c2const)$/;"	f	file:
+tcg_out_comclr	hppa/tcg-target.c	/^static void tcg_out_comclr(TCGContext *s, int cond, TCGArg ret,$/;"	f	file:
+tcg_out_cr7eq_from_cond	ppc/tcg-target.c	/^static void tcg_out_cr7eq_from_cond (TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_dat_imm	arm/tcg-target.c	/^static inline void tcg_out_dat_imm(TCGContext *s,$/;"	f	file:
+tcg_out_dat_reg	arm/tcg-target.c	/^static inline void tcg_out_dat_reg(TCGContext *s,$/;"	f	file:
+tcg_out_dat_reg2	arm/tcg-target.c	/^static inline void tcg_out_dat_reg2(TCGContext *s,$/;"	f	file:
+tcg_out_dep	hppa/tcg-target.c	/^static inline void tcg_out_dep(TCGContext *s, int ret, int arg,$/;"	f	file:
+tcg_out_div32	sparc/tcg-target.c	/^static void tcg_out_div32(TCGContext *s, int rd, int rs1,$/;"	f	file:
+tcg_out_eqv	ia64/tcg-target.c	/^static inline void tcg_out_eqv(TCGContext *s, TCGArg ret,$/;"	f	file:
+tcg_out_exit_tb	hppa/tcg-target.c	/^static void tcg_out_exit_tb(TCGContext *s, TCGArg arg)$/;"	f	file:
+tcg_out_exit_tb	ia64/tcg-target.c	/^static void tcg_out_exit_tb(TCGContext *s, tcg_target_long arg)$/;"	f	file:
+tcg_out_ext	ia64/tcg-target.c	/^static inline void tcg_out_ext(TCGContext *s, uint64_t opc_i29,$/;"	f	file:
+tcg_out_ext16s	arm/tcg-target.c	/^static inline void tcg_out_ext16s(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ext16s	hppa/tcg-target.c	/^static inline void tcg_out_ext16s(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_ext16s	i386/tcg-target.c	/^static inline void tcg_out_ext16s(TCGContext *s, int dest, int src, int rexw)$/;"	f	file:
+tcg_out_ext16s	mips/tcg-target.c	/^static inline void tcg_out_ext16s(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_ext16u	arm/tcg-target.c	/^static inline void tcg_out_ext16u(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ext16u	i386/tcg-target.c	/^static inline void tcg_out_ext16u(TCGContext *s, int dest, int src)$/;"	f	file:
+tcg_out_ext32s	i386/tcg-target.c	/^static inline void tcg_out_ext32s(TCGContext *s, int dest, int src)$/;"	f	file:
+tcg_out_ext32u	i386/tcg-target.c	/^static inline void tcg_out_ext32u(TCGContext *s, int dest, int src)$/;"	f	file:
+tcg_out_ext8s	arm/tcg-target.c	/^static inline void tcg_out_ext8s(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ext8s	hppa/tcg-target.c	/^static inline void tcg_out_ext8s(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_ext8s	i386/tcg-target.c	/^static void tcg_out_ext8s(TCGContext *s, int dest, int src, int rexw)$/;"	f	file:
+tcg_out_ext8s	mips/tcg-target.c	/^static inline void tcg_out_ext8s(TCGContext *s, int ret, int arg)$/;"	f	file:
+tcg_out_ext8u	arm/tcg-target.c	/^static inline void tcg_out_ext8u(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ext8u	i386/tcg-target.c	/^static inline void tcg_out_ext8u(TCGContext *s, int dest, int src)$/;"	f	file:
+tcg_out_extr	hppa/tcg-target.c	/^static inline void tcg_out_extr(TCGContext *s, int ret, int arg,$/;"	f	file:
+tcg_out_goto	arm/tcg-target.c	/^static inline void tcg_out_goto(TCGContext *s, int cond, uint32_t addr)$/;"	f	file:
+tcg_out_goto_label	arm/tcg-target.c	/^static inline void tcg_out_goto_label(TCGContext *s, int cond, int label_index)$/;"	f	file:
+tcg_out_goto_tb	hppa/tcg-target.c	/^static void tcg_out_goto_tb(TCGContext *s, TCGArg arg)$/;"	f	file:
+tcg_out_goto_tb	ia64/tcg-target.c	/^static inline void tcg_out_goto_tb(TCGContext *s, TCGArg arg)$/;"	f	file:
+tcg_out_insn	s390/tcg-target.c	657;"	d	file:
+tcg_out_insn_RI	s390/tcg-target.c	/^static void tcg_out_insn_RI(TCGContext *s, S390Opcode op, TCGReg r1, int i2)$/;"	f	file:
+tcg_out_insn_RIL	s390/tcg-target.c	/^static void tcg_out_insn_RIL(TCGContext *s, S390Opcode op, TCGReg r1, int i2)$/;"	f	file:
+tcg_out_insn_RR	s390/tcg-target.c	/^static void tcg_out_insn_RR(TCGContext *s, S390Opcode op, TCGReg r1, TCGReg r2)$/;"	f	file:
+tcg_out_insn_RRE	s390/tcg-target.c	/^static void tcg_out_insn_RRE(TCGContext *s, S390Opcode op,$/;"	f	file:
+tcg_out_insn_RS	s390/tcg-target.c	/^static void tcg_out_insn_RS(TCGContext *s, S390Opcode op, TCGReg r1,$/;"	f	file:
+tcg_out_insn_RSY	s390/tcg-target.c	/^static void tcg_out_insn_RSY(TCGContext *s, S390Opcode op, TCGReg r1,$/;"	f	file:
+tcg_out_insn_RX	s390/tcg-target.c	653;"	d	file:
+tcg_out_insn_RXY	s390/tcg-target.c	654;"	d	file:
+tcg_out_jmp	i386/tcg-target.c	/^static void tcg_out_jmp(TCGContext *s, tcg_target_long dest)$/;"	f	file:
+tcg_out_jmp	ia64/tcg-target.c	/^static inline void tcg_out_jmp(TCGContext *s, TCGArg addr)$/;"	f	file:
+tcg_out_jxx	i386/tcg-target.c	/^static void tcg_out_jxx(TCGContext *s, int opc, int label_index, int small)$/;"	f	file:
+tcg_out_label	tcg.c	/^static void tcg_out_label(TCGContext *s, int label_index, $/;"	f	file:
+tcg_out_ld	arm/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_ld	hppa/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, int ret,$/;"	f	file:
+tcg_out_ld	i386/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, int ret,$/;"	f	file:
+tcg_out_ld	ia64/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, TCGArg arg,$/;"	f	file:
+tcg_out_ld	mips/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_ld	ppc/tcg-target.c	/^static void tcg_out_ld (TCGContext *s, TCGType type, int ret, int arg1,$/;"	f	file:
+tcg_out_ld	ppc64/tcg-target.c	/^static void tcg_out_ld (TCGContext *s, TCGType type, int ret, int arg1,$/;"	f	file:
+tcg_out_ld	s390/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, TCGReg data,$/;"	f	file:
+tcg_out_ld	sparc/tcg-target.c	/^static inline void tcg_out_ld(TCGContext *s, TCGType type, int ret,$/;"	f	file:
+tcg_out_ld16s	arm/tcg-target.c	/^static inline void tcg_out_ld16s(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld16s_8	arm/tcg-target.c	/^static inline void tcg_out_ld16s_8(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld16s_r	arm/tcg-target.c	/^static inline void tcg_out_ld16s_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld16u	arm/tcg-target.c	/^static inline void tcg_out_ld16u(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld16u_8	arm/tcg-target.c	/^static inline void tcg_out_ld16u_8(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld16u_r	arm/tcg-target.c	/^static inline void tcg_out_ld16u_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld32_12	arm/tcg-target.c	/^static inline void tcg_out_ld32_12(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld32_r	arm/tcg-target.c	/^static inline void tcg_out_ld32_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld32_rwb	arm/tcg-target.c	/^static inline void tcg_out_ld32_rwb(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld32u	arm/tcg-target.c	/^static inline void tcg_out_ld32u(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8_12	arm/tcg-target.c	/^static inline void tcg_out_ld8_12(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8_r	arm/tcg-target.c	/^static inline void tcg_out_ld8_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8s	arm/tcg-target.c	/^static inline void tcg_out_ld8s(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8s_8	arm/tcg-target.c	/^static inline void tcg_out_ld8s_8(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8s_r	arm/tcg-target.c	/^static inline void tcg_out_ld8s_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld8u	arm/tcg-target.c	/^static inline void tcg_out_ld8u(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_ld_abs	s390/tcg-target.c	/^static void tcg_out_ld_abs(TCGContext *s, TCGType type, TCGReg dest, void *abs)$/;"	f	file:
+tcg_out_ld_ptr	sparc/tcg-target.c	/^static inline void tcg_out_ld_ptr(TCGContext *s, int ret,$/;"	f	file:
+tcg_out_ld_raw	sparc/tcg-target.c	/^static inline void tcg_out_ld_raw(TCGContext *s, int ret,$/;"	f	file:
+tcg_out_ld_rel	ia64/tcg-target.c	/^static inline void tcg_out_ld_rel(TCGContext *s, uint64_t opc_m4, TCGArg arg,$/;"	f	file:
+tcg_out_ldst	hppa/tcg-target.c	/^static void tcg_out_ldst(TCGContext *s, int ret, int addr,$/;"	f	file:
+tcg_out_ldst	mips/tcg-target.c	/^static inline void tcg_out_ldst(TCGContext *s, int opc, int arg,$/;"	f	file:
+tcg_out_ldst	ppc/tcg-target.c	/^static void tcg_out_ldst (TCGContext *s, int ret, int addr,$/;"	f	file:
+tcg_out_ldst	ppc64/tcg-target.c	/^static void tcg_out_ldst (TCGContext *s, int ret, int addr,$/;"	f	file:
+tcg_out_ldst	sparc/tcg-target.c	/^static inline void tcg_out_ldst(TCGContext *s, int ret, int addr, int offset, int op)$/;"	f	file:
+tcg_out_ldst_asi	sparc/tcg-target.c	/^static inline void tcg_out_ldst_asi(TCGContext *s, int ret, int addr,$/;"	f	file:
+tcg_out_ldst_index	hppa/tcg-target.c	/^static void tcg_out_ldst_index(TCGContext *s, int data,$/;"	f	file:
+tcg_out_ldsta	ppc64/tcg-target.c	/^static void tcg_out_ldsta (TCGContext *s, int ret, int addr,$/;"	f	file:
+tcg_out_mem	s390/tcg-target.c	/^static void tcg_out_mem(TCGContext *s, S390Opcode opc_rx, S390Opcode opc_rxy,$/;"	f	file:
+tcg_out_modrm	i386/tcg-target.c	/^static void tcg_out_modrm(TCGContext *s, int opc, int r, int rm)$/;"	f	file:
+tcg_out_modrm_offset	i386/tcg-target.c	/^static inline void tcg_out_modrm_offset(TCGContext *s, int opc, int r,$/;"	f	file:
+tcg_out_modrm_sib_offset	i386/tcg-target.c	/^static void tcg_out_modrm_sib_offset(TCGContext *s, int opc, int r, int rm,$/;"	f	file:
+tcg_out_mov	arm/tcg-target.c	/^static inline void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	hppa/tcg-target.c	/^static void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	i386/tcg-target.c	/^static inline void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	ia64/tcg-target.c	/^static inline void tcg_out_mov(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_mov	mips/tcg-target.c	/^static inline void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	ppc/tcg-target.c	/^static void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	ppc64/tcg-target.c	/^static void tcg_out_mov (TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_mov	s390/tcg-target.c	/^static void tcg_out_mov(TCGContext *s, TCGType type, TCGReg dst, TCGReg src)$/;"	f	file:
+tcg_out_mov	sparc/tcg-target.c	/^static inline void tcg_out_mov(TCGContext *s, TCGType type, int ret, int arg)$/;"	f	file:
+tcg_out_movi	arm/tcg-target.c	/^static inline void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	hppa/tcg-target.c	/^static void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	i386/tcg-target.c	/^static void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	ia64/tcg-target.c	/^static inline void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	mips/tcg-target.c	/^static inline void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	ppc/tcg-target.c	/^static void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	ppc64/tcg-target.c	/^static void tcg_out_movi (TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	s390/tcg-target.c	/^static void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi	sparc/tcg-target.c	/^static inline void tcg_out_movi(TCGContext *s, TCGType type,$/;"	f	file:
+tcg_out_movi32	arm/tcg-target.c	/^static inline void tcg_out_movi32(TCGContext *s,$/;"	f	file:
+tcg_out_movi32	ppc64/tcg-target.c	/^static void tcg_out_movi32 (TCGContext *s, int ret, int32_t arg)$/;"	f	file:
+tcg_out_movi_imm13	sparc/tcg-target.c	/^static inline void tcg_out_movi_imm13(TCGContext *s, int ret, uint32_t arg)$/;"	f	file:
+tcg_out_movi_imm32	sparc/tcg-target.c	/^static inline void tcg_out_movi_imm32(TCGContext *s, int ret, uint32_t arg)$/;"	f	file:
+tcg_out_mtctl_sar	hppa/tcg-target.c	/^static inline void tcg_out_mtctl_sar(TCGContext *s, int arg)$/;"	f	file:
+tcg_out_mul	ia64/tcg-target.c	/^static inline void tcg_out_mul(TCGContext *s, TCGArg ret,$/;"	f	file:
+tcg_out_mul32	arm/tcg-target.c	/^static inline void tcg_out_mul32(TCGContext *s,$/;"	f	file:
+tcg_out_nand	ia64/tcg-target.c	/^static inline void tcg_out_nand(TCGContext *s, TCGArg ret,$/;"	f	file:
+tcg_out_nop	hppa/tcg-target.c	/^static inline void tcg_out_nop(TCGContext *s)$/;"	f	file:
+tcg_out_nop	mips/tcg-target.c	/^static inline void tcg_out_nop(TCGContext *s)$/;"	f	file:
+tcg_out_nop	sparc/tcg-target.c	/^static inline void tcg_out_nop(TCGContext *s)$/;"	f	file:
+tcg_out_nor	ia64/tcg-target.c	/^static inline void tcg_out_nor(TCGContext *s, TCGArg ret,$/;"	f	file:
+tcg_out_op	arm/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,$/;"	f	file:
+tcg_out_op	hppa/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc, const TCGArg *args,$/;"	f	file:
+tcg_out_op	i386/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,$/;"	f	file:
+tcg_out_op	ia64/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,$/;"	f	file:
+tcg_out_op	mips/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,$/;"	f	file:
+tcg_out_op	ppc/tcg-target.c	/^static void tcg_out_op(TCGContext *s, TCGOpcode opc, const TCGArg *args,$/;"	f	file:
+tcg_out_op	ppc64/tcg-target.c	/^static void tcg_out_op (TCGContext *s, TCGOpcode opc, const TCGArg *args,$/;"	f	file:
+tcg_out_op	s390/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc,$/;"	f	file:
+tcg_out_op	sparc/tcg-target.c	/^static inline void tcg_out_op(TCGContext *s, TCGOpcode opc, const TCGArg *args,$/;"	f	file:
+tcg_out_opc	i386/tcg-target.c	/^static void tcg_out_opc(TCGContext *s, int opc)$/;"	f	file:
+tcg_out_opc	i386/tcg-target.c	/^static void tcg_out_opc(TCGContext *s, int opc, int r, int rm, int x)$/;"	f	file:
+tcg_out_opc	i386/tcg-target.c	401;"	d	file:
+tcg_out_opc_br	mips/tcg-target.c	/^static inline void tcg_out_opc_br(TCGContext *s, int opc, int rt, int rs)$/;"	f	file:
+tcg_out_opc_imm	mips/tcg-target.c	/^static inline void tcg_out_opc_imm(TCGContext *s, int opc, int rt, int rs, int imm)$/;"	f	file:
+tcg_out_opc_reg	mips/tcg-target.c	/^static inline void tcg_out_opc_reg(TCGContext *s, int opc, int rd, int rs, int rt)$/;"	f	file:
+tcg_out_opc_sa	mips/tcg-target.c	/^static inline void tcg_out_opc_sa(TCGContext *s, int opc, int rd, int rt, int sa)$/;"	f	file:
+tcg_out_orc	ia64/tcg-target.c	/^static inline void tcg_out_orc(TCGContext *s, TCGArg ret,$/;"	f	file:
+tcg_out_ori	hppa/tcg-target.c	/^static void tcg_out_ori(TCGContext *s, int ret, int arg, tcg_target_ulong m)$/;"	f	file:
+tcg_out_pop	i386/tcg-target.c	/^static inline void tcg_out_pop(TCGContext *s, int reg)$/;"	f	file:
+tcg_out_push	i386/tcg-target.c	/^static inline void tcg_out_push(TCGContext *s, int reg)$/;"	f	file:
+tcg_out_pushi	i386/tcg-target.c	/^static inline void tcg_out_pushi(TCGContext *s, tcg_target_long val)$/;"	f	file:
+tcg_out_qemu_ld	arm/tcg-target.c	/^static inline void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	hppa/tcg-target.c	/^static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	i386/tcg-target.c	/^static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_ld	ia64/tcg-target.c	/^static inline void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	mips/tcg-target.c	/^static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_ld	ppc/tcg-target.c	/^static void tcg_out_qemu_ld (TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	ppc64/tcg-target.c	/^static void tcg_out_qemu_ld (TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	s390/tcg-target.c	/^static void tcg_out_qemu_ld(TCGContext* s, const TCGArg* args, int opc)$/;"	f	file:
+tcg_out_qemu_ld	sparc/tcg-target.c	/^static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_ld_direct	hppa/tcg-target.c	/^static void tcg_out_qemu_ld_direct(TCGContext *s, int datalo_reg, int datahi_reg,$/;"	f	file:
+tcg_out_qemu_ld_direct	i386/tcg-target.c	/^static void tcg_out_qemu_ld_direct(TCGContext *s, int datalo, int datahi,$/;"	f	file:
+tcg_out_qemu_ld_direct	s390/tcg-target.c	/^static void tcg_out_qemu_ld_direct(TCGContext *s, int opc, TCGReg data,$/;"	f	file:
+tcg_out_qemu_st	arm/tcg-target.c	/^static inline void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_st	hppa/tcg-target.c	/^static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_st	i386/tcg-target.c	/^static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_st	ia64/tcg-target.c	/^static inline void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_st	mips/tcg-target.c	/^static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_st	ppc/tcg-target.c	/^static void tcg_out_qemu_st (TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_st	ppc64/tcg-target.c	/^static void tcg_out_qemu_st (TCGContext *s, const TCGArg *args, int opc)$/;"	f	file:
+tcg_out_qemu_st	s390/tcg-target.c	/^static void tcg_out_qemu_st(TCGContext* s, const TCGArg* args, int opc)$/;"	f	file:
+tcg_out_qemu_st	sparc/tcg-target.c	/^static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_qemu_st_direct	hppa/tcg-target.c	/^static void tcg_out_qemu_st_direct(TCGContext *s, int datalo_reg, int datahi_reg,$/;"	f	file:
+tcg_out_qemu_st_direct	i386/tcg-target.c	/^static void tcg_out_qemu_st_direct(TCGContext *s, int datalo, int datahi,$/;"	f	file:
+tcg_out_qemu_st_direct	s390/tcg-target.c	/^static void tcg_out_qemu_st_direct(TCGContext *s, int opc, TCGReg data,$/;"	f	file:
+tcg_out_qemu_tlb	ia64/tcg-target.c	/^static inline void tcg_out_qemu_tlb(TCGContext *s, TCGArg addr_reg,$/;"	f	file:
+tcg_out_rdy	sparc/tcg-target.c	/^static inline void tcg_out_rdy(TCGContext *s, int rd)$/;"	f	file:
+tcg_out_reloc	tcg.c	/^static void tcg_out_reloc(TCGContext *s, uint8_t *code_ptr, int type,$/;"	f	file:
+tcg_out_rld	ppc64/tcg-target.c	/^static void tcg_out_rld (TCGContext *s, int op, int ra, int rs, int sh, int mb)$/;"	f	file:
+tcg_out_rolw_8	i386/tcg-target.c	/^static inline void tcg_out_rolw_8(TCGContext *s, int reg)$/;"	f	file:
+tcg_out_rotl	hppa/tcg-target.c	/^static void tcg_out_rotl(TCGContext *s, int ret, int arg, int creg)$/;"	f	file:
+tcg_out_rotl_i32	ia64/tcg-target.c	/^static inline void tcg_out_rotl_i32(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_rotl_i64	ia64/tcg-target.c	/^static inline void tcg_out_rotl_i64(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_rotli	hppa/tcg-target.c	/^static void tcg_out_rotli(TCGContext *s, int ret, int arg, int count)$/;"	f	file:
+tcg_out_rotr	hppa/tcg-target.c	/^static void tcg_out_rotr(TCGContext *s, int ret, int arg, int creg)$/;"	f	file:
+tcg_out_rotr_i32	ia64/tcg-target.c	/^static inline void tcg_out_rotr_i32(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_rotr_i64	ia64/tcg-target.c	/^static inline void tcg_out_rotr_i64(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_rotri	hppa/tcg-target.c	/^static void tcg_out_rotri(TCGContext *s, int ret, int arg, int count)$/;"	f	file:
+tcg_out_sar	hppa/tcg-target.c	/^static void tcg_out_sar(TCGContext *s, int ret, int arg, int creg)$/;"	f	file:
+tcg_out_sar_i32	ia64/tcg-target.c	/^static inline void tcg_out_sar_i32(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_sar_i64	ia64/tcg-target.c	/^static inline void tcg_out_sar_i64(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_sari	hppa/tcg-target.c	/^static void tcg_out_sari(TCGContext *s, int ret, int arg, int count)$/;"	f	file:
+tcg_out_setcond	hppa/tcg-target.c	/^static void tcg_out_setcond(TCGContext *s, int cond, TCGArg ret,$/;"	f	file:
+tcg_out_setcond	ia64/tcg-target.c	/^static inline void tcg_out_setcond(TCGContext *s, TCGCond cond, TCGArg ret,$/;"	f	file:
+tcg_out_setcond	mips/tcg-target.c	/^static void tcg_out_setcond(TCGContext *s, TCGCond cond, int ret,$/;"	f	file:
+tcg_out_setcond	ppc/tcg-target.c	/^static void tcg_out_setcond (TCGContext *s, TCGCond cond, TCGArg arg0,$/;"	f	file:
+tcg_out_setcond	ppc64/tcg-target.c	/^static void tcg_out_setcond (TCGContext *s, TCGType type, TCGCond cond,$/;"	f	file:
+tcg_out_setcond2	hppa/tcg-target.c	/^static void tcg_out_setcond2(TCGContext *s, int cond, TCGArg ret,$/;"	f	file:
+tcg_out_setcond2	i386/tcg-target.c	/^static void tcg_out_setcond2(TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_setcond2	mips/tcg-target.c	/^static void tcg_out_setcond2(TCGContext *s, TCGCond cond, int ret,$/;"	f	file:
+tcg_out_setcond2	ppc/tcg-target.c	/^static void tcg_out_setcond2 (TCGContext *s, const TCGArg *args,$/;"	f	file:
+tcg_out_setcond2_i32	sparc/tcg-target.c	/^static void tcg_out_setcond2_i32(TCGContext *s, TCGCond cond, TCGArg ret,$/;"	f	file:
+tcg_out_setcond32	i386/tcg-target.c	/^static void tcg_out_setcond32(TCGContext *s, TCGCond cond, TCGArg dest,$/;"	f	file:
+tcg_out_setcond64	i386/tcg-target.c	/^static void tcg_out_setcond64(TCGContext *s, TCGCond cond, TCGArg dest,$/;"	f	file:
+tcg_out_setcond_i32	sparc/tcg-target.c	/^static void tcg_out_setcond_i32(TCGContext *s, TCGCond cond, TCGArg ret,$/;"	f	file:
+tcg_out_setcond_i64	sparc/tcg-target.c	/^static void tcg_out_setcond_i64(TCGContext *s, TCGCond cond, TCGArg ret,$/;"	f	file:
+tcg_out_sethi	sparc/tcg-target.c	/^static inline void tcg_out_sethi(TCGContext *s, int ret, uint32_t arg)$/;"	f	file:
+tcg_out_sety	sparc/tcg-target.c	/^static inline void tcg_out_sety(TCGContext *s, int rs)$/;"	f	file:
+tcg_out_sh32	s390/tcg-target.c	/^static void tcg_out_sh32(TCGContext* s, S390Opcode op, TCGReg dest,$/;"	f	file:
+tcg_out_sh64	s390/tcg-target.c	/^static void tcg_out_sh64(TCGContext* s, S390Opcode op, TCGReg dest,$/;"	f	file:
+tcg_out_shd	hppa/tcg-target.c	/^static inline void tcg_out_shd(TCGContext *s, int ret, int hi, int lo,$/;"	f	file:
+tcg_out_shifti	i386/tcg-target.c	/^static void tcg_out_shifti(TCGContext *s, int subopc, int reg, int count)$/;"	f	file:
+tcg_out_shl	hppa/tcg-target.c	/^static void tcg_out_shl(TCGContext *s, int ret, int arg, int creg)$/;"	f	file:
+tcg_out_shl_i32	ia64/tcg-target.c	/^static inline void tcg_out_shl_i32(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_shl_i64	ia64/tcg-target.c	/^static inline void tcg_out_shl_i64(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_shli	hppa/tcg-target.c	/^static void tcg_out_shli(TCGContext *s, int ret, int arg, int count)$/;"	f	file:
+tcg_out_shr	hppa/tcg-target.c	/^static void tcg_out_shr(TCGContext *s, int ret, int arg, int creg)$/;"	f	file:
+tcg_out_shr_i32	ia64/tcg-target.c	/^static inline void tcg_out_shr_i32(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_shr_i64	ia64/tcg-target.c	/^static inline void tcg_out_shr_i64(TCGContext *s, TCGArg ret, TCGArg arg1,$/;"	f	file:
+tcg_out_shri	hppa/tcg-target.c	/^static void tcg_out_shri(TCGContext *s, int ret, int arg, int count)$/;"	f	file:
+tcg_out_smull32	arm/tcg-target.c	/^static inline void tcg_out_smull32(TCGContext *s,$/;"	f	file:
+tcg_out_st	arm/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_st	hppa/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, int ret,$/;"	f	file:
+tcg_out_st	i386/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_st	ia64/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, TCGArg arg,$/;"	f	file:
+tcg_out_st	mips/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_st	ppc/tcg-target.c	/^static void tcg_out_st (TCGContext *s, TCGType type, int arg, int arg1,$/;"	f	file:
+tcg_out_st	ppc64/tcg-target.c	/^static void tcg_out_st (TCGContext *s, TCGType type, int arg, int arg1,$/;"	f	file:
+tcg_out_st	s390/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, TCGReg data,$/;"	f	file:
+tcg_out_st	sparc/tcg-target.c	/^static inline void tcg_out_st(TCGContext *s, TCGType type, int arg,$/;"	f	file:
+tcg_out_st16	arm/tcg-target.c	/^static inline void tcg_out_st16(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st16_8	arm/tcg-target.c	/^static inline void tcg_out_st16_8(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st16_r	arm/tcg-target.c	/^static inline void tcg_out_st16_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st32	arm/tcg-target.c	/^static inline void tcg_out_st32(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st32_12	arm/tcg-target.c	/^static inline void tcg_out_st32_12(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st32_r	arm/tcg-target.c	/^static inline void tcg_out_st32_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st32_rwb	arm/tcg-target.c	/^static inline void tcg_out_st32_rwb(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st8	arm/tcg-target.c	/^static inline void tcg_out_st8(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st8_12	arm/tcg-target.c	/^static inline void tcg_out_st8_12(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st8_r	arm/tcg-target.c	/^static inline void tcg_out_st8_r(TCGContext *s, int cond,$/;"	f	file:
+tcg_out_st_rel	ia64/tcg-target.c	/^static inline void tcg_out_st_rel(TCGContext *s, uint64_t opc_m4, TCGArg arg,$/;"	f	file:
+tcg_out_sub2	hppa/tcg-target.c	/^static void tcg_out_sub2(TCGContext *s, int destl, int desth, int al, int ah,$/;"	f	file:
+tcg_out_tlb_load	i386/tcg-target.c	/^static inline void tcg_out_tlb_load(TCGContext *s, int addrlo_idx,$/;"	f	file:
+tcg_out_tlb_read	hppa/tcg-target.c	/^static int tcg_out_tlb_read(TCGContext *s, int r0, int r1, int addrlo,$/;"	f	file:
+tcg_out_tlb_read	ppc64/tcg-target.c	/^static void tcg_out_tlb_read (TCGContext *s, int r0, int r1, int r2,$/;"	f	file:
+tcg_out_umull32	arm/tcg-target.c	/^static inline void tcg_out_umull32(TCGContext *s,$/;"	f	file:
+tcg_out_vshd	hppa/tcg-target.c	/^static void tcg_out_vshd(TCGContext *s, int ret, int hi, int lo, int creg)$/;"	f	file:
+tcg_out_xmpyu	hppa/tcg-target.c	/^static void tcg_out_xmpyu(TCGContext *s, int retl, int reth,$/;"	f	file:
+tcg_pool_reset	tcg.c	/^void tcg_pool_reset(TCGContext *s)$/;"	f
+tcg_prepare_qemu_ldst	s390/tcg-target.c	/^static void tcg_prepare_qemu_ldst(TCGContext* s, TCGReg data_reg,$/;"	f	file:
+tcg_prepare_user_ldst	s390/tcg-target.c	/^static void tcg_prepare_user_ldst(TCGContext *s, TCGReg *addr_reg,$/;"	f	file:
+tcg_prologue_init	tcg.c	/^void tcg_prologue_init(TCGContext *s)$/;"	f
+tcg_qemu_tb_exec	tcg.h	486;"	d
+tcg_qemu_tb_exec	tcg.h	489;"	d
+tcg_reg_alloc	tcg.c	/^static int tcg_reg_alloc(TCGContext *s, TCGRegSet reg1, TCGRegSet reg2)$/;"	f	file:
+tcg_reg_alloc_bb_end	tcg.c	/^static void tcg_reg_alloc_bb_end(TCGContext *s, TCGRegSet allocated_regs)$/;"	f	file:
+tcg_reg_alloc_call	tcg.c	/^static int tcg_reg_alloc_call(TCGContext *s, const TCGOpDef *def,$/;"	f	file:
+tcg_reg_alloc_mov	tcg.c	/^static void tcg_reg_alloc_mov(TCGContext *s, const TCGOpDef *def,$/;"	f	file:
+tcg_reg_alloc_movi	tcg.c	/^static void tcg_reg_alloc_movi(TCGContext *s, const TCGArg *args)$/;"	f	file:
+tcg_reg_alloc_op	tcg.c	/^static void tcg_reg_alloc_op(TCGContext *s, $/;"	f	file:
+tcg_reg_alloc_start	tcg.c	/^static void tcg_reg_alloc_start(TCGContext *s)$/;"	f	file:
+tcg_reg_free	tcg.c	/^static void tcg_reg_free(TCGContext *s, int reg)$/;"	f	file:
+tcg_register_helper	tcg.c	/^void tcg_register_helper(void *func, const char *name)$/;"	f
+tcg_regset_and	tcg.h	64;"	d
+tcg_regset_andnot	tcg.h	65;"	d
+tcg_regset_clear	tcg.h	57;"	d
+tcg_regset_not	tcg.h	66;"	d
+tcg_regset_or	tcg.h	63;"	d
+tcg_regset_reset_reg	tcg.h	61;"	d
+tcg_regset_set	tcg.h	58;"	d
+tcg_regset_set32	tcg.h	59;"	d
+tcg_regset_set_reg	tcg.h	60;"	d
+tcg_regset_test_reg	tcg.h	62;"	d
+tcg_set_frame	tcg.c	/^void tcg_set_frame(TCGContext *s, int reg,$/;"	f
+tcg_set_nop	tcg.c	/^static inline void tcg_set_nop(TCGContext *s, uint16_t *opc_ptr, $/;"	f	file:
+tcg_sub_ptr	tcg.h	448;"	d
+tcg_sub_ptr	tcg.h	458;"	d
+tcg_swap_cond	tcg.h	/^static inline TCGCond tcg_swap_cond(TCGCond c)$/;"	f
+tcg_table_op_count	tcg.c	/^static int64_t tcg_table_op_count[NB_OPS];$/;"	v	file:
+tcg_target_available_regs	tcg.c	/^static TCGRegSet tcg_target_available_regs[2];$/;"	v	file:
+tcg_target_call_clobber_regs	tcg.c	/^static TCGRegSet tcg_target_call_clobber_regs;$/;"	v	file:
+tcg_target_call_iarg_regs	arm/tcg-target.c	/^static const int tcg_target_call_iarg_regs[4] = {$/;"	v	file:
+tcg_target_call_iarg_regs	hppa/tcg-target.c	/^static const int tcg_target_call_iarg_regs[4] = {$/;"	v	file:
+tcg_target_call_iarg_regs	i386/tcg-target.c	/^static const int tcg_target_call_iarg_regs[] = {$/;"	v	file:
+tcg_target_call_iarg_regs	ia64/tcg-target.c	/^static const int tcg_target_call_iarg_regs[8] = {$/;"	v	file:
+tcg_target_call_iarg_regs	mips/tcg-target.c	/^static const int tcg_target_call_iarg_regs[4] = {$/;"	v	file:
+tcg_target_call_iarg_regs	ppc/tcg-target.c	/^static const int tcg_target_call_iarg_regs[] = {$/;"	v	file:
+tcg_target_call_iarg_regs	ppc64/tcg-target.c	/^static const int tcg_target_call_iarg_regs[] = {$/;"	v	file:
+tcg_target_call_iarg_regs	s390/tcg-target.c	/^static const int tcg_target_call_iarg_regs[] = {$/;"	v	file:
+tcg_target_call_iarg_regs	sparc/tcg-target.c	/^static const int tcg_target_call_iarg_regs[6] = {$/;"	v	file:
+tcg_target_call_oarg_regs	arm/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	hppa/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	i386/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	ia64/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	mips/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	ppc/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	ppc64/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_call_oarg_regs	s390/tcg-target.c	/^static const int tcg_target_call_oarg_regs[] = {$/;"	v	file:
+tcg_target_call_oarg_regs	sparc/tcg-target.c	/^static const int tcg_target_call_oarg_regs[2] = {$/;"	v	file:
+tcg_target_callee_save_regs	hppa/tcg-target.c	/^static int tcg_target_callee_save_regs[] = {$/;"	v	file:
+tcg_target_callee_save_regs	i386/tcg-target.c	/^static int tcg_target_callee_save_regs[] = {$/;"	v	file:
+tcg_target_callee_save_regs	mips/tcg-target.c	/^static int tcg_target_callee_save_regs[] = {$/;"	v	file:
+tcg_target_callee_save_regs	ppc/tcg-target.c	/^static const int tcg_target_callee_save_regs[] = {$/;"	v	file:
+tcg_target_callee_save_regs	ppc64/tcg-target.c	/^static const int tcg_target_callee_save_regs[] = {$/;"	v	file:
+tcg_target_const_match	arm/tcg-target.c	/^static inline int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	hppa/tcg-target.c	/^static int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	i386/tcg-target.c	/^static inline int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	ia64/tcg-target.c	/^static inline int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	mips/tcg-target.c	/^static inline int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	ppc/tcg-target.c	/^static int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	ppc64/tcg-target.c	/^static int tcg_target_const_match (tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	s390/tcg-target.c	/^static int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_const_match	sparc/tcg-target.c	/^static inline int tcg_target_const_match(tcg_target_long val,$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	arm/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	hppa/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	i386/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	ia64/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	mips/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	ppc/tcg-target.c	/^static int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	ppc64/tcg-target.c	/^static int tcg_target_get_call_iarg_regs_count (int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	s390/tcg-target.c	/^static int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_get_call_iarg_regs_count	sparc/tcg-target.c	/^static inline int tcg_target_get_call_iarg_regs_count(int flags)$/;"	f	file:
+tcg_target_init	arm/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	hppa/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	i386/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	ia64/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	mips/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	ppc/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	ppc64/tcg-target.c	/^static void tcg_target_init (TCGContext *s)$/;"	f	file:
+tcg_target_init	s390/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_init	sparc/tcg-target.c	/^static void tcg_target_init(TCGContext *s)$/;"	f	file:
+tcg_target_long	tcg.h	/^typedef int32_t tcg_target_long;$/;"	t
+tcg_target_long	tcg.h	/^typedef int64_t tcg_target_long;$/;"	t
+tcg_target_qemu_prologue	arm/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	hppa/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	i386/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	ia64/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	mips/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	ppc/tcg-target.c	/^static void tcg_target_qemu_prologue (TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	ppc64/tcg-target.c	/^static void tcg_target_qemu_prologue (TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	s390/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_qemu_prologue	sparc/tcg-target.c	/^static void tcg_target_qemu_prologue(TCGContext *s)$/;"	f	file:
+tcg_target_reg_alloc_order	arm/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	hppa/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	i386/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	ia64/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	mips/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	ppc/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	ppc64/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	s390/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_alloc_order	sparc/tcg-target.c	/^static const int tcg_target_reg_alloc_order[] = {$/;"	v	file:
+tcg_target_reg_names	arm/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	hppa/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	i386/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	ia64/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	mips/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	ppc/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	ppc64/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	s390/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_reg_names	sparc/tcg-target.c	/^static const char * const tcg_target_reg_names[TCG_TARGET_NB_REGS] = {$/;"	v	file:
+tcg_target_ulong	tcg.h	/^typedef uint32_t tcg_target_ulong;$/;"	t
+tcg_target_ulong	tcg.h	/^typedef uint64_t tcg_target_ulong;$/;"	t
+tcg_temp_alloc	tcg.c	/^static inline void tcg_temp_alloc(TCGContext *s, int n)$/;"	f	file:
+tcg_temp_free	tcg-op.h	2088;"	d
+tcg_temp_free	tcg-op.h	2099;"	d
+tcg_temp_free_i32	tcg.c	/^void tcg_temp_free_i32(TCGv_i32 arg)$/;"	f
+tcg_temp_free_i64	tcg.c	/^void tcg_temp_free_i64(TCGv_i64 arg)$/;"	f
+tcg_temp_free_internal	tcg.c	/^static inline void tcg_temp_free_internal(int idx)$/;"	f	file:
+tcg_temp_free_ptr	tcg.h	454;"	d
+tcg_temp_free_ptr	tcg.h	464;"	d
+tcg_temp_local_new	tcg-op.h	2087;"	d
+tcg_temp_local_new	tcg-op.h	2098;"	d
+tcg_temp_local_new_i32	tcg.h	/^static inline TCGv_i32 tcg_temp_local_new_i32(void)$/;"	f
+tcg_temp_local_new_i64	tcg.h	/^static inline TCGv_i64 tcg_temp_local_new_i64(void)$/;"	f
+tcg_temp_new	tcg-op.h	2084;"	d
+tcg_temp_new	tcg-op.h	2095;"	d
+tcg_temp_new_i32	tcg.h	/^static inline TCGv_i32 tcg_temp_new_i32(void)$/;"	f
+tcg_temp_new_i64	tcg.h	/^static inline TCGv_i64 tcg_temp_new_i64(void)$/;"	f
+tcg_temp_new_internal	tcg.c	/^static inline int tcg_temp_new_internal(TCGType type, int temp_local)$/;"	f	file:
+tcg_temp_new_internal_i32	tcg.c	/^TCGv_i32 tcg_temp_new_internal_i32(int temp_local)$/;"	f
+tcg_temp_new_internal_i64	tcg.c	/^TCGv_i64 tcg_temp_new_internal_i64(int temp_local)$/;"	f
+tcg_temp_new_ptr	tcg.h	453;"	d
+tcg_temp_new_ptr	tcg.h	463;"	d
+tcg_to_bc	ppc/tcg-target.c	/^static const uint32_t tcg_to_bc[10] = {$/;"	v	file:
+tcg_to_bc	ppc64/tcg-target.c	/^static const uint32_t tcg_to_bc[10] = {$/;"	v	file:
+tcg_unsigned_cond	tcg.h	/^static inline TCGCond tcg_unsigned_cond(TCGCond c)$/;"	f
+temp_allocate_frame	tcg.c	/^static void temp_allocate_frame(TCGContext *s, int temp)$/;"	f	file:
+temp_allocated	tcg.h	/^    unsigned int temp_allocated:1; \/* never used for code gen *\/$/;"	m	struct:TCGTemp
+temp_count	tcg.h	/^    int64_t temp_count;$/;"	m	struct:TCGContext
+temp_count_max	tcg.h	/^    int temp_count_max;$/;"	m	struct:TCGContext
+temp_local	tcg.h	/^    unsigned int temp_local:1; \/* If true, the temp is saved accross$/;"	m	struct:TCGTemp
+temp_save	tcg.c	/^static void temp_save(TCGContext *s, int temp, TCGRegSet allocated_regs)$/;"	f	file:
+temps	tcg.h	/^    TCGTemp *temps; \/* globals first, temps after *\/$/;"	m	struct:TCGContext
+tgen32_addi	s390/tcg-target.c	/^static inline void tgen32_addi(TCGContext *s, TCGReg dest, int32_t val)$/;"	f	file:
+tgen64_addi	s390/tcg-target.c	/^static inline void tgen64_addi(TCGContext *s, TCGReg dest, int64_t val)$/;"	f	file:
+tgen64_andi	s390/tcg-target.c	/^static void tgen64_andi(TCGContext *s, TCGReg dest, tcg_target_ulong val)$/;"	f	file:
+tgen64_andi_tmp	s390/tcg-target.c	/^static void tgen64_andi_tmp(TCGContext *s, TCGReg dest, tcg_target_ulong val)$/;"	f	file:
+tgen64_ori	s390/tcg-target.c	/^static void tgen64_ori(TCGContext *s, TCGReg dest, tcg_target_ulong val)$/;"	f	file:
+tgen64_xori	s390/tcg-target.c	/^static void tgen64_xori(TCGContext *s, TCGReg dest, tcg_target_ulong val)$/;"	f	file:
+tgen_arithi	i386/tcg-target.c	/^static void tgen_arithi(TCGContext *s, int c, int r0,$/;"	f	file:
+tgen_arithr	i386/tcg-target.c	/^static inline void tgen_arithr(TCGContext *s, int subop, int dest, int src)$/;"	f	file:
+tgen_branch	s390/tcg-target.c	/^static void tgen_branch(TCGContext *s, int cc, int labelno)$/;"	f	file:
+tgen_brcond	s390/tcg-target.c	/^static void tgen_brcond(TCGContext *s, TCGType type, TCGCond c,$/;"	f	file:
+tgen_calli	s390/tcg-target.c	/^static void tgen_calli(TCGContext *s, tcg_target_long dest)$/;"	f	file:
+tgen_cmp	s390/tcg-target.c	/^static int tgen_cmp(TCGContext *s, TCGType type, TCGCond c, TCGReg r1,$/;"	f	file:
+tgen_compare_branch	s390/tcg-target.c	/^static void tgen_compare_branch(TCGContext *s, S390Opcode opc, int cc,$/;"	f	file:
+tgen_compare_imm_branch	s390/tcg-target.c	/^static void tgen_compare_imm_branch(TCGContext *s, S390Opcode opc, int cc,$/;"	f	file:
+tgen_ext16s	s390/tcg-target.c	/^static void tgen_ext16s(TCGContext *s, TCGType type, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_ext16u	s390/tcg-target.c	/^static void tgen_ext16u(TCGContext *s, TCGType type, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_ext32s	s390/tcg-target.c	/^static inline void tgen_ext32s(TCGContext *s, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_ext32u	s390/tcg-target.c	/^static inline void tgen_ext32u(TCGContext *s, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_ext8s	s390/tcg-target.c	/^static void tgen_ext8s(TCGContext *s, TCGType type, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_ext8u	s390/tcg-target.c	/^static void tgen_ext8u(TCGContext *s, TCGType type, TCGReg dest, TCGReg src)$/;"	f	file:
+tgen_gotoi	s390/tcg-target.c	/^static void tgen_gotoi(TCGContext *s, int cc, tcg_target_long dest)$/;"	f	file:
+tgen_setcond	s390/tcg-target.c	/^static void tgen_setcond(TCGContext *s, TCGType type, TCGCond c,$/;"	f	file:
+type	tcg.h	/^    TCGType type;$/;"	m	struct:TCGTemp
+type	tcg.h	/^    int type;$/;"	m	struct:TCGRelocation
+u	tcg.h	/^    } u;$/;"	m	struct:TCGArgConstraint	typeref:union:TCGArgConstraint::__anon24
+u	tcg.h	/^    } u;$/;"	m	struct:TCGLabel	typeref:union:TCGLabel::__anon20
+use_armv5_instructions	arm/tcg-target.c	/^static const int use_armv5_instructions = 0;$/;"	v	file:
+use_armv5_instructions	arm/tcg-target.c	/^static const int use_armv5_instructions = 1;$/;"	v	file:
+use_armv6_instructions	arm/tcg-target.c	/^static const int use_armv6_instructions = 0;$/;"	v	file:
+use_armv6_instructions	arm/tcg-target.c	/^static const int use_armv6_instructions = 1;$/;"	v	file:
+use_armv7_instructions	arm/tcg-target.c	/^static const int use_armv7_instructions = 0;$/;"	v	file:
+use_armv7_instructions	arm/tcg-target.c	/^static const int use_armv7_instructions = 1;$/;"	v	file:
+used	tcg.h	/^    int used;$/;"	m	struct:TCGOpDef
+val	tcg.h	/^    tcg_target_long val;$/;"	m	struct:TCGTemp
+val_type	tcg.h	/^    int val_type;$/;"	m	struct:TCGTemp
+value	tcg.h	/^        tcg_target_ulong value;$/;"	m	union:TCGLabel::__anon20
+x86_op_defs	i386/tcg-target.c	/^static const TCGTargetOpDef x86_op_defs[] = {$/;"	v	file:

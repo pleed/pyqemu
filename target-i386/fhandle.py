@@ -39,6 +39,19 @@ class FunctionHandler:
 	def addPendingReturn(self, function):
 		function.addReturnCallback(self.onLeave)
 
+class WinExecFunctionHandler(FunctionHandler):
+	def onEnter(self, function):
+		self.cmdline = STR(self.process.backend, function.getIntArg(1))
+		self.cmdshow = function.getIntArg(1)
+		self.addPendingReturn(function)
+
+	def onLeave(self, function):
+		retval = function.retval()
+		if retval > 31:
+			print "WinExec('%s')"%self.cmdline
+		else:
+			print "WinExec returned Error!"
+
 class RecvFunctionHandler(FunctionHandler):
 	def onEnter(self, function):
 		self.addPendingReturn(function)
@@ -431,4 +444,5 @@ HOOKS = [
 				("ole32.dll",  "CoTaskMemAlloc" , HeapAllocationFunctionHandler),
 				("ole32.dll",  "CoTaskMemFree"  , HeapFreeFunctionHandler),
 				("ws2_32.dll", "WSAGetLastError", WSAGetLastErrorFunctionHandler),
+				("kernel32.dll", "WinExec", WinExecFunctionHandler),
 ]

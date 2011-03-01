@@ -580,6 +580,8 @@ static inline void gen_op_ld_T1_A0(int idx)
 
 static inline void gen_op_st_v(int idx, TCGv t0, TCGv a0)
 {
+
+
     int mem_index = (idx >> 2) - 1;
     switch(idx & 3) {
     case 0:
@@ -4649,8 +4651,10 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
-        	gen_helper_call_ev_protected(tcg_const_i32(pc_start),
-        	   							 cpu_T[0], cpu_T[1]);
+			if(userspace(pc_start)){
+        		gen_helper_call_ev_protected(tcg_const_i32(pc_start),
+        	   							     cpu_T[0], cpu_T[1]);
+			}
             gen_op_jmp_T0();
             gen_eob(s);
             break;
@@ -4680,7 +4684,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         case 4: /* jmp Ev */
             if (s->dflag == 0)
                 gen_op_andl_T0_ffff();
-			gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[0]);
+			if(userspace(pc_start))
+				gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[0]);
             gen_op_jmp_T0();
             gen_eob(s);
             break;
@@ -4694,7 +4699,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_op_set_cc_op(s->cc_op);
                 gen_jmp_im(pc_start - s->cs_base);
                 tcg_gen_trunc_tl_i32(cpu_tmp2_i32, cpu_T[0]);
-				gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[1]);
+				if(userspace(pc_start))
+					gen_helper_jmp(tcg_const_i32(pc_start), cpu_T[1]);
                 gen_helper_ljmp_protected(cpu_tmp2_i32, cpu_T[1],
                                           tcg_const_i32(s->pc - pc_start));
             } else {
@@ -6204,7 +6210,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         val = ldsw_code(s->pc);
         s->pc += 2;
         gen_pop_T0(s);
-		gen_helper_ret_event(cpu_T[0]);
+		if(userspace(pc_start))
+			gen_helper_ret_event(cpu_T[0]);
         if (CODE64(s) && s->dflag)
             s->dflag = 2;
         gen_stack_update(s, val + (2 << s->dflag));
@@ -6215,7 +6222,8 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xc3: /* ret */
         gen_pop_T0(s);
-		gen_helper_ret_event(cpu_T[0]);
+		if(userspace(pc_start))
+			gen_helper_ret_event(cpu_T[0]);
         gen_pop_update(s);
         if (s->dflag == 0)
             gen_op_andl_T0_ffff();
@@ -6292,9 +6300,11 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
             gen_movtl_T0_im(next_eip);
             gen_push_T0(s);
-          	gen_helper_call_im_protected(tcg_const_i32(pc_start),
-               						     tcg_const_i32(tval),
-										 cpu_T[0]);
+			if(userspace(pc_start)){
+          		gen_helper_call_im_protected(tcg_const_i32(pc_start),
+               						         tcg_const_i32(tval),
+										     cpu_T[0]);
+			}
             gen_jmp(s, tval);
 
         }
@@ -6724,7 +6734,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xcd: /* int N */
         val = ldub_code(s->pc++);
-		if (val == 0x80 && instrumentation_active && instrumentation_syscall_active)
+		if (val == 0x80 && userspace(pc_start))
 			gen_helper_syscall_event();
         if (s->vm86 && s->iopl != 3) {
             gen_exception(s, EXCP0D_GPF, pc_start - s->cs_base);

@@ -85,6 +85,7 @@ def event_update_cr3(old_cr3, new_cr3):
 		process = KNOWN_Processes[new_cr3]		
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
+			#PyFlxInstrument.memtrace_disable()
 			return 1
 		
 		is_new = False
@@ -96,10 +97,12 @@ def event_update_cr3(old_cr3, new_cr3):
 			if not isinstance(process, TracedProcess):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
+				#PyFlxInstrument.memtrace_disable()
 				return 1
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
+				#PyFlxInstrument.memtrace_enable()
 
 		return 1
 	elif kpcr_addr > 0xf0000000: #otherwise something breaks :(			   
@@ -595,6 +598,14 @@ class TracedProcess(processinfo.Process):
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks(callhandler)
+		self.addBreakpoint(0x401000, self.entryPointReached)
+
+	def entryPointReached(self, addr):
+		self.log("Process is now at entry point on address 0x%x"%addr)
+
+	@classmethod
+	def addProcessToTrace(cls, process_name):
+		pass
 
 	def addBreakpoint(self, addr, callback):
 		if not self.breakpoints.has_key(addr):
@@ -719,13 +730,28 @@ class TracedProcess(processinfo.Process):
 			if syscall_name == "NtTerminateProcess":
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
+				self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtCreateThread":
-				pass # notify in the future
+				print "New Thread has been created by %s"%self.name
+				self.log(SyscallEvent(syscall_name))
+			if syscall_name == "NtTerminateThread":
+				print "Thread %d terminated"%self.cur_tid
+				self.log(SyscallEvent(syscall_name))
+			if syscall_name == "NtCreateProcess" or syscall_name == "NtCreateProcessEx":
+				print "New Process has been created by %s"%self.name
+				self.log(SyscallEvent(syscall_name))
 
 	@RegisteredCallback
 	def handle_call(self, fromaddr, toaddr, nextaddr):
 		""" Call Opcode handler. """
 		self._handle_call_filter(fromaddr, toaddr, nextaddr)
+
+	@RegisteredCallback
+	def handle_memtrace(self, address, value, size, iswrite):
+		if iswrite:
+			print "Write: 0x%x , Addr: 0x%x"%(value,address)
+		else:
+			print "Read:  0x%x , Addr: 0x%x"%(value,address)
 
 	@RegisteredCallback
 	def handle_jmp(self, fromaddr, toaddr):
@@ -776,7 +802,10 @@ class TracedProcess(processinfo.Process):
 			from_image = self.get_image_by_address(fromaddr)
 			to_image   = self.get_image_by_address(toaddr)
 			if from_image is None or to_image is None:
-				self.update_images()
+				try:
+					self.update_images()
+				except PageFaultException:
+					return
 			if from_image is not None and to_image is not None:
 				if self.callFromExe():
 					self.thread.previous_call = (fromaddr, toaddr, nextaddr)
@@ -845,10 +874,7 @@ class TracedProcess(processinfo.Process):
 
 	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
 		""" if call/jmp could generate interesting event, this function will handle it """
-		print "thread id: %d"%self.cur_tid
 		global emulate_functions
-		if toaddr in emulate_functions[self.imagefilename()]:
-			emulate_function(self, toaddr)
 		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
 		self.log_call(function)
 		self.callstack.push(function)
@@ -871,6 +897,7 @@ class TracedProcess(processinfo.Process):
 
 	def imagefilename(self):
 		return self.get_imagefilename().strip("\x00").lower()
+	name = property(imagefilename)
 
 	def registerFunctionHandler(self, dllname, function, callback):
 		""" Registers a function that will be called when vm process calls dllname::funcname(). """
@@ -1074,4 +1101,5 @@ ev_call       = ensure_error_handling_helper(lambda *args: get_current_process()
 ev_jmp        = ensure_error_handling_helper(lambda *args: get_current_process().handle_jmp(*args))
 ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_bp         = ensure_error_handling_helper(lambda *args: get_current_process().handle_breakpoint(*args))
+ev_memtrace   = ensure_error_handling_helper(lambda *args: get_current_process().handle_memtrace(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
