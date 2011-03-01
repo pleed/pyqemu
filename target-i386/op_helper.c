@@ -26,6 +26,7 @@
 #include "disas.h"
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
+#include "flx_optrace.h"
 
 extern struct FILE *stdout;
 extern struct FILE *stderr;
@@ -2208,6 +2209,10 @@ void helper_jmp(target_ulong src_eip, target_ulong new_eip){
 	if(instrumentation_active && instrumentation_call_active)
   		if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(src_eip, FLX_SLOT_ISJMP))
   	 		 flxinstrument_jmp_event(src_eip, new_eip);
+}
+
+void helper_opcode_event(target_ulong eip, target_ulong opcode){
+	flx_optrace_event(eip, opcode);
 }
 
 void helper_ret_event(target_ulong new_eip){

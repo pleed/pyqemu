@@ -31,6 +31,8 @@
 #include "helper.h"
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
+#include "flx_optrace.h"
+
 #define GEN_HELPER 1
 #include "helper.h"
 
@@ -1315,7 +1317,7 @@ static void gen_helper_fp_arith_STN_ST0(int op, int opreg)
 }
 
 /* if d == OR_TMP0, it means memory operand (address in A0) */
-static void gen_op(DisasContext *s1, int op, int ot, int d)
+static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_start)
 {
     if (d != OR_TMP0) {
         gen_op_mov_TN_reg(ot, 0, d);
@@ -1377,6 +1379,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d)
         break;
     default:
     case OP_ANDL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_AND);
         tcg_gen_and_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1386,6 +1390,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d)
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_ORL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_OR);
         tcg_gen_or_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1395,6 +1401,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d)
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_XORL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_XOR);
         tcg_gen_xor_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1918,28 +1926,44 @@ static void gen_shiftd_rm_T1_T3(DisasContext *s, int ot, int op1,
     tcg_temp_free(a0);
 }
 
-static void gen_shift(DisasContext *s1, int op, int ot, int d, int s)
+static void gen_shift(DisasContext *s1, int op, int ot, int d, int s, target_ulong pc_start)
 {
     if (s != OR_TMP1)
         gen_op_mov_TN_reg(ot, 1, s);
     switch(op) {
     case OP_ROL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROL);
         gen_rot_rm_T1(s1, ot, d, 0);
         break;
     case OP_ROR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROR);
         gen_rot_rm_T1(s1, ot, d, 1);
         break;
     case OP_SHL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL);
+        gen_shift_rm_T1(s1, ot, d, 0, 0);
+        break;
     case OP_SHL1:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL1);
         gen_shift_rm_T1(s1, ot, d, 0, 0);
         break;
     case OP_SHR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHR);
         gen_shift_rm_T1(s1, ot, d, 1, 0);
         break;
     case OP_SAR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SAR);
         gen_shift_rm_T1(s1, ot, d, 1, 1);
         break;
     case OP_RCL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_RCL);
         gen_rotc_rm_T1(s1, ot, d, 0);
         break;
     case OP_RCR:
@@ -1948,29 +1972,43 @@ static void gen_shift(DisasContext *s1, int op, int ot, int d, int s)
     }
 }
 
-static void gen_shifti(DisasContext *s1, int op, int ot, int d, int c)
+static void gen_shifti(DisasContext *s1, int op, int ot, int d, int c, target_ulong pc_start)
 {
     switch(op) {
     case OP_ROL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROL);
         gen_rot_rm_im(s1, ot, d, c, 0);
         break;
     case OP_ROR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROR);
         gen_rot_rm_im(s1, ot, d, c, 1);
         break;
     case OP_SHL:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL);
+        gen_shift_rm_im(s1, ot, d, c, 0, 0);
+        break;
     case OP_SHL1:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL1);
         gen_shift_rm_im(s1, ot, d, c, 0, 0);
         break;
     case OP_SHR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHR);
         gen_shift_rm_im(s1, ot, d, c, 1, 0);
         break;
     case OP_SAR:
+		if(optrace_enabled && userspace(pc_start))
+			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SAR);
         gen_shift_rm_im(s1, ot, d, c, 1, 1);
         break;
     default:
         /* currently not optimized */
         gen_op_movl_T1_im(c);
-        gen_shift(s1, op, ot, d, OR_TMP1);
+        gen_shift(s1, op, ot, d, OR_TMP1, pc_start);
         break;
     }
 }
@@ -4280,7 +4318,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     opreg = rm;
                 }
                 gen_op_mov_TN_reg(ot, 1, reg);
-                gen_op(s, op, ot, opreg);
+                gen_op(s, op, ot, opreg, pc_start);
                 break;
             case 1: /* OP Gv, Ev */
                 modrm = ldub_code(s->pc++);
@@ -4295,12 +4333,12 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 } else {
                     gen_op_mov_TN_reg(ot, 1, rm);
                 }
-                gen_op(s, op, ot, reg);
+                gen_op(s, op, ot, reg, pc_start);
                 break;
             case 2: /* OP A, Iv */
                 val = insn_get(s, ot);
                 gen_op_movl_T1_im(val);
-                gen_op(s, op, ot, OR_EAX);
+                gen_op(s, op, ot, OR_EAX, pc_start);
                 break;
             }
         }
@@ -4348,7 +4386,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                 break;
             }
             gen_op_movl_T1_im(val);
-            gen_op(s, op, ot, opreg);
+            gen_op(s, op, ot, opreg, pc_start);
         }
         break;
 
@@ -4652,8 +4690,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
 			if(userspace(pc_start)){
-        		gen_helper_call_ev_protected(tcg_const_i32(pc_start),
-        	   							     cpu_T[0], cpu_T[1]);
+        		gen_helper_call_ev_protected(tcg_const_i32(pc_start), cpu_T[0], cpu_T[1]);
 			}
             gen_op_jmp_T0();
             gen_eob(s);
@@ -5425,12 +5462,12 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
             /* simpler op */
             if (shift == 0) {
-                gen_shift(s, op, ot, opreg, OR_ECX);
+                gen_shift(s, op, ot, opreg, OR_ECX, pc_start);
             } else {
                 if (shift == 2) {
                     shift = ldub_code(s->pc++);
                 }
-                gen_shifti(s, op, ot, opreg, shift);
+                gen_shifti(s, op, ot, opreg, shift, pc_start);
             }
         }
         break;
