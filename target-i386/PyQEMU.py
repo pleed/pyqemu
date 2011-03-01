@@ -28,6 +28,7 @@ import dllhandling
 import syscalls
 from fhandle import *
 from FlxPyEmu import *
+from config import *
 
 DEBUG = True
 NULL = 0
@@ -602,6 +603,10 @@ class TracedProcess(processinfo.Process):
 
 	def entryPointReached(self, addr):
 		self.log("Process is now at entry point on address 0x%x"%addr)
+
+	@classmethod
+	def addProcessToTrace(cls, process_name):
+		pass
 
 	@classmethod
 	def addProcessToTrace(cls, process_name):
