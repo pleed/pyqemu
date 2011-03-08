@@ -6,6 +6,7 @@
 #include "exec-all.h"
 #include "cpu.h"
 
+#include "flx_instrument.h"
 #include "flx_optrace.h"
 
 uint8_t optrace_enabled = 0;
@@ -16,12 +17,12 @@ void flx_optrace_init(optrace_handler handler){
 }
 
 void flx_optrace_enable(void){
-	tb_invalidate_phys_page_range(0, 0xffffffff, 0);
+	tb_flush(current_environment);
 	optrace_enabled = 1;
 }
 
 void flx_optrace_disable(void){
-	tb_invalidate_phys_page_range(0, 0xffffffff, 0);
+	tb_flush(current_environment);
 	optrace_enabled = 0;
 }
 
@@ -30,4 +31,8 @@ void flx_optrace_event(uint32_t eip, uint32_t opcode){
 		flx_optrace_handler(eip, opcode);
 	else
 		printf("failed to initialize flx_optrace handler!\n");
+}
+
+int flx_optrace_status(void){
+	return optrace_enabled;
 }

@@ -2212,8 +2212,15 @@ void helper_jmp(target_ulong src_eip, target_ulong new_eip){
 }
 
 void helper_opcode_event(target_ulong eip, target_ulong opcode){
-	flx_optrace_event(eip, opcode);
+	if(optrace_enabled)
+		flx_optrace_event(eip,opcode);
 }
+/*
+void helper_opcode_event(target_ulong eip, target_ulong opcode){
+	printf("opcode event start\n");
+	flx_optrace_event(eip, opcode);
+	printf("opcode event stop\n");
+}*/
 
 void helper_ret_event(target_ulong new_eip){
 	if(instrumentation_active && instrumentation_call_active)

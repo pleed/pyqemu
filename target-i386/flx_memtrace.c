@@ -14,11 +14,11 @@ void flx_memtrace_init(mem_access_handler handler){
 }
 
 void flx_memtrace_start(void){
-	tb_invalidate_phys_page_range(0, 0xffffffff, 0);
+	tb_flush(current_environment);
 	memtrace_enabled = 1;
 }
 void flx_memtrace_stop(void){
-	tb_invalidate_phys_page_range(0, 0xffffffff, 0);
+	tb_flush(current_environment);
 	memtrace_enabled = 0;
 }
 

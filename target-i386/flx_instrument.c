@@ -37,6 +37,7 @@
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
 #include "flx_memtrace.h"
+#include "flx_optrace.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -76,6 +77,7 @@ PyObject *PyFlx_ev_update_cr3 = NULL;
 PyObject *PyFlx_ev_ret = NULL;
 PyObject *PyFlx_ev_bp = NULL;
 PyObject *PyFlx_ev_memtrace = NULL;
+PyObject *PyFlx_ev_optrace = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -139,6 +141,33 @@ void flxinstrument_blacklist_cleanup(void){
 			memset(bs, 0, sizeof(blacklist_slot));
 		}
 	}
+}
+
+static PyObject* PyFlxC_optrace_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_optrace_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_optrace_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_optrace_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_optrace_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_optrace_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static PyObject* PyFlxC_memtrace_disable(PyObject *self, PyObject *args) {
@@ -457,6 +486,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"creg", (PyCFunction)PyFlxC_creg, METH_VARARGS,
      "Returns a control register"
     },
+    {"optrace_enable", (PyCFunction)PyFlxC_optrace_enable, METH_VARARGS,
+     "Start tracing opcode execution"
+    },
+    {"optrace_disable", (PyCFunction)PyFlxC_optrace_disable, METH_VARARGS,
+     "Stop tracing opcode execution"
+    },
     {"memtrace_enable", (PyCFunction)PyFlxC_memtrace_enable, METH_VARARGS,
      "Start tracing memory access"
     },
@@ -570,6 +605,16 @@ void flxinstrument_init(void) {
      }   
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
 
+   PyFlx_ev_optrace = PyObject_GetAttrString(Py_Python_Module, "ev_optrace");
+   Py_XINCREF(PyFlx_ev_optrace);
+   if (PyFlx_ev_optrace && PyCallable_Check(PyFlx_ev_optrace))
+     {
+       printf("Opcode event active\n");
+       instrumentation_call_active = 1;
+     }   
+   flx_optrace_init((optrace_handler)flxinstrument_optrace_event);
+
+
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    if (PyFlx_ev_jmp && PyCallable_Check(PyFlx_ev_jmp))
@@ -625,6 +670,8 @@ void flxinstrument_init(void) {
      PyFlx_ev_call = NULL;
      Py_XDECREF(PyFlx_ev_memtrace);
      PyFlx_ev_memtrace = NULL;
+     Py_XDECREF(PyFlx_ev_optrace);
+     PyFlx_ev_optrace = NULL;
      Py_XDECREF(PyFlx_ev_jmp);
      PyFlx_ev_jmp = NULL;
      Py_XDECREF(PyFlx_ev_ret);
@@ -697,6 +744,38 @@ int flxinstrument_syscall_event(uint32_t eax) {
   result = PyObject_CallFunction(PyFlx_ev_syscall,
 				 (char*) "(I)",
 				 eax);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_optrace_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_optrace)) {
+    fprintf(stderr, "No registered memtrace event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_optrace,
+				 (char*) "(II)",
+				 eip,
+				 opcode);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

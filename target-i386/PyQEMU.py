@@ -86,7 +86,8 @@ def event_update_cr3(old_cr3, new_cr3):
 		process = KNOWN_Processes[new_cr3]		
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
-			#PyFlxInstrument.memtrace_disable()
+			PyFlxInstrument.memtrace_disable()
+			#PyFlxInstrument.optrace_disable()
 			return 1
 		
 		is_new = False
@@ -98,12 +99,14 @@ def event_update_cr3(old_cr3, new_cr3):
 			if not isinstance(process, TracedProcess):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
-				#PyFlxInstrument.memtrace_disable()
+				PyFlxInstrument.memtrace_disable()
+				#PyFlxInstrument.optrace_disable()
 				return 1
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
-				#PyFlxInstrument.memtrace_enable()
+				PyFlxInstrument.memtrace_enable()
+				#PyFlxInstrument.optrace_enable()
 
 		return 1
 	elif kpcr_addr > 0xf0000000: #otherwise something breaks :(			   
@@ -753,10 +756,15 @@ class TracedProcess(processinfo.Process):
 
 	@RegisteredCallback
 	def handle_memtrace(self, address, value, size, iswrite):
+		eip = PyFlxInstrument.registers()["eip"]
 		if iswrite:
-			print "Write: 0x%x , Addr: 0x%x"%(value,address)
+			print "Write: 0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
 		else:
-			print "Read:  0x%x , Addr: 0x%x"%(value,address)
+			print "Read:  0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
+
+	@RegisteredCallback
+	def handle_optrace(self, eip, opcode):
+		print "Executed opcode 0x%x at eip 0x%x"%(opcode,eip)
 
 	@RegisteredCallback
 	def handle_jmp(self, fromaddr, toaddr):
@@ -940,6 +948,11 @@ class UntracedProcess(processinfo.Process):
 
 	def handle_jmp(self, *args):
 		pass
+	def handle_optrace(self, *args):
+		pass
+
+	def handle_memtrace(self, *args):
+		pass
 
 def init(sval):	
 	print "Python instrument started"
@@ -1107,4 +1120,5 @@ ev_jmp        = ensure_error_handling_helper(lambda *args: get_current_process()
 ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process().handle_ret(*args))
 ev_bp         = ensure_error_handling_helper(lambda *args: get_current_process().handle_breakpoint(*args))
 ev_memtrace   = ensure_error_handling_helper(lambda *args: get_current_process().handle_memtrace(*args))
+ev_optrace    = ensure_error_handling_helper(lambda *args: get_current_process().handle_optrace(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)

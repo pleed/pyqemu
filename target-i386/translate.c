@@ -1379,8 +1379,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         break;
     default:
     case OP_ANDL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_AND);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_AND));
         tcg_gen_and_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1390,8 +1390,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_ORL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_OR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_OR));
         tcg_gen_or_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1401,8 +1401,8 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_XORL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_XOR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_XOR));
         tcg_gen_xor_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1932,38 +1932,38 @@ static void gen_shift(DisasContext *s1, int op, int ot, int d, int s, target_ulo
         gen_op_mov_TN_reg(ot, 1, s);
     switch(op) {
     case OP_ROL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROL);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_ROL));
         gen_rot_rm_T1(s1, ot, d, 0);
         break;
     case OP_ROR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_ROR));
         gen_rot_rm_T1(s1, ot, d, 1);
         break;
     case OP_SHL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHL));
         gen_shift_rm_T1(s1, ot, d, 0, 0);
         break;
     case OP_SHL1:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL1);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHL1));
         gen_shift_rm_T1(s1, ot, d, 0, 0);
         break;
     case OP_SHR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHR));
         gen_shift_rm_T1(s1, ot, d, 1, 0);
         break;
     case OP_SAR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SAR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SAR));
         gen_shift_rm_T1(s1, ot, d, 1, 1);
         break;
     case OP_RCL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_RCL);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_RCL));
         gen_rotc_rm_T1(s1, ot, d, 0);
         break;
     case OP_RCR:
@@ -1976,33 +1976,33 @@ static void gen_shifti(DisasContext *s1, int op, int ot, int d, int c, target_ul
 {
     switch(op) {
     case OP_ROL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROL);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_ROL));
         gen_rot_rm_im(s1, ot, d, c, 0);
         break;
     case OP_ROR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_ROR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_ROR));
         gen_rot_rm_im(s1, ot, d, c, 1);
         break;
     case OP_SHL:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHL));
         gen_shift_rm_im(s1, ot, d, c, 0, 0);
         break;
     case OP_SHL1:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHL1);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHL1));
         gen_shift_rm_im(s1, ot, d, c, 0, 0);
         break;
     case OP_SHR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SHR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SHR));
         gen_shift_rm_im(s1, ot, d, c, 1, 0);
         break;
     case OP_SAR:
-		if(optrace_enabled && userspace(pc_start))
-			gen_helper_opcode_event(tcg_const_i32(pc_start),FLX_OP_SAR);
+		if(userspace(pc_start) && optrace_enabled)
+			gen_helper_opcode_event(tcg_const_i32(pc_start),tcg_const_i32(FLX_OP_SAR));
         gen_shift_rm_im(s1, ot, d, c, 1, 1);
         break;
     default:

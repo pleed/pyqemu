@@ -24,3 +24,4 @@ void flx_optrace_init(optrace_handler handler);
 void flx_optrace_enable(void);
 void flx_optrace_disable(void);
 void flx_optrace_event(uint32_t eip, uint32_t opcode);
+int flx_optrace_status(void);

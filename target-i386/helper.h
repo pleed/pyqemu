@@ -40,6 +40,7 @@ DEF_HELPER_3(ljmp_protected, void, int, tl, int)
 DEF_HELPER_4(lcall_real, void, int, tl, int, int)
 
 DEF_HELPER_2(opcode_event, void, tl, tl) 
+//DEF_HELPER_2(opcode_event, void, tl, tl) 
 DEF_HELPER_0(flx_debug, void)
 DEF_HELPER_0(syscall_event, void)
 DEF_HELPER_2(jmp, void, tl, tl)
