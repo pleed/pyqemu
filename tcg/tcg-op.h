@@ -24,6 +24,7 @@
 #include "tcg.h"
 #include "flx_memtrace.h"
 #include "flx_instrument.h"
+#include "flx_hooking.h"
 
 int gen_new_label(void);
 
@@ -421,20 +422,14 @@ static inline void tcg_gen_helper64(void *func, int sizemask, TCGv_i64 ret,
 
 /* FLX HELPER */
 static inline int32_t flx_memtrace_read(int32_t value, int32_t address, int32_t offset, int32_t size){
-	if(instrumentation_active){
-		if(!memtrace_enabled)
-			printf("memtrace_read called but memtrace disabled! check invalidation!!!\n");
+	if(flx_state.global_active && flx_state.memtrace_active)
 		flx_memtrace_event(address, value, size, 0);
-	}
 	return value;
 }
 
 static inline int32_t flx_memtrace_write(int32_t value, int32_t address, int32_t offset, int32_t size){
-	if(instrumentation_active){
-		if(!memtrace_enabled)
-			printf("memtrace_write called but memtrace disabled! check invalidation!!!\n");
+	if(flx_state.global_active && flx_state.memtrace_active)
 		flx_memtrace_event(address, value, size, 1);
-	}
 	return value;
 }
 /* 32 bit ops */

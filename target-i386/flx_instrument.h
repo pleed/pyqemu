@@ -14,10 +14,24 @@
 
 extern CPUState *current_environment;
 
-extern int instrumentation_active;
-extern int instrumentation_call_active;
-extern int instrumentation_syscall_active;
-extern int python_active;
+typedef struct {
+	// global flags
+	uint8_t global_active;
+	uint8_t python_active;
+
+	// feature flags
+	uint8_t optrace_active;
+	uint8_t memtrace_active;
+	uint8_t filter_active;
+
+	// specific opcode flags
+	uint8_t syscall_active;
+	uint8_t jmp_active;
+	uint8_t call_active;
+	uint8_t ret_active;
+} FLX_STATE;
+
+extern FLX_STATE flx_state;
 
 typedef struct {
 	char set;

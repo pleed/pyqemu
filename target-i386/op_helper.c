@@ -2200,20 +2200,17 @@ void helper_load_seg(int seg_reg, int selector)
 
 void helper_flx_debug(void)
 {
-	if(instrumentation_active && flx_breakpoint_search(current_environment->eip, current_environment->cr[3])){
+	if(flx_breakpoint_search(current_environment->eip, current_environment->cr[3])){
 		flxinstrument_breakpoint_event(current_environment->eip);
 	}
 }
 
-void helper_jmp(target_ulong src_eip, target_ulong new_eip){
-	if(instrumentation_active && instrumentation_call_active)
-  		if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(src_eip, FLX_SLOT_ISJMP))
-  	 		 flxinstrument_jmp_event(src_eip, new_eip);
+void helper_flx_jmp(target_ulong src_eip, target_ulong new_eip){
+	flxinstrument_jmp_event(src_eip, new_eip);
 }
 
-void helper_opcode_event(target_ulong eip, target_ulong opcode){
-	if(optrace_enabled)
-		flx_optrace_event(eip,opcode);
+void helper_flx_opcode(target_ulong eip, target_ulong opcode){
+	flx_optrace_event(eip,opcode);
 }
 /*
 void helper_opcode_event(target_ulong eip, target_ulong opcode){
@@ -2222,10 +2219,8 @@ void helper_opcode_event(target_ulong eip, target_ulong opcode){
 	printf("opcode event stop\n");
 }*/
 
-void helper_ret_event(target_ulong new_eip){
-	if(instrumentation_active && instrumentation_call_active)
-		if(!(0x80000000&new_eip))
-  	  		flxinstrument_ret_event(new_eip);
+void helper_flx_ret(target_ulong new_eip){
+	flxinstrument_ret_event(new_eip);
 }
 
 /* protected mode jump */
@@ -2355,8 +2350,6 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
     target_ulong ssp, old_ssp, next_eip;
 
     next_eip = env->eip + next_eip_addend;
-	//if (instrumentation_active && instrumentation_call_active)
-	//	gen_helper_call_protected(pc_start, new_eip, next_eip);
     LOG_PCALL("lcall %04x:%08x s=%d\n", new_cs, (uint32_t)new_eip, shift);
     LOG_PCALL_STATE(env);
     if ((new_cs & 0xfffc) == 0)
@@ -2549,35 +2542,13 @@ void helper_lcall_protected(int new_cs, target_ulong new_eip,
 
 int get_current_register(int index);
 
-void helper_call_im_protected(target_ulong src_eip,
-							  target_ulong new_eip, int next_eip){
-  if (!(new_eip & 0x80000000) ){
-	helper_call_protected(src_eip,new_eip,next_eip);
-  }
-
-}
-void helper_call_ev_protected(target_ulong src_eip,
-							  target_ulong new_eip, int next_eip){
-    if (!(new_eip & 0x80000000) ){
-	  //fprintf(stderr, "call_ev:\n");
-  	  helper_call_protected(src_eip,new_eip,next_eip);
-    }
-}
-
 /* regular calls in protected mode */
-void helper_call_protected(target_ulong src_eip,
-               target_ulong new_eip, int next_eip )
+void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong next_eip)
 {
-  if(instrumentation_active && instrumentation_call_active){
-  	// We are not interested in kernel mode stuff
-  	if (!(new_eip & 0x80000000) && !flxinstrument_is_blacklisted(src_eip, FLX_SLOT_ISCALL)){
-  	  flxinstrument_call_event(src_eip, new_eip, next_eip);
-  	}
-  }
+	flxinstrument_call_event(src_eip, new_eip, next_eip);
 }
 
-void helper_syscall_event(void){
-  if(instrumentation_active && instrumentation_syscall_active)
+void helper_flx_syscall(void){
 	flxinstrument_syscall_event(env->regs[R_EAX]);
 }
 

@@ -8,7 +8,6 @@
 
 #define NUM_FILTER_TREES 256
 
-uint8_t flx_filter_enabled;
 avl_tree_t* page_trees[NUM_FILTER_TREES];
 
 flx_filter_cache flx_filter_search_cache;
@@ -82,10 +81,10 @@ void flx_filter_destroy(void){
 }
 
 void flx_filter_enable(void){
-	flx_filter_enabled = 1;
+	flx_state.filter_active= 1;
 }
 void flx_filter_disable(void){
-	flx_filter_enabled = 0;
+	flx_state.filter_active= 0;
 }
 
 int flx_filter_search_by_addr(uint32_t address){

@@ -9,7 +9,6 @@
 #include "flx_instrument.h"
 #include "flx_optrace.h"
 
-uint8_t optrace_enabled = 0;
 optrace_handler flx_optrace_handler = 0;
 
 void flx_optrace_init(optrace_handler handler){
@@ -18,12 +17,12 @@ void flx_optrace_init(optrace_handler handler){
 
 void flx_optrace_enable(void){
 	tb_flush(current_environment);
-	optrace_enabled = 1;
+	flx_state.optrace_active = 1;
 }
 
 void flx_optrace_disable(void){
 	tb_flush(current_environment);
-	optrace_enabled = 0;
+	flx_state.optrace_active = 0;
 }
 
 void flx_optrace_event(uint32_t eip, uint32_t opcode){
@@ -34,5 +33,5 @@ void flx_optrace_event(uint32_t eip, uint32_t opcode){
 }
 
 int flx_optrace_status(void){
-	return optrace_enabled;
+	return flx_state.optrace_active;
 }

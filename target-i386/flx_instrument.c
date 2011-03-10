@@ -61,10 +61,8 @@ unsigned startup_time = 0;
 
 
 // #define PROFILE_PYTHON
-int python_active;
-int instrumentation_active;
-int instrumentation_call_active;
-int instrumentation_syscall_active;
+
+FLX_STATE flx_state;
 
 static PyObject *Py_Python_Module;
 static PyObject *PyFlx_C_Module;
@@ -451,7 +449,7 @@ static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *arg
     return NULL;
   }
   
-  instrumentation_active = active_flag;
+  flx_state.global_active = active_flag;
   
   Py_INCREF(Py_None);
   return Py_None;
@@ -582,10 +580,10 @@ void flxinstrument_init(void) {
 
    Py_XINCREF(Py_Python_Module);
 
-   python_active = 1;
-   instrumentation_active = 0;
-   instrumentation_syscall_active= 0;
-   instrumentation_call_active = 0;
+   flx_state.python_active = 1;
+   flx_state.global_active = 0;
+   flx_state.syscall_active= 0;
+   flx_state.call_active = 0;
    flxinstrument_blacklist_alloc();
    
    PyFlx_ev_call = PyObject_GetAttrString(Py_Python_Module, "ev_call");
@@ -593,7 +591,7 @@ void flxinstrument_init(void) {
    if (PyFlx_ev_call && PyCallable_Check(PyFlx_ev_call))
      {
        printf("Call event active\n");
-       instrumentation_call_active = 1;
+       flx_state.call_active = 1;
      }   
 
    PyFlx_ev_memtrace = PyObject_GetAttrString(Py_Python_Module, "ev_memtrace");
@@ -601,7 +599,7 @@ void flxinstrument_init(void) {
    if (PyFlx_ev_memtrace && PyCallable_Check(PyFlx_ev_memtrace))
      {
        printf("Memtrace event active\n");
-       instrumentation_call_active = 1;
+       flx_state.call_active = 1;
      }   
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
 
@@ -610,7 +608,7 @@ void flxinstrument_init(void) {
    if (PyFlx_ev_optrace && PyCallable_Check(PyFlx_ev_optrace))
      {
        printf("Opcode event active\n");
-       instrumentation_call_active = 1;
+       flx_state.call_active = 1;
      }   
    flx_optrace_init((optrace_handler)flxinstrument_optrace_event);
 
@@ -620,20 +618,20 @@ void flxinstrument_init(void) {
    if (PyFlx_ev_jmp && PyCallable_Check(PyFlx_ev_jmp))
      {
        printf("Jmp event active\n");
-       instrumentation_call_active = 1;
+       flx_state.call_active = 1;
      }   
 
 
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
    Py_XINCREF(PyFlx_ev_ret);
-   if (PyFlx_ev_ret && PyCallable_Check(PyFlx_ev_ret) && instrumentation_call_active)
+   if (PyFlx_ev_ret && PyCallable_Check(PyFlx_ev_ret) && flx_state.call_active)
      {
        printf("Ret event active\n");
      }   
 
    PyFlx_ev_bp = PyObject_GetAttrString(Py_Python_Module, "ev_bp");
    Py_XINCREF(PyFlx_ev_bp);
-   if (PyFlx_ev_bp && PyCallable_Check(PyFlx_ev_bp) && instrumentation_call_active)
+   if (PyFlx_ev_bp && PyCallable_Check(PyFlx_ev_bp) && flx_state.call_active)
      {
        printf("Breakpoint event active\n");
      }   
@@ -646,7 +644,7 @@ void flxinstrument_init(void) {
    if (PyFlx_ev_syscall && PyCallable_Check(PyFlx_ev_syscall))
      {
        printf("Syscall event active\n");
-       instrumentation_syscall_active = 1;
+       flx_state.syscall_active = 1;
      }   
 
    
@@ -658,10 +656,10 @@ void flxinstrument_init(void) {
    enable_python = PyObject_CallMethod(Py_Python_Module, (char*)"init", (char*)"I",0);
    if (!PyInt_Check(enable_python) || (PyInt_AS_LONG(enable_python) == 0)) {
      printf("Python instrumentation disabled. Init returned None or 0\n");
-     instrumentation_call_active = 0;
-     instrumentation_syscall_active = 0;
-     instrumentation_active = 0;
-     python_active = 0;
+     flx_state.call_active = 0;
+     flx_state.syscall_active = 0;
+     flx_state.global_active = 0;
+     flx_state.python_active = 0;
 
      Py_XDECREF(PyFlx_ev_update_cr3);
      PyFlx_ev_update_cr3 = NULL;
@@ -697,6 +695,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 	fprintf(stderr," - NO EXC\n");
 #endif
 
+  static uint8_t last_monitored = 0;
   PyObject *result;
   int retval = 0;
   
@@ -717,6 +716,18 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
     Py_XDECREF(result);
+
+	// Flash translation cache before and after
+	// a monitored process is scheduled
+	if(last_monitored)
+		tb_flush(current_environment)
+	if(retval){
+		tb_flush(current_environment);
+		last_monitored = 1;
+	}
+	else{
+		last_monitored = 0;
+	}
   }
   else {
     PyErr_Print();

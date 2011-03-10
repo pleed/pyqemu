@@ -88,7 +88,7 @@ def event_update_cr3(old_cr3, new_cr3):
 			PyFlxInstrument.set_instrumentation_active(0)
 			PyFlxInstrument.memtrace_disable()
 			#PyFlxInstrument.optrace_disable()
-			return 1
+			return 0
 		
 		is_new = False
 
@@ -101,14 +101,15 @@ def event_update_cr3(old_cr3, new_cr3):
 				PyFlxInstrument.set_instrumentation_active(0)
 				PyFlxInstrument.memtrace_disable()
 				#PyFlxInstrument.optrace_disable()
-				return 1
+				return 0
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
 				PyFlxInstrument.memtrace_enable()
 				#PyFlxInstrument.optrace_enable()
+				return 1
 
-		return 1
+		return 0
 	elif kpcr_addr > 0xf0000000: #otherwise something breaks :(			   
 		backend = VMemBackend( 0, 0x100000000)				
 		filename = ""

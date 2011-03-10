@@ -1,3 +1,6 @@
+#ifndef FLX_OPTRACE
+#define FLX_OPTRACE
+
 #include <inttypes.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -17,7 +20,6 @@ enum {
 
 typedef int(*optrace_handler)(uint32_t, uint32_t);
 
-extern uint8_t optrace_enabled;
 extern optrace_handler flx_optrace_handler;
 
 void flx_optrace_init(optrace_handler handler);
@@ -25,3 +27,5 @@ void flx_optrace_enable(void);
 void flx_optrace_disable(void);
 void flx_optrace_event(uint32_t eip, uint32_t opcode);
 int flx_optrace_status(void);
+
+#endif

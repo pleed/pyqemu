@@ -1,3 +1,6 @@
+#ifndef FLX_FILTER
+#define FLX_FILTER
+
 #include <avl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,7 +9,6 @@
 
 #define NUM_FILTER_TREES 256
 
-extern uint8_t flx_filter_enabled;
 extern avl_tree_t* page_trees[NUM_FILTER_TREES];
 
 typedef struct {
@@ -25,3 +27,5 @@ int flx_filter_search_by_range(uint32_t start, uint32_t end);
 int flx_filter_add_by_addr(uint32_t address);
 int flx_filter_add_by_range(uint32_t start, uint32_t end);
 int flx_filter_filtered(uint32_t address);
+
+#endif
