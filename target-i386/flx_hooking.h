@@ -14,7 +14,7 @@
 #define FLX_ON_SYSCALL_ACTIVE 0x00000100
 
 #define flx_hook(conditions, hook, ...) do{ \
-											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE |conditions );\
+											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE | FLX_ON_FILTERED | conditions );\
 											hook(__VA_ARGS__);\
 										  }while(0)
 

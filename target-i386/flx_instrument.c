@@ -34,6 +34,8 @@
 #include <time.h>
 
 #include "cpu.h"
+#include "exec-all.h"
+
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
 #include "flx_memtrace.h"
@@ -720,7 +722,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 	// Flash translation cache before and after
 	// a monitored process is scheduled
 	if(last_monitored)
-		tb_flush(current_environment)
+		tb_flush(current_environment);
 	if(retval){
 		tb_flush(current_environment);
 		last_monitored = 1;

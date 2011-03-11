@@ -4,9 +4,20 @@
 #include <inttypes.h>
 #include <avl.h>
 
+#include "flx_instrument.h"
 #include "flx_filter.h"
 
 #define NUM_FILTER_TREES 256
+
+static inline uint32_t    flx_filter_addrtopage(uint32_t addr);
+static inline uint8_t     flx_filter_cache_index(uint32_t address);
+static inline int         flx_filter_cache_hit(uint32_t address);
+static inline void        flx_filter_cache_update(uint32_t address);
+static inline void        flx_filter_cache_invalidate(uint32_t address);
+static inline avl_tree_t* flx_filter_addrtotree(uint32_t addr);
+static uint16_t           flx_filter_addrtovalue(uint32_t addr);
+static int                avl_page_cmp(const uint16_t* a, const uint16_t* b);
+static void               avl_page_free(void* item);
 
 avl_tree_t* page_trees[NUM_FILTER_TREES];
 
@@ -32,7 +43,7 @@ flx_filter_cache_hit(uint32_t address){
 	return 0;
 }
 
-static inline int
+static inline void
 flx_filter_cache_update(uint32_t address){
 	uint8_t index = flx_filter_cache_index(address);
 	flx_filter_search_cache.valid[index] = 1;
@@ -40,7 +51,7 @@ flx_filter_cache_update(uint32_t address){
 }
 
 static inline void
-flx_filter_cache_invalidate(address){
+flx_filter_cache_invalidate(uint32_t address){
 	flx_filter_search_cache.valid[flx_filter_cache_index(address)] = 0;
 }
 
@@ -70,13 +81,13 @@ flx_filter_addrtovalue(uint32_t addr){
 
 void flx_filter_init(void){
 	memset(page_trees, 0, sizeof(page_trees));
-	flx_filter_cache_invalidate();
+	memset(&flx_filter_search_cache, 0, sizeof(flx_filter_search_cache));
 }
 
 void flx_filter_destroy(void){
 	uint16_t i;
 	for(i=0; i<NUM_FILTER_TREES; ++i){
-		page_trees[i];
+		avl_free_tree(page_trees[i]);
 	}
 }
 
@@ -91,7 +102,6 @@ int flx_filter_search_by_addr(uint32_t address){
 	if(flx_filter_cache_hit(address))
 		return 1;
 
-	uint8_t hash = (address>>16)&0xff;
 	avl_tree_t* tree = flx_filter_addrtotree(address);
 	if(!tree){
 		return 0;
@@ -177,11 +187,6 @@ int flx_filter_add_by_range(uint32_t start, uint32_t end){
 	return 0;
 }
 
-int flx_filter_filtered(uint32_t address){
-	avl_tree_t* tree = flx_filter_addrtotree(address);
-	
-}
-
 #ifdef FLX_FILTER_UNITTEST
 
 #include <stdlib.h>
@@ -212,7 +217,7 @@ int main(int argc, char* argv[]){
 	for(i=0; i<VALUES; ++i){
 		flx_filter_del_by_addr(addresses[i]);
 	}
-	for(i=0; i<256; ++i){
+	for(i=0; i<NUM_FILTER_TREES; ++i){
 		if(page_trees[i])
 			if(avl_count(page_trees[i]) != 0)
 				printf("ALARM\n");
@@ -221,7 +226,7 @@ int main(int argc, char* argv[]){
 		flx_filter_add_by_addr(addresses[i]);
 	}
 	flx_filter_del_by_range(0,0xffffffff);
-	for(i=0; i<256; ++i){
+	for(i=0; i<NUM_FILTER_TREES; ++i){
 		if(page_trees[i])
 			if(avl_count(page_trees[i]) != 0)
 				printf("ALARM!!!!\n");

@@ -1,7 +1,10 @@
 #ifndef _FLX_INSTRUMENT_
 #define _FLX_INSTRUMENT_
 
+#include "cpu-all.h"
+
 #include <inttypes.h>
+
 
 #define FLX_BLACKLIST_SIZE 256*256*256
 
