@@ -17,18 +17,14 @@ import Queue
 import random
 import time
 
-import event
-from event import *
 import PyFlxInstrument
-import processinfo
-from Structures import *
-import Structures
-from dllhandling import *
-import dllhandling
-import syscalls
-from fhandle import *
-from FlxPyEmu import *
-from config import *
+import pyqemu.processinfo
+import pyqemu.syscalls
+from pyqemu.Structures import *
+from pyqemu.dllhandling import *
+from pyqemu.event import *
+from pyqemu.fhandle import *
+from pyqemu.config import *
 
 DEBUG = True
 NULL = 0
@@ -594,7 +590,7 @@ class TracedProcess(processinfo.Process):
 		self.threadcount         = 0
 		self.threads             = {}
 		self.logger              = EventLogger("/tmp/","flx_dump_events")
-		self.dllhandler          = DLLHandler("/media/shared/dlls/")
+		self.dllhandler          = DLLHandler("/home/matenaar/dlls/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
 		self.breakpoints         = {}

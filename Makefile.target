@@ -29,7 +29,10 @@ QEMU_PROG=qemu-system-$(TARGET_ARCH2)$(EXESUF)
 endif
 endif
 
-PROGS=$(QEMU_PROG)
+PROGS=$(QEMU_PROG) 
+PYQEMU_SRCPATH=../target-i386
+PYQEMU_PROGS= $(PYQEMU_SRCPATH)/PyQEMU.py $(PYQEMU_SRCPATH)/pyqemu
+PYQEMU_PYTHON_PATH=/usr/lib/python2.6/
 
 LIBS+=-lm -lpython2.6 -lavl
 
@@ -38,7 +41,7 @@ kvm.o kvm-all.o vhost.o vhost_net.o: QEMU_CFLAGS+=$(KVM_CFLAGS)
 config-target.h: config-target.h-timestamp
 config-target.h-timestamp: config-target.mak
 
-all: $(PROGS)
+all: $(PROGS) 
 
 # Dummy command so that make thinks it has done something
 	@true
@@ -61,6 +64,8 @@ libobj-y += disas.o
 $(libobj-y): $(GENERATED_HEADERS)
 
 # libqemu
+pyqemu: $(PYQEMU_FILES)
+	cp -r $(PYQEMU_PROGS) $(PYQEMU_PYTHON_PATH)
 
 translate.o: translate.c cpu.h
 
@@ -332,7 +337,7 @@ clean:
 	rm -f *.d */*.d tcg/*.o ide/*.o
 	rm -f qemu-monitor.h gdbstub-xml.c
 
-install: all
+install: all pyqemu
 ifneq ($(PROGS),)
 	$(INSTALL) -m 755 $(PROGS) "$(DESTDIR)$(bindir)"
 ifneq ($(STRIP),)
