@@ -1106,6 +1106,47 @@ else
 fi
 
 ##########################################
+# python header check
+cat > $TMPC << EOF
+#include <python2.6/Python.h>
+#if PY_MAJOR_VERSION != 2
+#error "wrong python major version!"
+#endif
+#if PY_MINOR_VERSION != 6
+#error "wrong python minor version!"
+#endif
+
+int main(void) { return 0; }
+EOF
+if compile_prog "" "-lpython2.6" ; then
+    :
+else
+    echo
+    echo "Error: python check failed"
+    echo "Make sure to have the python 2.6 libs and headers installed."
+    echo
+    exit 1
+fi
+
+
+
+##########################################
+# libavl check
+cat > $TMPC << EOF
+#include <avl.h>
+int main(void) { avl_init_tree(0,0,0); return 0; }
+EOF
+if compile_prog "" "-lavl" ; then
+    :
+else
+    echo
+    echo "Error: libavl check failed"
+    echo "Make sure to have the avl libs and headers installed."
+    echo
+    exit 1
+fi
+
+##########################################
 # xen probe
 
 if test "$xen" != "no" ; then

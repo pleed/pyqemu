@@ -2282,7 +2282,7 @@ static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld8u(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld8u, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2295,7 +2295,7 @@ static inline void tcg_gen_qemu_ld8u(TCGv ret, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld8s, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2308,7 +2308,7 @@ static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld16u, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2321,7 +2321,7 @@ static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld16s(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld16s, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2335,7 +2335,7 @@ static inline void tcg_gen_qemu_ld32u(TCGv ret, TCGv addr, int mem_index)
 {
 #if TARGET_LONG_BITS == 32
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2352,7 +2352,7 @@ static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)
 {
 #if TARGET_LONG_BITS == 32
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2368,7 +2368,7 @@ static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_ld64, ret, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2381,7 +2381,7 @@ static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st8, arg, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2394,7 +2394,7 @@ static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st16, arg, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2407,7 +2407,7 @@ static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st32, arg, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
@@ -2420,7 +2420,7 @@ static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_st64, arg, addr, mem_index);
-	if(memtrace_enabled){
+	if(flx_state.memtrace_active){
 		int sizemask = 0;
 		sizemask |= tcg_gen_sizemask(0, 0, 0);
 		sizemask |= tcg_gen_sizemask(1, 0, 0);
