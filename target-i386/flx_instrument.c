@@ -441,6 +441,10 @@ static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *arg
   }
   
   flx_state.global_active = active_flag;
+  flx_state.syscall_active = active_flag;
+  flx_state.ret_active = active_flag;
+  flx_state.call_active = active_flag;
+  flx_state.jmp_active = active_flag;
   
   Py_INCREF(Py_None);
   return Py_None;
@@ -683,9 +687,12 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 
 	// Flush translation cache before and after
 	// a monitored process is scheduled
+	
 	if(last_monitored)
+		printf("flushing chache\n");
 		tb_flush(current_environment);
 	if(retval){
+		printf("flushing chache\n");
 		tb_flush(current_environment);
 		last_monitored = 1;
 	}

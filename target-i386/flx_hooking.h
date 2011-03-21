@@ -13,14 +13,18 @@
 #define FLX_ON_JMP_ACTIVE     0x00000080
 #define FLX_ON_SYSCALL_ACTIVE 0x00000100
 
+
+
 #define flx_hook(conditions, hook, ...) do{ \
 											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE | FLX_ON_FILTERED | conditions );\
+											do{\
 											hook(__VA_ARGS__);\
+											}while(0);\
 										  }while(0)
 
 #define FLX_TEST_CONDITION(conditions, code, condition) ((((conditions) & condition) && !(code))?0:1)
 
-#define FLX_TEST_CONDITION_FILTERED(conditions)      FLX_TEST_CONDITION(conditions, (flx_state.filter_active && (!flx_filter_search_by_addr(pc_start))), FLX_ON_FILTERED)
+#define FLX_TEST_CONDITION_FILTERED(conditions)      FLX_TEST_CONDITION(conditions, ((!flx_state.filter_active) || (!flx_filter_search_by_addr(pc_start))), FLX_ON_FILTERED)
 #define FLX_TEST_CONDITION_USERSPACE(conditions)     FLX_TEST_CONDITION(conditions, userspace(pc_start), FLX_ON_USERSPACE)
 #define FLX_TEST_CONDITION_OPTRACE(conditions)       FLX_TEST_CONDITION(conditions, flx_state.optrace_active, FLX_ON_OPTRACE)
 #define FLX_TEST_CONDITION_MEMTRACE(conditions)      FLX_TEST_CONDITION(conditions, flx_state.memtrace_active, FLX_ON_MEMTRACE)
@@ -30,15 +34,44 @@
 #define FLX_TEST_CONDITION_CALL_ACTIVE(conditions)   FLX_TEST_CONDITION(conditions, flx_state.call_active,   FLX_ON_CALL_ACTIVE)
 #define FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditions) FLX_TEST_CONDITION(conditions, flx_state.syscall_active,   FLX_ON_SYSCALL_ACTIVE)
 
+
 #define FLX_TEST_CONDITIONS(conditions) if(!FLX_TEST_CONDITION_GLOBAL_ACTIVE(conditions) || \
-										   !FLX_TEST_CONDITION_USERSPACE(conditions)     ||\
-										   !FLX_TEST_CONDITION_CALL_ACTIVE(conditions)   ||\
-										   !FLX_TEST_CONDITION_JMP_ACTIVE(conditions)    ||\
-										   !FLX_TEST_CONDITION_RET_ACTIVE(conditions)    ||\
-										   !FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditions)    ||\
-										   !FLX_TEST_CONDITION_OPTRACE(conditions)       ||\
-										   !FLX_TEST_CONDITION_MEMTRACE(conditions)      ||\
-										   !FLX_TEST_CONDITION_FILTERED(conditions))\
-											break
+					!FLX_TEST_CONDITION_USERSPACE(conditions)     ||\
+					!FLX_TEST_CONDITION_CALL_ACTIVE(conditions)   ||\
+					!FLX_TEST_CONDITION_JMP_ACTIVE(conditions)    ||\
+					!FLX_TEST_CONDITION_RET_ACTIVE(conditions)    ||\
+					!FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditions)    ||\
+					!FLX_TEST_CONDITION_OPTRACE(conditions)       ||\
+					!FLX_TEST_CONDITION_MEMTRACE(conditions)      ||\
+					!FLX_TEST_CONDITION_FILTERED(conditions)){\
+						break;\
+					}
 
 #endif
+/*
+						if(flx_state.global_active){\
+							printf("Condition debugging: \n\n");\
+							if(flx_state.global_active){\
+								if(!FLX_TEST_CONDITION_GLOBAL_ACTIVE(conditions))\
+									printf("GLOBAL_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_USERSPACE(conditions))\
+									printf("USERSPACE_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_CALL_ACTIVE(conditions))\
+									printf("CALL_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_JMP_ACTIVE(conditions))\
+									printf("JMP_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_RET_ACTIVE(conditions))\
+									printf("RET_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditions))\
+									printf("SYSCALL_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_OPTRACE(conditions))\
+									printf("OPTRACE_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_MEMTRACE(conditions))\
+									printf("MEMTRACE_ACTIVE!\n");\
+								if(!FLX_TEST_CONDITION_FILTERED(conditions))\
+									printf("FILTERED_ACTIVE!\n");\
+							}\
+							printf("-------------------\n\n");\
+						}\
+
+*/

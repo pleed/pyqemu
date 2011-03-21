@@ -237,15 +237,18 @@ class CalledFunction:
 class EventLogger(pickle.Pickler):
 	cache_treshold = 100
 	""" Object serialization logger """
-	def __init__(self, directory, dumpfile):
+	def __init__(self, directory, dumpfile, cache = True):
 		self.dir = directory
 		self.dumpfile = open(directory+dumpfile,"w")
 		self.eventcache = []
+		self.cache = cache
 		random.seed(time.time())
 
 	def handle_event(self, obj):
 		self.eventcache.append(obj)
-		if len(self.eventcache) <= self.cache_treshold:
+		if self.cache == False:
+			self.flushEvents()
+		elif len(self.eventcache) <= self.cache_treshold:
 			return
 		else:
 			self.flushEvents()
@@ -586,7 +589,7 @@ class TracedProcess(processinfo.Process):
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
-		self.logger              = EventLogger("/home/matenaar/","flx_event_dump")
+		self.logger              = EventLogger("/home/matenaar/","flx_event_dump", cache = False)
 		self.dllhandler          = DLLHandler("/home/matenaar/dlls/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
@@ -729,6 +732,7 @@ class TracedProcess(processinfo.Process):
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(eax)
 		if syscall_name is not None:
+			self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtTerminateProcess":
 				global cleanup_processes
 				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
