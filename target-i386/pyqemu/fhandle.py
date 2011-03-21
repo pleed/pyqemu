@@ -9,7 +9,6 @@ import pickle
 import avl
 import gc
 import copy
-import guppy
 import cProfile
 import threading
 import Queue

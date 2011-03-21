@@ -493,16 +493,6 @@ INSTRUMENT_DATA flx_instr_data;
    the PDPT */
 void cpu_x86_update_cr3(CPUX86State *env, target_ulong new_cr3)
 {
-#define FLXTEST 0
-
-#if FLXTEST
-  uint32_t addr;
-  uint32_t KPRCB_addr = 0;
-  uint32_t ETHREAD_addr = 0;
-  uint32_t EPROCESS_addr = 0;
-  char filename[16];
-  uint8_t buffer[64];
-#endif
   target_ulong old_cr3;
 
   old_cr3 = env->cr[3];
@@ -514,11 +504,9 @@ void cpu_x86_update_cr3(CPUX86State *env, target_ulong new_cr3)
 #endif
         tlb_flush(env, 0);
 
-  		if (flx_state.python_active){
+  	if (flx_state.python_active){
     		current_environment = env;
       		flxinstrument_update_cr3(old_cr3, new_cr3);
-			// FIXME FLX: i guess this could be a BAD idea, remove permanentrly?
-    		//current_environment = NULL; 
     	}
 
     }

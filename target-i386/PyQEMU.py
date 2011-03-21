@@ -10,9 +10,6 @@ import pickle
 import avl
 import gc
 import copy
-import guppy
-import cProfile
-import threading
 import Queue
 import random
 import time
@@ -82,7 +79,7 @@ def event_update_cr3(old_cr3, new_cr3):
 		process = KNOWN_Processes[new_cr3]		
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
-			PyFlxInstrument.memtrace_disable()
+			#PyFlxInstrument.memtrace_disable()
 			#PyFlxInstrument.optrace_disable()
 			return 0
 		
@@ -95,13 +92,13 @@ def event_update_cr3(old_cr3, new_cr3):
 			if not isinstance(process, TracedProcess):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
-				PyFlxInstrument.memtrace_disable()
+				#PyFlxInstrument.memtrace_disable()
 				#PyFlxInstrument.optrace_disable()
 				return 0
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
-				PyFlxInstrument.memtrace_enable()
+				#PyFlxInstrument.memtrace_enable()
 				#PyFlxInstrument.optrace_enable()
 				return 1
 
@@ -589,7 +586,7 @@ class TracedProcess(processinfo.Process):
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
-		self.logger              = EventLogger("/tmp/","flx_dump_events")
+		self.logger              = EventLogger("/home/matenaar/","flx_event_dump")
 		self.dllhandler          = DLLHandler("/home/matenaar/dlls/")
 		# stores registerd callbacks
 		self.callonfunction      = {}
@@ -953,6 +950,8 @@ class UntracedProcess(processinfo.Process):
 
 def init(sval):	
 	print "Python instrument started"
+	if os.getenv("PYQEMU_DISABLE") is None:
+		return 0
 	return 1
 
 # Exceptions are not properly handled in flx_instrument.c wrapper helps detecting them
@@ -984,7 +983,7 @@ trace_processes = {
 #	"putty.exe": HOOKS,
 #	"ftp.exe":   HOOKS,
 	"curl.exe":  HOOKS,
-#	"notepad.exe": HOOKS,
+	"notepad.exe": HOOKS,
 }
 
 emulate_functions = {
@@ -1070,6 +1069,7 @@ emulate_functions = {
 	"fencryption.exe": [],
 	"curl.exe": [],
 	"asam.exe": [],
+	"notepad.exe": [],
 }
 
 class PyQemuEmulationInterface:
