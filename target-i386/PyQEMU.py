@@ -80,7 +80,8 @@ def event_update_cr3(old_cr3, new_cr3):
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
 			#PyFlxInstrument.memtrace_disable()
-			#PyFlxInstrument.optrace_disable()
+			if process.optrace:
+				PyFlxInstrument.optrace_disable()
 			return 0
 		
 		is_new = False
@@ -93,13 +94,15 @@ def event_update_cr3(old_cr3, new_cr3):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
 				#PyFlxInstrument.memtrace_disable()
-				#PyFlxInstrument.optrace_disable()
+				if process.optrace:
+					PyFlxInstrument.optrace_disable()
 				return 0
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
 				#PyFlxInstrument.memtrace_enable()
-				#PyFlxInstrument.optrace_enable()
+				if process.optrace:
+					PyFlxInstrument.optrace_enable()
 				return 1
 
 		return 0
@@ -599,10 +602,21 @@ class TracedProcess(processinfo.Process):
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks(callhandler)
-		self.addBreakpoint(0x401000, self.entryPointReached)
+
+		self.addBreakpoint(0x100739d, self.entryPointReached)
+		self.optrace = False
 
 	def entryPointReached(self, addr):
-		self.log("Process is now at entry point on address 0x%x"%addr)
+		image = self.get_image_by_address(addr)
+		if image is None:
+			print "MAIN IMAGE IS NONE!!!"
+			return
+		self.imagestart = image.DllBase
+		self.imagestop  = self.imagestart + image.SizeOfImage
+		PyFlxInstrument.filter_add(self.imagestart,self.imagestop)
+		PyFlxInstrument.filter_enable()
+		print "INITIALIZING FILTER DONE!!!"
+		PyFlxInstrument.optrace_enable()
 
 	@classmethod
 	def addProcessToTrace(cls, process_name):
@@ -762,6 +776,8 @@ class TracedProcess(processinfo.Process):
 
 	@RegisteredCallback
 	def handle_optrace(self, eip, opcode):
+		if self.imagestart > eip or self.imagestop < eip:
+			print "EIP NOT IN RANGE!!!"
 		print "Executed opcode 0x%x at eip 0x%x"%(opcode,eip)
 
 	@RegisteredCallback
@@ -936,6 +952,7 @@ class TracedProcess(processinfo.Process):
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):
 		processinfo.Process.__init__(self)
+		self.optrace = False
 
 	def handle_call(self, *args):
 		pass

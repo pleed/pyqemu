@@ -766,7 +766,7 @@ case "$cpu" in
     i386)
            QEMU_CFLAGS="-m32 $QEMU_CFLAGS"
            LDFLAGS="-m32 $LDFLAGS"
-           helper_cflags="-fomit-frame-pointer"
+           helper_cflags=""
            host_guest_base="yes"
            ;;
     x86_64)

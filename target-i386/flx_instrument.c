@@ -132,6 +132,69 @@ void flxinstrument_blacklist_cleanup(void){
 	}
 }
 
+static PyObject* PyFlxC_filter_add(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_filter_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t start;
+  uint32_t end;
+  
+  if(!PyArg_ParseTuple(args, "II", &start, &end))
+    return NULL;
+  flx_filter_add_by_range(start,end);
+  Py_INCREF(Py_None);
+  return Py_None;
+
+}
+
+static PyObject* PyFlxC_filter_del(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_filter_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t start;
+  uint32_t end;
+  if(!PyArg_ParseTuple(args, "II", &start, &end))
+    return NULL;
+  flx_filter_del_by_range(start,end);
+  Py_INCREF(Py_None);
+  return Py_None;
+
+}
+
+static PyObject* PyFlxC_filter_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_filter_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_filter_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_filter_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_filter_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_filter_disable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyObject* PyFlxC_optrace_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_optrace_disable");  
@@ -485,6 +548,18 @@ static PyMethodDef PyFlxC_methods[] = {
     {"optrace_disable", (PyCFunction)PyFlxC_optrace_disable, METH_VARARGS,
      "Stop tracing opcode execution"
     },
+    {"filter_enable", (PyCFunction)PyFlxC_filter_enable, METH_VARARGS,
+     "Activate translation filtering"
+    },
+    {"filter_add", (PyCFunction)PyFlxC_filter_add, METH_VARARGS,
+     "Activate translation filtering"
+    },
+    {"filter_del", (PyCFunction)PyFlxC_filter_del, METH_VARARGS,
+     "Activate translation filtering"
+    },
+    {"filter_disable", (PyCFunction)PyFlxC_filter_disable, METH_VARARGS,
+     "Deactivate translation filtering"
+    },
     {"memtrace_enable", (PyCFunction)PyFlxC_memtrace_enable, METH_VARARGS,
      "Start tracing memory access"
     },
@@ -663,7 +738,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 	fprintf(stderr," - NO EXC\n");
 #endif
 
-  static uint8_t last_monitored = 0;
+  //static uint8_t last_monitored = 0;
   PyObject *result;
   int retval = 0;
   
@@ -688,7 +763,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 	// Flush translation cache before and after
 	// a monitored process is scheduled
 	
-	if(last_monitored)
+	/*if(last_monitored)
 		printf("flushing chache\n");
 		tb_flush(current_environment);
 	if(retval){
@@ -698,7 +773,7 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 	}
 	else{
 		last_monitored = 0;
-	}
+	}*/
   }
   else {
     PyErr_Print();
