@@ -38,6 +38,8 @@ DEF_HELPER_2(load_seg, void, int, int)
 DEF_HELPER_3(ljmp_protected, void, int, tl, int)
 DEF_HELPER_4(lcall_real, void, int, tl, int, int)
 
+DEF_HELPER_2(flx_bblstart, void, tl, i64)
+DEF_HELPER_1(flx_bblstop, void, tl)
 DEF_HELPER_2(flx_opcode, void, tl, tl) 
 DEF_HELPER_0(flx_debug, void)
 DEF_HELPER_0(flx_syscall, void)

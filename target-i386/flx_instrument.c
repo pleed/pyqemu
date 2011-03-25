@@ -67,6 +67,7 @@ PyObject *PyFlx_ev_ret = NULL;
 PyObject *PyFlx_ev_bp = NULL;
 PyObject *PyFlx_ev_memtrace = NULL;
 PyObject *PyFlx_ev_optrace = NULL;
+PyObject *PyFlx_ev_bblstart = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -659,6 +660,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_syscall);
    PyFlx_ev_update_cr3 = PyObject_GetAttrString(Py_Python_Module, "ev_update_cr3");
    Py_XINCREF(PyFlx_ev_update_cr3);   
+   PyFlx_ev_bblstart = PyObject_GetAttrString(Py_Python_Module, "ev_bblstart");
+   Py_XINCREF(PyFlx_ev_bblstart);
    printf("done!\n");
 }
 
@@ -801,6 +804,38 @@ int flxinstrument_syscall_event(uint32_t eax) {
   result = PyObject_CallFunction(PyFlx_ev_syscall,
 				 (char*) "(I)",
 				 eax);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_bblstart_event(uint32_t eip, uint32_t icount) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_bblstart_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_bblstart)) {
+    fprintf(stderr, "No registered memtrace event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_bblstart,
+				 (char*) "(II)",
+				 eip,
+				 icount);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
@@ -975,7 +1010,7 @@ int flxinstrument_breakpoint_event(uint32_t eip) {
   return retval;
 }
 
-int flxinstrument_ret_event(uint32_t new_eip) {
+int flxinstrument_ret_event(uint32_t eip, uint32_t new_eip) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_ret_event");  
   if(PyErr_Occurred())
@@ -992,7 +1027,8 @@ int flxinstrument_ret_event(uint32_t new_eip) {
   }
 
   result = PyObject_CallFunction(PyFlx_ev_ret,
-				 (char*) "(I)",
+				 (char*) "(II)",
+				 eip,
 				 new_eip);
 
   if (result != Py_None) {

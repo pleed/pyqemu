@@ -115,7 +115,13 @@ static const CPU86_LDouble f15rk[7] =
 };
 
 /* broken thread support */
+//#ifdef FLX_HELPER_DEBUG
+#define flx_helper_debug(s, ...) printf(s, __VA_ARGS__);
+//#else
+//#define flx_helper_debug(s, ...) do{}while(0)
+//#endif
 
+uint32_t flx_vmem_to_phys(uint32_t address);
 static spinlock_t global_cpu_lock = SPIN_LOCK_UNLOCKED;
 
 void helper_lock(void)
@@ -2201,18 +2207,41 @@ void helper_load_seg(int seg_reg, int selector)
 void helper_flx_debug(void)
 {
 	if(flx_state.global_active && flx_breakpoint_search(current_environment->eip, current_environment->cr[3])){
+		flx_helper_debug("Breakpoint at 0x%x\n", current_environment->eip);
 		flxinstrument_breakpoint_event(current_environment->eip);
 	}
 }
 
 void helper_flx_jmp(target_ulong src_eip, target_ulong new_eip){
-	if(flx_state.global_active)
-		flxinstrument_jmp_event(src_eip, new_eip);
+	if(flx_state.global_active){
+		flx_helper_debug("Jump from 0x%x to 0x%x\n",env->eip, new_eip);
+		flxinstrument_jmp_event(env->eip, new_eip);
+	}
+}
+
+void helper_flx_bblstart(target_ulong eip, uint64_t tb){
+	if(flx_state.global_active){
+		if(env->eip != eip){
+			flx_helper_debug("Block start eip: 0x%x, env->eip: 0x%x\n",env->eip, eip);
+		}
+		TranslationBlock* t = (TranslationBlock*)tb;
+		flx_helper_debug("Block start: 0x%x, num ins: %d\n",env->eip, t->icount);
+		flxinstrument_bblstart_event(env->eip, t->icount);
+	}
+}
+
+void helper_flx_bblstop(target_ulong ins_count){
+	if(flx_state.global_active){
+		flx_helper_debug("Block end: %d instructions\n",ins_count);
+		flxinstrument_bblstop_event(ins_count);
+	}
 }
 
 void helper_flx_opcode(target_ulong eip, target_ulong opcode){
-	if(flx_state.global_active)
-		flx_optrace_event(eip,opcode);
+	if(flx_state.global_active){
+		flx_helper_debug("Opcode: %d at 0x%x\n",opcode, env->eip);
+		flx_optrace_event(env->eip,opcode);
+	}
 }
 /*
 void helper_opcode_event(target_ulong eip, target_ulong opcode){
@@ -2222,8 +2251,10 @@ void helper_opcode_event(target_ulong eip, target_ulong opcode){
 }*/
 
 void helper_flx_ret(target_ulong new_eip){
-	if(flx_state.global_active)
-		flxinstrument_ret_event(new_eip);
+	if(flx_state.global_active){
+		flx_helper_debug("Ret from 0x%x to 0x%x\n",env->eip, new_eip);
+		flxinstrument_ret_event(env->eip, new_eip);
+	}
 }
 
 /* protected mode jump */
@@ -2548,13 +2579,17 @@ int get_current_register(int index);
 /* regular calls in protected mode */
 void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong next_eip)
 {
-	if(flx_state.global_active)
-		flxinstrument_call_event(src_eip, new_eip, next_eip);
+	if(flx_state.global_active){
+		flx_helper_debug("Call from 0x%x, to 0x%x , next: 0x%x\n",env->eip, new_eip, next_eip);
+		flxinstrument_call_event(env->eip, new_eip, next_eip);
+	}
 }
 
 void helper_flx_syscall(void){
-	if(flx_state.global_active)
+	if(flx_state.global_active){
+		flx_helper_debug("Syscall at 0x%x, eax: %d",env->eip, env->regs[R_EAX]);
 		flxinstrument_syscall_event(env->regs[R_EAX]);
+	}
 }
 
 void helper_post_call_protected(target_ulong sub_eip,
@@ -2859,7 +2894,6 @@ void helper_lret_protected(int shift, int addend)
     helper_ret_protected(shift, 0, addend);
 }
 
-uint32_t flx_vmem_to_phys(uint32_t address);
 
 int flx_get_vmem_word(uint32_t address, uint16_t *result);
 int flx_get_vmem_word(uint32_t address, uint16_t *result)

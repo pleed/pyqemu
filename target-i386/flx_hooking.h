@@ -15,9 +15,10 @@
 
 
 
-#define flx_hook(conditions, hook, ...) do{ \
+#define flx_hook(conditions, context, hook, ...) do{ \
 											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE | conditions );\
 											do{\
+											gen_jmp_im(pc_start - context->cs_base);\
 											hook(__VA_ARGS__);\
 											}while(0);\
 										  }while(0)

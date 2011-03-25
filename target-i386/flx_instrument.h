@@ -51,10 +51,11 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3);
 int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, uint32_t next_eip);
 int flxinstrument_jmp_event(uint32_t jmp_source, uint32_t jmp_destination);
 int flxinstrument_syscall_event(uint32_t eax);
-int flxinstrument_ret_event(uint32_t new_eip);
+int flxinstrument_ret_event(uint32_t eip, uint32_t new_eip);
 int flxinstrument_breakpoint_event(uint32_t eip);
 int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite);
 int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode);
+int flxinstrument_bblstart_event(uint32_t eip, uint32_t ins_count);
 
 void flxinstrument_blacklist_alloc(void);
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);

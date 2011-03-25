@@ -722,7 +722,7 @@ class TracedProcess(processinfo.Process):
 		breakpoint.trigger()
 
 	@RegisteredCallback
-	def handle_ret(self, toaddr):
+	def handle_ret(self, fromaddr, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		# keep callstack up to date
 		try:
@@ -773,6 +773,10 @@ class TracedProcess(processinfo.Process):
 			print "Write: 0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
 		else:
 			print "Read:  0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
+
+	@RegisteredCallback
+	def handle_bblstart(self, eip, icount):
+		self.log("BBL start at 0x%x, containing %d instructions"%(eip,icount))
 
 	@RegisteredCallback
 	def handle_optrace(self, eip, opcode):
@@ -1139,4 +1143,5 @@ ev_ret        = ensure_error_handling_helper(lambda *args: get_current_process()
 ev_bp         = ensure_error_handling_helper(lambda *args: get_current_process().handle_breakpoint(*args))
 ev_memtrace   = ensure_error_handling_helper(lambda *args: get_current_process().handle_memtrace(*args))
 ev_optrace    = ensure_error_handling_helper(lambda *args: get_current_process().handle_optrace(*args))
+ev_bblstart   = ensure_error_handling_helper(lambda *args: get_current_process().handle_bblstart(*args))
 ev_update_cr3 = ensure_error_handling_helper(event_update_cr3)
