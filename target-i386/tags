@@ -115,6 +115,7 @@ MMX_W	cpu.h	/^#define MMX_W(n) _w[n]$/
 MSR_MTRRphysBase	cpu.h	/^#define MSR_MTRRphysBase(reg)		(0x200 + 2 * (reg))/
 MSR_MTRRphysMask	cpu.h	/^#define MSR_MTRRphysMask(reg)		(0x200 + 2 * (reg) /
 MemoryManager	PyQEMU.py	/^class MemoryManager:$/
+Mflx_bbl	flx_bbl.c	/^int main(int argc, char* argv[]){$/
 Mflx_filter	flx_filter.c	/^int main(int argc, char* argv[]){$/
 POPCOUNT	ops_sse.h	/^#define POPCOUNT(n, i) (n & POPMASK(i)) + ((n >> (/
 POPL	op_helper.c	/^#define POPL(ssp, sp, sp_mask, val)\\$/
@@ -286,7 +287,9 @@ approx_rcp	op_helper.c	/^static float approx_rcp(float a)$/
 approx_rsqrt	op_helper.c	/^static float approx_rsqrt(float a)$/
 avl_breakpoint_cmp	flx_breakpoint.c	/^static int avl_breakpoint_cmp(const flx_breakpoint/
 avl_breakpoint_free	flx_breakpoint.c	/^static void avl_breakpoint_free(flx_breakpoint *bp/
+avl_page_cmp	flx_bbl.c	/^int avl_page_cmp(const uint16_t* a, const uint16_t/
 avl_page_cmp	flx_filter.c	/^int avl_page_cmp(const uint16_t* a, const uint16_t/
+avl_page_free	flx_bbl.c	/^void avl_page_free(void* item){$/
 avl_page_free	flx_filter.c	/^void avl_page_free(void* item){$/
 avl_process_cmp	flx_breakpoint.c	/^static int avl_process_cmp(const uint32_t *a, cons/
 avl_process_free	flx_breakpoint.c	/^static void avl_process_free(void *item){$/
@@ -379,11 +382,6 @@ find_hw_breakpoint	kvm.c	/^static int find_hw_breakpoint(target_ulong addr, i/
 float64_to_floatx	exec.h	/^#define float64_to_floatx(x, e) (x)$/
 floatx_to_float64	exec.h	/^#define floatx_to_float64(x, e) (x)$/
 flushEvents	PyQEMU.py	/^	def flushEvents(self):$/
-flx_bbl_alloc	flx_bbl.c	/^flx_bbl_alloc(uint32_t start){$/
-flx_bbl_cur	flx_bbl.c	/^flx_bbl_cur(void){$/
-flx_bbl_init	flx_bbl.c	/^flx_bbl_init(bbl_handler handler){$/
-flx_bbl_start	flx_bbl.c	/^flx_bbl_start(uint32_t eip){$/
-flx_bbl_stop	flx_bbl.c	/^flx_bbl_stop(uint32_t eip){$/
 flx_breakpoint_alloc	flx_breakpoint.c	/^static flx_breakpoint* flx_breakpoint_alloc(uint32/
 flx_breakpoint_delete	flx_breakpoint.c	/^int flx_breakpoint_delete(uint32_t addr, uint32_t /
 flx_breakpoint_free	flx_breakpoint.c	/^static void flx_breakpoint_free(flx_breakpoint* bp/
@@ -391,27 +389,45 @@ flx_breakpoint_init	flx_breakpoint.c	/^void flx_breakpoint_init(void){$/
 flx_breakpoint_insert	flx_breakpoint.c	/^void flx_breakpoint_insert(uint32_t addr, uint32_t/
 flx_breakpoint_search	flx_breakpoint.c	/^int flx_breakpoint_search(uint32_t addr, uint32_t /
 flx_breakpoint_search_addr	flx_breakpoint.c	/^int flx_breakpoint_search_addr(uint32_t addr, uint/
+flx_filter_add_by_addr	flx_bbl.c	/^int flx_filter_add_by_addr(uint32_t address){$/
 flx_filter_add_by_addr	flx_filter.c	/^int flx_filter_add_by_addr(uint32_t address){$/
+flx_filter_add_by_range	flx_bbl.c	/^int flx_filter_add_by_range(uint32_t start, uint32/
 flx_filter_add_by_range	flx_filter.c	/^int flx_filter_add_by_range(uint32_t start, uint32/
+flx_filter_addrtopage	flx_bbl.c	/^flx_filter_addrtopage(uint32_t addr){$/
 flx_filter_addrtopage	flx_filter.c	/^flx_filter_addrtopage(uint32_t addr){$/
+flx_filter_addrtotree	flx_bbl.c	/^flx_filter_addrtotree(uint32_t addr){$/
 flx_filter_addrtotree	flx_filter.c	/^flx_filter_addrtotree(uint32_t addr){$/
+flx_filter_addrtovalue	flx_bbl.c	/^flx_filter_addrtovalue(uint32_t addr){$/
 flx_filter_addrtovalue	flx_filter.c	/^flx_filter_addrtovalue(uint32_t addr){$/
+flx_filter_cache_hit	flx_bbl.c	/^flx_filter_cache_hit(uint32_t address){$/
 flx_filter_cache_hit	flx_filter.c	/^flx_filter_cache_hit(uint32_t address){$/
+flx_filter_cache_index	flx_bbl.c	/^flx_filter_cache_index(uint32_t address){$/
 flx_filter_cache_index	flx_filter.c	/^flx_filter_cache_index(uint32_t address){$/
+flx_filter_cache_invalidate	flx_bbl.c	/^flx_filter_cache_invalidate(uint32_t address){$/
 flx_filter_cache_invalidate	flx_filter.c	/^flx_filter_cache_invalidate(uint32_t address){$/
+flx_filter_cache_update	flx_bbl.c	/^flx_filter_cache_update(uint32_t address){$/
 flx_filter_cache_update	flx_filter.c	/^flx_filter_cache_update(uint32_t address){$/
+flx_filter_del_by_addr	flx_bbl.c	/^int flx_filter_del_by_addr(uint32_t address){$/
 flx_filter_del_by_addr	flx_filter.c	/^int flx_filter_del_by_addr(uint32_t address){$/
+flx_filter_del_by_range	flx_bbl.c	/^int flx_filter_del_by_range(uint32_t start, uint32/
 flx_filter_del_by_range	flx_filter.c	/^int flx_filter_del_by_range(uint32_t start, uint32/
+flx_filter_destroy	flx_bbl.c	/^void flx_filter_destroy(void){$/
 flx_filter_destroy	flx_filter.c	/^void flx_filter_destroy(void){$/
+flx_filter_disable	flx_bbl.c	/^void flx_filter_disable(void){$/
 flx_filter_disable	flx_filter.c	/^void flx_filter_disable(void){$/
+flx_filter_enable	flx_bbl.c	/^void flx_filter_enable(void){$/
 flx_filter_enable	flx_filter.c	/^void flx_filter_enable(void){$/
+flx_filter_init	flx_bbl.c	/^void flx_filter_init(void){$/
 flx_filter_init	flx_filter.c	/^void flx_filter_init(void){$/
+flx_filter_search_by_addr	flx_bbl.c	/^int flx_filter_search_by_addr(uint32_t address){$/
 flx_filter_search_by_addr	flx_filter.c	/^int flx_filter_search_by_addr(uint32_t address){$/
+flx_filter_search_by_range	flx_bbl.c	/^int flx_filter_search_by_range(uint32_t start, uin/
 flx_filter_search_by_range	flx_filter.c	/^int flx_filter_search_by_range(uint32_t start, uin/
 flx_get_vmem_dword	op_helper.c	/^int flx_get_vmem_dword(uint32_t address, uint32_t /
 flx_get_vmem_word	op_helper.c	/^int flx_get_vmem_word(uint32_t address, uint16_t */
+flx_helper_debug	op_helper.c	/^#define flx_helper_debug(s, ...) printf(s, __VA_AR/
 flx_hex_dump	op_helper.c	/^void flx_hex_dump(uint32_t address, uint32_t len)$/
-flx_hook	flx_hooking.h	/^#define flx_hook(conditions, hook, ...) do{ \\$/
+flx_hook	flx_hooking.h	/^#define flx_hook(conditions, context, hook, ...) d/
 flx_memtrace_event	flx_memtrace.c	/^void flx_memtrace_event(uint32_t address, uint32_t/
 flx_memtrace_init	flx_memtrace.c	/^void flx_memtrace_init(mem_access_handler handler)/
 flx_memtrace_start	flx_memtrace.c	/^void flx_memtrace_start(void){$/
@@ -429,6 +445,7 @@ flx_tbrestore_new	flx_tbrestoring.c	/^void flx_tbrestore_new(uint32_t cr3){$/
 flx_tbrestore_restore	flx_tbrestoring.c	/^int flx_tbrestore_restore(uint32_t cr3){$/
 flx_tbrestore_save	flx_tbrestoring.c	/^int flx_tbrestore_save(uint32_t cr3){$/
 flx_vmem_to_phys	op_helper.c	/^uint32_t flx_vmem_to_phys(uint32_t address)$/
+flxinstrument_bblstart_event	flx_instrument.c	/^int flxinstrument_bblstart_event(uint32_t eip, uin/
 flxinstrument_blacklist	flx_instrument.c	/^void flxinstrument_blacklist(uint32_t addr, uint32/
 flxinstrument_blacklist_alloc	flx_instrument.c	/^void flxinstrument_blacklist_alloc(void){$/
 flxinstrument_blacklist_cleanup	flx_instrument.c	/^void flxinstrument_blacklist_cleanup(void){$/
@@ -440,7 +457,7 @@ flxinstrument_jmp_event	flx_instrument.c	/^int flxinstrument_jmp_event(uint32_t 
 flxinstrument_memtrace_event	flx_instrument.c	/^int flxinstrument_memtrace_event(uint32_t address,/
 flxinstrument_optrace_event	flx_instrument.c	/^int flxinstrument_optrace_event(uint32_t eip, uint/
 flxinstrument_register_callbacks	flx_instrument.c	/^flxinstrument_register_callbacks(void){$/
-flxinstrument_ret_event	flx_instrument.c	/^int flxinstrument_ret_event(uint32_t new_eip) {$/
+flxinstrument_ret_event	flx_instrument.c	/^int flxinstrument_ret_event(uint32_t eip, uint32_t/
 flxinstrument_state_init	flx_instrument.c	/^flxinstrument_state_init(void){$/
 flxinstrument_syscall_event	flx_instrument.c	/^int flxinstrument_syscall_event(uint32_t eax) {$/
 flxinstrument_update_cr3	flx_instrument.c	/^int flxinstrument_update_cr3(uint32_t old_cr3, uin/
@@ -469,8 +486,7 @@ gen_eob	translate.c	/^static void gen_eob(DisasContext *s)$/
 gen_exception	translate.c	/^static void gen_exception(DisasContext *s, int tra/
 gen_exts	translate.c	/^static void gen_exts(int ot, TCGv reg)$/
 gen_extu	translate.c	/^static void gen_extu(int ot, TCGv reg)$/
-gen_flx_bblstart	translate.c	/^static void gen_flx_bblstart(target_ulong cur_eip)/
-gen_flx_bblstop	translate.c	/^static void gen_flx_bblstop(target_ulong cur_eip){/
+gen_flx_bblstart	translate.c	/^static void gen_flx_bblstart(target_ulong cur_eip,/
 gen_flx_debug	translate.c	/^static void gen_flx_debug(DisasContext *s, target_/
 gen_goto_tb	translate.c	/^static inline void gen_goto_tb(DisasContext *s, in/
 gen_helper_fp_arith_STN_ST0	translate.c	/^static void gen_helper_fp_arith_STN_ST0(int op, in/
@@ -680,6 +696,7 @@ glue	ops_sse.h	/^void glue(helper_pcmpestri, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpestrm, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpistri, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpistrm, SUFFIX) (Reg *d, Reg */
+handle_bblstart	PyQEMU.py	/^	def handle_bblstart(self, eip, icount):$/
 handle_breakpoint	PyQEMU.py	/^	def handle_breakpoint(self, addr):$/
 handle_call	PyQEMU.py	/^	def handle_call(self, fromaddr, toaddr, nextaddr)/
 handle_call	PyQEMU.py	/^	def handle_call(self, *args):$/
@@ -692,7 +709,7 @@ handle_memtrace	PyQEMU.py	/^	def handle_memtrace(self, address, value, size, i/
 handle_memtrace	PyQEMU.py	/^	def handle_memtrace(self, *args):$/
 handle_optrace	PyQEMU.py	/^	def handle_optrace(self, eip, opcode):$/
 handle_optrace	PyQEMU.py	/^	def handle_optrace(self, *args):$/
-handle_ret	PyQEMU.py	/^	def handle_ret(self, toaddr):$/
+handle_ret	PyQEMU.py	/^	def handle_ret(self, fromaddr, toaddr):$/
 handle_ret	PyQEMU.py	/^	def handle_ret(self, *args):$/
 handle_syscall	PyQEMU.py	/^	def handle_syscall(self, eax):$/
 handle_syscall	PyQEMU.py	/^	def handle_syscall(self, *args):$/
@@ -811,6 +828,8 @@ helper_fldt	exec.h	/^static inline CPU86_LDouble helper_fldt(target_ulo/
 helper_fldt_ST0	op_helper.c	/^void helper_fldt_ST0(target_ulong ptr)$/
 helper_fldz_FT0	op_helper.c	/^void helper_fldz_FT0(void)$/
 helper_fldz_ST0	op_helper.c	/^void helper_fldz_ST0(void)$/
+helper_flx_bblstart	op_helper.c	/^void helper_flx_bblstart(target_ulong eip, uint64_/
+helper_flx_bblstop	op_helper.c	/^void helper_flx_bblstop(target_ulong ins_count){$/
 helper_flx_call	op_helper.c	/^void helper_flx_call(target_ulong src_eip, target_/
 helper_flx_debug	op_helper.c	/^void helper_flx_debug(void)$/
 helper_flx_jmp	op_helper.c	/^void helper_flx_jmp(target_ulong src_eip, target_u/

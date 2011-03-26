@@ -2728,7 +2728,7 @@ static void gen_interrupt(DisasContext *s, int intno,
 static void gen_flx_bblstart(target_ulong cur_eip, TranslationBlock* tb, DisasContext* s){
     uint64_t ptr = (uint64_t)tb;
     target_ulong pc_start = cur_eip;
-    flx_hook(FLX_ON_OPTRACE | FLX_ON_FILTERED, s, gen_helper_flx_bblstart, tcg_const_i32(cur_eip), tcg_const_i64(ptr));
+    flx_hook(FLX_ON_FILTERED | FLX_ON_OPTRACE, s, gen_helper_flx_bblstart, tcg_const_i32(cur_eip), tcg_const_i64(ptr));
 }
 
 /*static void gen_flx_bblstop(DisasContext* s){
@@ -4698,7 +4698,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
 
-			flx_hook(FLX_ON_CALL_ACTIVE ,
+			flx_global_hook(FLX_ON_CALL_ACTIVE ,
 					s,
 					 gen_helper_flx_call,
           			 tcg_const_i32(pc_start - s->cs_base),
@@ -4732,7 +4732,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         case 4: /* jmp Ev */
             if (s->dflag == 0)
                 gen_op_andl_T0_ffff();
-			flx_hook(FLX_ON_JMP_ACTIVE, s, gen_helper_flx_jmp, tcg_const_i32(pc_start), cpu_T[0]);
+			flx_global_hook(FLX_ON_JMP_ACTIVE, s, gen_helper_flx_jmp, tcg_const_i32(pc_start), cpu_T[0]);
             gen_op_jmp_T0();
             gen_eob(s);
             break;
@@ -4746,7 +4746,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_op_set_cc_op(s->cc_op);
                 gen_jmp_im(pc_start - s->cs_base);
                 tcg_gen_trunc_tl_i32(cpu_tmp2_i32, cpu_T[0]);
-				flx_hook(FLX_ON_JMP_ACTIVE, s, gen_helper_flx_jmp, tcg_const_i32(pc_start), cpu_T[1]);
+				flx_global_hook(FLX_ON_JMP_ACTIVE, s, gen_helper_flx_jmp, tcg_const_i32(pc_start), cpu_T[1]);
                 gen_helper_ljmp_protected(cpu_tmp2_i32, cpu_T[1],
                                           tcg_const_i32(s->pc - pc_start));
             } else {
@@ -6256,7 +6256,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         val = ldsw_code(s->pc);
         s->pc += 2;
         gen_pop_T0(s);
-	flx_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
+	flx_global_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
         if (CODE64(s) && s->dflag)
             s->dflag = 2;
         gen_stack_update(s, val + (2 << s->dflag));
@@ -6267,7 +6267,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xc3: /* ret */
         gen_pop_T0(s);
-		flx_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
+		flx_global_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
         gen_pop_update(s);
         if (s->dflag == 0)
             gen_op_andl_T0_ffff();
@@ -6345,7 +6345,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_movtl_T0_im(next_eip);
             gen_push_T0(s);
 			
-			flx_hook(FLX_ON_CALL_ACTIVE ,
+			flx_global_hook(FLX_ON_CALL_ACTIVE ,
 					 s,
 					 gen_helper_flx_call,
           			 tcg_const_i32(pc_start - s->cs_base),
@@ -6782,7 +6782,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0xcd: /* int N */
         val = ldub_code(s->pc++);
 		if (val == 0x80 || val == 0x2e)
-			flx_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
+			flx_global_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
         if (s->vm86 && s->iopl != 3) {
             gen_exception(s, EXCP0D_GPF, pc_start - s->cs_base);
         } else {
@@ -6983,7 +6983,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         if (!s->pe) {
             gen_exception(s, EXCP0D_GPF, pc_start - s->cs_base);
         } else {
-			flx_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
+			flx_global_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
             gen_update_cc_op(s);
             gen_jmp_im(pc_start - s->cs_base);
             gen_helper_sysenter();
@@ -7006,7 +7006,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 #ifdef TARGET_X86_64
     case 0x105: /* syscall */
         /* XXX: is it usable in real mode ? */
-		flx_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
+		flx_global_hook(FLX_ON_SYSCALL_ACTIVE, s, gen_helper_flx_syscall);
         gen_update_cc_op(s);
         gen_jmp_im(pc_start - s->cs_base);
         gen_helper_syscall(tcg_const_i32(s->pc - pc_start));

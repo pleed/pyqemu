@@ -119,12 +119,18 @@ def event_update_cr3(old_cr3, new_cr3):
 		if (len(filename) > 0):
 			if filename.lower() in trace_processes.keys():
 				print "New TracedProcess %s"%filename
-				p = TracedProcess(trace_processes[filename.lower()])
+				process = TracedProcess(trace_processes[filename.lower()])
+				PyFlxInstrument.set_instrumentation_active(1)
+				if process.optrace:
+					PyFlxInstrument.optrace_enable()
 			else:
 				print "New UntracedProcess %s"%filename
-				p = UntracedProcess([])
-			KNOWN_Processes[new_cr3] = p
-			p.watched = True
+				process = UntracedProcess([])
+				PyFlxInstrument.set_instrumentation_active(0)
+				if process.optrace:
+					PyFlxInstrument.optrace_disable()
+			KNOWN_Processes[new_cr3] = process
+			process.watched = True
 	
 	return 0
 
@@ -959,19 +965,19 @@ class UntracedProcess(processinfo.Process):
 		self.optrace = False
 
 	def handle_call(self, *args):
-		pass
+		print "UNTRACED PROCESS CALL! %s"%str(args)
 	def handle_syscall(self, *args):
-		pass
+		print "UNTRACED PROCESS SYSCALL! %s"%str(args)
 	def handle_ret(self, *args):
-		pass
-
+		print "UNTRACED PROCESS RET! %s"%str(args)
 	def handle_jmp(self, *args):
-		pass
+		print "UNTRACED PROCESS JMP! %s"%str(args)
 	def handle_optrace(self, *args):
-		pass
-
+		print "UNTRACED PROCESS OPTRACE! %s"%str(args)
 	def handle_memtrace(self, *args):
-		pass
+		print "UNTRACED PROCESS MEMTRACE! %s"%str(args)
+	def handle_bblstart(self, *args):
+		print "UNTRACED PROCESS BBLSTART! %s"%str(args)
 
 def init(sval):	
 	print "Python instrument started"

@@ -13,8 +13,16 @@
 #define FLX_ON_JMP_ACTIVE     0x00000080
 #define FLX_ON_SYSCALL_ACTIVE 0x00000100
 
+/* use this hook to catch events happening *anywhere* in the process */
+#define flx_global_hook(conditions, context, hook, ...) do{ \
+											FLX_TEST_CONDITIONS( FLX_ON_USERSPACE | conditions );\
+											do{\
+											gen_jmp_im(pc_start - context->cs_base);\
+											hook(__VA_ARGS__);\
+											}while(0);\
+										  }while(0)
 
-
+/* use this hook to catch events happening *only* in the main process image */
 #define flx_hook(conditions, context, hook, ...) do{ \
 											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE | conditions );\
 											do{\

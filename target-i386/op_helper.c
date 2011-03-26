@@ -2230,13 +2230,6 @@ void helper_flx_bblstart(target_ulong eip, uint64_t tb){
 	}
 }
 
-void helper_flx_bblstop(target_ulong ins_count){
-	if(flx_state.global_active){
-		flx_helper_debug("Block end: %d instructions\n",ins_count);
-		flxinstrument_bblstop_event(ins_count);
-	}
-}
-
 void helper_flx_opcode(target_ulong eip, target_ulong opcode){
 	if(flx_state.global_active){
 		flx_helper_debug("Opcode: %d at 0x%x\n",opcode, env->eip);
@@ -2587,7 +2580,7 @@ void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong ne
 
 void helper_flx_syscall(void){
 	if(flx_state.global_active){
-		flx_helper_debug("Syscall at 0x%x, eax: %d",env->eip, env->regs[R_EAX]);
+		flx_helper_debug("Syscall at 0x%x, eax: %d\n",env->eip, env->regs[R_EAX]);
 		flxinstrument_syscall_event(env->regs[R_EAX]);
 	}
 }
