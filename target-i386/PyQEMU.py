@@ -123,6 +123,7 @@ def event_update_cr3(old_cr3, new_cr3):
 				PyFlxInstrument.set_instrumentation_active(1)
 				if process.optrace:
 					PyFlxInstrument.optrace_enable()
+				PyFlxInstrument.retranslate()
 			else:
 				print "New UntracedProcess %s"%filename
 				process = UntracedProcess([])

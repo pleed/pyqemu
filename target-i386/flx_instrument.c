@@ -366,6 +366,18 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
   return retval;
 }
 
+static PyObject* PyFlxC_retranslate(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "retranslate");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *retval = Py_None;
+  tb_flush(current_environment);
+  return retval;
+}
 
 static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -505,10 +517,6 @@ static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *arg
   }
   
   flx_state.global_active = active_flag;
-  flx_state.syscall_active = active_flag;
-  flx_state.ret_active = active_flag;
-  flx_state.call_active = active_flag;
-  flx_state.jmp_active = active_flag;
   
   Py_INCREF(Py_None);
   return Py_None;
@@ -536,6 +544,9 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"eip", (PyCFunction)PyFlxC_eip, METH_VARARGS,
      "Returns the eip register"
+    },
+    {"retranslate", (PyCFunction)PyFlxC_retranslate, METH_VARARGS,
+     "Retranslate all translation blocks"
     },
     {"genreg", (PyCFunction)PyFlxC_genreg, METH_VARARGS,
      "Returns a general purpose register"
@@ -637,8 +648,14 @@ flxinstrument_state_init(void){
    char* ptr = getenv("FLX_DISABLE");
    if(ptr)
 	flx_state.python_active = 0;
-   else
+   else{
 	flx_state.python_active = 1;
+	flx_state.syscall_active = 1;
+	flx_state.ret_active = 1;
+	flx_state.call_active = 1;
+        flx_state.jmp_active = 1;
+   }
+
 }
 
 static void
