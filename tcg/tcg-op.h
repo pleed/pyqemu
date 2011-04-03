@@ -25,6 +25,7 @@
 #include "flx_memtrace.h"
 #include "flx_instrument.h"
 #include "flx_hooking.h"
+#include "flx_filter.h"
 
 int gen_new_label(void);
 
@@ -421,17 +422,17 @@ static inline void tcg_gen_helper64(void *func, int sizemask, TCGv_i64 ret,
 }
 
 /* FLX HELPER */
-static inline int32_t flx_memtrace_read(int32_t value, int32_t address, int32_t offset, int32_t size){
-	if(flx_state.global_active && flx_state.memtrace_active)
+/*
+void helper_memtrace_read(target_ulong value, target_ulong address, target_ulong offset, target_ulong size){
+	if(flx_state.global_active)
 		flx_memtrace_event(address, value, size, 0);
-	return value;
 }
 
-static inline int32_t flx_memtrace_write(int32_t value, int32_t address, int32_t offset, int32_t size){
-	if(flx_state.global_active && flx_state.memtrace_active)
+void helper_memtrace_write(target_ulong value, target_ulong address, target_ulong offset, target_ulong size){
+	if(flx_state.global_active)
 		flx_memtrace_event(address, value, size, 1);
-	return value;
 }
+*/
 /* 32 bit ops */
 
 static inline void tcg_gen_ld8u_i32(TCGv_i32 ret, TCGv_ptr arg2, tcg_target_long offset)
@@ -2132,6 +2133,9 @@ static inline void tcg_gen_rotri_i64(TCGv_i64 ret, TCGv_i64 arg1, int64_t arg2)
 #define TCGV_EQUAL(a, b) TCGV_EQUAL_I64(a, b)
 #endif
 
+extern void flx_memtrace_read(TCGv_i64 ret, TCGv addr, int mem_index, uint8_t size);
+extern void flx_memtrace_write(TCGv_i64 arg, TCGv addr, int mem_index, uint8_t size);
+
 /* debug info: write the PC of the corresponding QEMU CPU instruction */
 static inline void tcg_gen_debug_insn_start(uint64_t pc)
 {
@@ -2164,7 +2168,7 @@ static inline void tcg_gen_qemu_ld8u(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_movi_i32(TCGV_HIGH(ret), 0);
 #endif
-
+    flx_memtrace_read(ret, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)
@@ -2176,6 +2180,7 @@ static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_sari_i32(TCGV_HIGH(ret), TCGV_LOW(ret), 31);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)
@@ -2187,6 +2192,7 @@ static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_movi_i32(TCGV_HIGH(ret), 0);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_ld16s(TCGv ret, TCGv addr, int mem_index)
@@ -2198,6 +2204,7 @@ static inline void tcg_gen_qemu_ld16s(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_sari_i32(TCGV_HIGH(ret), TCGV_LOW(ret), 31);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_ld32u(TCGv ret, TCGv addr, int mem_index)
@@ -2209,6 +2216,7 @@ static inline void tcg_gen_qemu_ld32u(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_movi_i32(TCGV_HIGH(ret), 0);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)
@@ -2220,6 +2228,7 @@ static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)
                      TCGV_HIGH(addr), mem_index);
     tcg_gen_sari_i32(TCGV_HIGH(ret), TCGV_LOW(ret), 31);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
@@ -2230,6 +2239,7 @@ static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
     tcg_gen_op5i_i32(INDEX_op_qemu_ld64, TCGV_LOW(ret), TCGV_HIGH(ret),
                      TCGV_LOW(addr), TCGV_HIGH(addr), mem_index);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 64);
 }
 
 static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
@@ -2240,6 +2250,7 @@ static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
     tcg_gen_op4i_i32(INDEX_op_qemu_st8, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
+    flx_memtrace_write(arg, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
@@ -2250,17 +2261,18 @@ static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
     tcg_gen_op4i_i32(INDEX_op_qemu_st16, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
+    flx_memtrace_write(arg, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 {
-	printf("hallo welt\n");
 #if TARGET_LONG_BITS == 32
     tcg_gen_op3i_i32(INDEX_op_qemu_st32, arg, addr, mem_index);
 #else
     tcg_gen_op4i_i32(INDEX_op_qemu_st32, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
+    flx_memtrace_write(arg, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
@@ -2272,6 +2284,7 @@ static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
     tcg_gen_op5i_i32(INDEX_op_qemu_st64, TCGV_LOW(arg), TCGV_HIGH(arg),
                      TCGV_LOW(addr), TCGV_HIGH(addr), mem_index);
 #endif
+    flx_memtrace_write(arg, addr, mem_index, 64);
 }
 
 #define tcg_gen_ld_ptr tcg_gen_ld_i32
@@ -2282,152 +2295,75 @@ static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 static inline void tcg_gen_qemu_ld8u(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld8u, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(8));
-	}
+    flx_memtrace_read(ret, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_ld8s(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld8s, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(8));
-	}
+    flx_memtrace_read(ret, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_ld16u(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld16u, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(16));
-	}
+    flx_memtrace_read(ret, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_ld16s(TCGv ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld16s, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(16));
-	}
+    flx_memtrace_read(ret, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_ld32u(TCGv ret, TCGv addr, int mem_index)
 {
 #if TARGET_LONG_BITS == 32
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(32));
-	}
 #else
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32u, ret, addr, mem_index);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_ld32s(TCGv ret, TCGv addr, int mem_index)
 {
 #if TARGET_LONG_BITS == 32
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(32));
-	}
 #else
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_ld32s, ret, addr, mem_index);
 #endif
+    flx_memtrace_read(ret, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_ld64, ret, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = ret;
-		tcg_gen_helper4(flx_memtrace_read, sizemask, dummy, ret, addr, tcg_const_i32(mem_index), tcg_const_i32(64));
-	}
+    flx_memtrace_read(ret, addr, mem_index, 64);
 }
 
 static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st8, arg, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = arg;
-		tcg_gen_helper4(flx_memtrace_write, sizemask, dummy, arg, addr, tcg_const_i32(mem_index), tcg_const_i32(8));
-	}
+    flx_memtrace_write(arg, addr, mem_index, 8);
 }
 
 static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st16, arg, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = arg;
-		tcg_gen_helper4(flx_memtrace_write, sizemask, dummy, arg, addr, tcg_const_i32(mem_index), tcg_const_i32(16));
-	}
+    flx_memtrace_write(arg, addr, mem_index, 16);
 }
 
 static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op(INDEX_op_qemu_st32, arg, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = arg;
-		tcg_gen_helper4(flx_memtrace_write, sizemask, dummy, arg, addr, tcg_const_i32(mem_index), tcg_const_i32(32));
-	}
+    flx_memtrace_write(arg, addr, mem_index, 32);
 }
 
 static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 {
     tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_st64, arg, addr, mem_index);
-	if(flx_state.memtrace_active){
-		int sizemask = 0;
-		sizemask |= tcg_gen_sizemask(0, 0, 0);
-		sizemask |= tcg_gen_sizemask(1, 0, 0);
-		sizemask |= tcg_gen_sizemask(2, 0, 0);
-		TCGv dummy = arg;
-		tcg_gen_helper4(flx_memtrace_write, sizemask, dummy, arg, addr, tcg_const_i32(mem_index), tcg_const_i32(64));
-	}
+    flx_memtrace_write(arg, addr, mem_index, 64);
 }
 
 #define tcg_gen_ld_ptr tcg_gen_ld_i64

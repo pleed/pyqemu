@@ -70,6 +70,7 @@ static ssize_t net_socket_receive_dgram(VLANClientState *nc, const uint8_t *buf,
 
 static void net_socket_send(void *opaque)
 {
+    printf("sending network traffic\n");
     NetSocketState *s = opaque;
     int size, err;
     unsigned l;

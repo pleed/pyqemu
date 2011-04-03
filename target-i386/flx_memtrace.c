@@ -22,11 +22,5 @@ void flx_memtrace_stop(void){
 }
 
 void flx_memtrace_event(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
-	if(likely(flx_access_handler)){
-		if(!(current_environment->eip &0x80000000) && !(address& 0x80000000))
-			flx_access_handler(address, value, size, iswrite);
-	}
-	else{
-		printf("failed to initialize flx_memtrace handler!\n");
-	}
+	flx_access_handler(address, value, size, iswrite);
 }

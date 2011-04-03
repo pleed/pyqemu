@@ -116,9 +116,9 @@ static const CPU86_LDouble f15rk[7] =
 
 /* broken thread support */
 //#ifdef FLX_HELPER_DEBUG
-#define flx_helper_debug(s, ...) printf(s, __VA_ARGS__);
+//#define flx_helper_debug(s, ...) printf(s, __VA_ARGS__);
 //#else
-//#define flx_helper_debug(s, ...) do{}while(0)
+#define flx_helper_debug(s, ...) do{}while(0)
 //#endif
 
 uint32_t flx_vmem_to_phys(uint32_t address);
@@ -2217,6 +2217,24 @@ void helper_flx_jmp(target_ulong src_eip, target_ulong new_eip){
 		flx_helper_debug("Jump from 0x%x to 0x%x\n",env->eip, new_eip);
 		flxinstrument_jmp_event(env->eip, new_eip);
 	}
+}
+
+void helper_flx_memtrace_read(uint64_t value, uint64_t address, uint64_t mem_index, uint64_t size){
+	flx_memtrace_event((uint32_t)address, (uint32_t)value, (uint8_t)size, 0);
+/*
+	long long int val = (long long int)value;
+	unsigned long long addr = (unsigned long long)address;
+	//printf("Read  - Addr: 0x%llx Value: %lld\n, esp: 0x%x",addr, val, env->regs[R_ESP]);
+*/
+}
+
+void helper_flx_memtrace_write(uint64_t value, uint64_t address, uint64_t mem_index, uint64_t size){
+	flx_memtrace_event((uint32_t)address, (uint32_t)value, (uint8_t)size, 1);
+/*
+	long long val = (long long int)value;
+	unsigned long long addr = (unsigned long long)address;
+	printf("Write - Addr: 0x%llx Value: %lld\n, esp: 0x%x",addr, val, env->regs[R_ESP]);
+*/
 }
 
 void helper_flx_bblstart(target_ulong eip, uint64_t tb){

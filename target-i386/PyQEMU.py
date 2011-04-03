@@ -80,8 +80,8 @@ def event_update_cr3(old_cr3, new_cr3):
 		if not process.watched:
 			PyFlxInstrument.set_instrumentation_active(0)
 			#PyFlxInstrument.memtrace_disable()
-			if process.optrace:
-				PyFlxInstrument.optrace_disable()
+			#if process.optrace:
+			#	PyFlxInstrument.optrace_disable()
 			return 0
 		
 		is_new = False
@@ -94,15 +94,15 @@ def event_update_cr3(old_cr3, new_cr3):
 				process.watched = False
 				PyFlxInstrument.set_instrumentation_active(0)
 				#PyFlxInstrument.memtrace_disable()
-				if process.optrace:
-					PyFlxInstrument.optrace_disable()
+				#if process.optrace:
+				#	PyFlxInstrument.optrace_disable()
 				return 0
 
 			if isinstance(process, TracedProcess):
 				PyFlxInstrument.set_instrumentation_active(1)
 				#PyFlxInstrument.memtrace_enable()
-				if process.optrace:
-					PyFlxInstrument.optrace_enable()
+				#if process.optrace:
+				#	PyFlxInstrument.optrace_enable()
 				return 1
 
 		return 0
@@ -121,8 +121,8 @@ def event_update_cr3(old_cr3, new_cr3):
 				print "New TracedProcess %s"%filename
 				process = TracedProcess(trace_processes[filename.lower()])
 				PyFlxInstrument.set_instrumentation_active(1)
-				if process.optrace:
-					PyFlxInstrument.optrace_enable()
+				#if process.optrace:
+				#	PyFlxInstrument.optrace_enable()
 				PyFlxInstrument.retranslate()
 			else:
 				print "New UntracedProcess %s"%filename
@@ -624,6 +624,8 @@ class TracedProcess(processinfo.Process):
 		PyFlxInstrument.filter_enable()
 		print "INITIALIZING FILTER DONE!!!"
 		PyFlxInstrument.optrace_enable()
+		PyFlxInstrument.memtrace_enable()
+		PyFlxInstrument.retranslate()
 
 	@classmethod
 	def addProcessToTrace(cls, process_name):
@@ -777,9 +779,9 @@ class TracedProcess(processinfo.Process):
 	def handle_memtrace(self, address, value, size, iswrite):
 		eip = PyFlxInstrument.registers()["eip"]
 		if iswrite:
-			print "Write: 0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
+			self.log("Write: 0x%x , Addr: 0x%x, BBL: 0x%x"%(value,address,eip))
 		else:
-			print "Read:  0x%x , Addr: 0x%x, EIP: 0x%x"%(value,address,eip)
+			self.log("Read:  0x%x , Addr: 0x%x, BBL: 0x%x"%(value,address,eip))
 
 	@RegisteredCallback
 	def handle_bblstart(self, eip, icount):

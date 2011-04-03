@@ -22,3 +22,11 @@ Ideen:
 	- wird mit einem puffer nicht mehrmals aufgerufen
 	- wenige branches (schleifen, keine if/switch anweisungen)
 
+
+	- identifikation von prng?
+
+
+- sniffing (network card hooking)
+-
+
+www.cuckoobox.org
