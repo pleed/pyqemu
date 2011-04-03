@@ -1320,20 +1320,20 @@ static void gen_helper_fp_arith_STN_ST0(int op, int opreg)
     }
 }
 
-void flx_memtrace_read(TCGv ret, TCGv addr, int mem_index, uint8_t size){
+void flx_memtrace_read(TCGv ret, TCGv addr, uint8_t size){
 	if(flx_state.global_active &&\
 	   flx_state.memtrace_active &&\
 	   flx_state.filter_active &&\
 	   flx_filter_search_by_addr(current_environment->eip))
-		gen_helper_flx_memtrace_read(ret, addr, tcg_const_i32(mem_index), tcg_const_i32(size));
+		gen_helper_flx_memtrace_read(ret, addr, tcg_const_i32(size));
 }
 
-void flx_memtrace_write(TCGv arg, TCGv addr, int mem_index, uint8_t size){
+void flx_memtrace_write(TCGv arg, TCGv addr, uint8_t size){
 	if(flx_state.global_active &&\
 	   flx_state.memtrace_active &&\
 	   flx_state.filter_active &&\
 	   flx_filter_search_by_addr(current_environment->eip))
-		gen_helper_flx_memtrace_write(arg, addr, tcg_const_i64(mem_index), tcg_const_i64(size));
+		gen_helper_flx_memtrace_write(arg, addr, tcg_const_i32(size));
 }
 
 
@@ -7923,7 +7923,6 @@ static inline void gen_intermediate_code_internal(CPUState *env,
     uint32_t next_breakpoint;
     int breakpoint_reached = 0;
     flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
-    printf("BBL start: 0x%x\n",pc_start);
     gen_flx_bblstart(pc_start, tb, dc);
     gen_icount_start();
     for(;;) {

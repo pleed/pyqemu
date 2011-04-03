@@ -2219,7 +2219,7 @@ void helper_flx_jmp(target_ulong src_eip, target_ulong new_eip){
 	}
 }
 
-void helper_flx_memtrace_read(uint64_t value, uint64_t address, uint64_t mem_index, uint64_t size){
+void helper_flx_memtrace_read(uint64_t value, uint64_t address, uint32_t size){
 	flx_memtrace_event((uint32_t)address, (uint32_t)value, (uint8_t)size, 0);
 /*
 	long long int val = (long long int)value;
@@ -2228,7 +2228,7 @@ void helper_flx_memtrace_read(uint64_t value, uint64_t address, uint64_t mem_ind
 */
 }
 
-void helper_flx_memtrace_write(uint64_t value, uint64_t address, uint64_t mem_index, uint64_t size){
+void helper_flx_memtrace_write(uint64_t value, uint64_t address, uint32_t size){
 	flx_memtrace_event((uint32_t)address, (uint32_t)value, (uint8_t)size, 1);
 /*
 	long long val = (long long int)value;
