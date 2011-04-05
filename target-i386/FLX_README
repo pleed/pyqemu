@@ -1,0 +1,4 @@
+1. you can globally disable the python extension by setting
+	export FLX_DISABLE=$arbitrary
+
+   The _existance_ of FLX_DISABLE is checked when initializing

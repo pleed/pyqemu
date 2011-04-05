@@ -726,10 +726,11 @@ void flxinstrument_init(void) {
    Py_XINCREF(Py_Python_Module);
    
    enable_python = PyObject_CallMethod(Py_Python_Module, (char*)"init", (char*)"I",0);
-   if (PyInt_Check(enable_python) && (PyInt_AS_LONG(enable_python) != 1))
+   if (PyInt_Check(enable_python) && (PyInt_AS_LONG(enable_python) != 1)){
       flxinstrument_register_callbacks();
+   }
    else{
-      printf("PyQEMU init method did not return 1 or was not callable, disabling!!!\n");
+      printf("PyQEMU init method did not return 0 or was not callable, disabling!!!\n");
       flx_state.python_active = 0;
       return;
    }

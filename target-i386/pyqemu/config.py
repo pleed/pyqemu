@@ -26,12 +26,12 @@ class _JsonConfigLoader(_ConfigLoader):
 
 class ConfigLoaderFactory:
 	@classmethod
-	def create(cls, configtype, configfile):
+	def create(cls, configtype, configfile, configclass):
 		if configtype == "json":
-			return _JsonConfigLoader(configfile)
+			return configclass(_JsonConfigLoader(configfile).load())
 		raise ConfigException("Unknown type of configuration file - file: %s, type: %s"%(configfile, configtype))
 
-class ProgramAnalyzerConfig(dict):
+class QemuFlxConfig(dict):
 	def __init__(self, *args):
 		dict.__init__(self, *args)
 		if not self.isValid():

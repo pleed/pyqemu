@@ -8,4 +8,8 @@ __all__ = [
 	"processinfo",
 	"Structures",
 	"syscalls",
+	"cpu",
+	"msg",
+	"process",
+	"memory",
 	  ]
