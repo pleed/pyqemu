@@ -1,6 +1,6 @@
 __all__ = [
 	"config",
-	"dllhandling",
+	"dll",
 	"event",
 	"fhandle",
 	"Helpers",
@@ -12,4 +12,5 @@ __all__ = [
 	"msg",
 	"process",
 	"memory",
+	"operatingsystem",
 	  ]

@@ -19,8 +19,8 @@ import PyFlxInstrument
 import processinfo
 from Structures import *
 import Structures
-from dllhandling import *
-import dllhandling
+from dll import *
+import dll
 import syscalls
 from fhandle import *
 

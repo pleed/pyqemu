@@ -1,15 +1,17 @@
+#!/usr/bin/env python
+
 import pefile
 import os
 import avl
 import glob
 
-class DLLHandler:
+class PEHandler:
 	def __init__(self, dlldir):
 		self.dlldir = dlldir
 		self.tree = avl.new()
 		self.known_libs = {}
 
-	def loadDLL(self, filename, imagebase):
+	def loadPE(self, filename, imagebase):
 		filename = filename.lower()
 		if self.known_libs.has_key(filename):
 			return
@@ -18,7 +20,7 @@ class DLLHandler:
 				nocasefilename = self._emulateFilenameNoCase(filename)
 				if nocasefilename is None:
 					raise IOError
-				lib = DLLFile(nocasefilename, imagebase)
+				lib = PEFile(nocasefilename, imagebase)
 				self.tree.insert(lib)
 				self.known_libs[filename] = lib
 			except IOError:
@@ -49,23 +51,28 @@ class DLLHandler:
 				return file
 		return None
 
-class DLLFile(dict):
+class PEFile(dict,pefile.PE):
 	def __init__(self, filename, imagebase):
 		self.imagebase = imagebase
 		self.filename = os.path.basename(filename)
 
 		dict.__init__(self)
+		pefile.PE.__init__(self, filename)
 		print "Loading %s"%filename
 		# Load functions
-		lib = pefile.PE(filename)
-		self.size = lib.OPTIONAL_HEADER.SizeOfImage
-		if hasattr(lib,"DIRECTORY_ENTRY_EXPORT"):
-			for function in lib.DIRECTORY_ENTRY_EXPORT.symbols:
+		self.size = self.OPTIONAL_HEADER.SizeOfImage
+		if hasattr(self,"DIRECTORY_ENTRY_EXPORT"):
+			for function in self.DIRECTORY_ENTRY_EXPORT.symbols:
 				self[imagebase+function.address] = (function.ordinal, function.address, function.name)
-		del(lib)
+
+	def calculateEntryPoint(self):
+		return self.OPTIONAL_HEADER.ImageBase+self.OPTIONAL_HEADER.AddressOfEntryPoint
+			
 
 	def includes(self, address):
 		return self.imagebase <= address < self.imagebase+self.size
+	def contains(self, address):
+		return self.includes(address)
 	def __len__(self):
 		return self.size
 	def __int__(self):

@@ -18,7 +18,7 @@ import PyFlxInstrument
 import pyqemu.processinfo
 import pyqemu.syscalls
 from pyqemu.Structures import *
-from pyqemu.dllhandling import *
+from pyqemu.dll import *
 from pyqemu.event import *
 from pyqemu.fhandle import *
 from pyqemu.config import *
@@ -26,21 +26,35 @@ from pyqemu.cpu import QemuCPU
 from pyqemu.msg import *
 from pyqemu.memory import QemuMemory
 from pyqemu.instrumentation import QemuInstrumentation
-from pyqemu.os import OperatingSystem
+from pyqemu.operatingsystem import OperatingSystem
 
 class QemuFlxLogger:
 	def __init__(self, config):
 		self.config = config
+		self.logfiles = {}
 
 	def error(self, message):
-		print "ERROR: %s"
+		print "ERROR: %s"%message
 	def warning(self, warning):
-		print "WARNING: %s"
+		print "WARNING: %s"%message
 	def info(self, message):
-		print "INFO: %s"
+		print "INFO: %s"%message
 	def debug(self, message):
 		if self.config["debug"] == 1:
 			print "DEBUG: %s"%message
+	def handleProcessEvent(self, obj, process):
+		logfile = "%s-%s.log"%(process.imagefilename(),process.cur_tid)
+		if not self.logfiles.has_key(logfile):
+			self.logfiles[logfile] = open(logfile,"w")
+		self.logfiles[logfile].write("%s\n"%obj)
+
+	def closeAll(self):
+		for key,value in self.logfiles.items():
+			value.close()
+			del(self.logfiles[key])
+
+	def __del__(self):
+		self.closeAll()
 
 class Qemu:
 	def __init__(self):

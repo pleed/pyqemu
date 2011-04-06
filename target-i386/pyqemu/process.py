@@ -3,7 +3,6 @@
 import traceback
 import json
 import sys
-import os
 import glob
 import struct
 import pickle
@@ -14,25 +13,24 @@ import Queue
 import random
 import time
 
+from dll import *
+
 import PyFlxInstrument
 import processinfo
 import syscalls
 from Structures import *
-from dllhandling import *
 from event import *
 from fhandle import *
 from config import *
 from msg import *
 
-class RegisteredCallback:
-	def __init__(self, func):
-		self.func = func
+class Breakpoint:
+	def __init__(self, addr, callback):
+		self.addr = addr
+		self.callback = callback
 
-	def __call__(self, *args):
-		process = get_current_process()
-		if not process.isRegisteredThread():
-			process.createNewThread()
-		return self.func(process,*args)
+	def trigger(self):
+		self.callback(self.addr)
 
 class Thread:
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
@@ -42,26 +40,27 @@ class Thread:
 			self.callstack = callstack
 		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
+		self.process = process
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
 
-	def __init__(self, callhandler = []):
+	def __init__(self, options, os, logger, imagefilename, hardware):
+		self.hardware = hardware
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
-		self.logger              = EventLogger("/home/matenaar/","flx_event_dump", cache = False)
-		self.dllhandler          = DLLHandler("/home/matenaar/dlls/")
+		self.logger              = logger
+		self.dllhandler          = PEHandler(options["dlldir"])
 		# stores registerd callbacks
 		self.callonfunction      = {}
 		self.breakpoints         = {}
 
-		self.create_thread_list  = []
-
 		processinfo.Process.__init__(self)
-		self.loadCallbacks(callhandler)
+		self.loadCallbacks([])
 
-		self.addBreakpoint(0x100739d, self.entryPointReached)
+		self.pe_image = PEFile("%s/%s"%(options["exedir"], imagefilename), 0)
+		self.addBreakpoint(self.pe_image.calculateEntryPoint(), self.entryPointReached)
 		self.optrace = False
 
 	def entryPointReached(self, addr):
@@ -71,14 +70,14 @@ class TracedProcess(processinfo.Process):
 			return
 		self.imagestart = image.DllBase
 		self.imagestop  = self.imagestart + image.SizeOfImage
-		PyFlxInstrument.filter_add(self.imagestart,self.imagestop)
-		PyFlxInstrument.filter_enable()
+		self.hardware.instrumentation.filter_add(self.imagestart,self.imagestop)
+		self.hardware.instrumentation.filter_enable()
+		self.hardware.instrumentation.optrace_enable()
+		self.hardware.instrumentation.memtrace_enable()
+		self.hardware.instrumentation.retranslate()
 		print "INITIALIZING FILTER DONE!!!"
-		PyFlxInstrument.optrace_enable()
-		PyFlxInstrument.memtrace_enable()
-		PyFlxInstrument.retranslate()
 
-	def handleEvent(self, ev, event):
+	def handleEvent(self, event):
 		if isinstance(event, QemuCallEvent):
 			self.handle_call(event)
 		elif isinstance(event, QemuJmpEvent):
@@ -156,7 +155,7 @@ class TracedProcess(processinfo.Process):
 
 	def log(self, obj):
 		""" Log event """
-		self.logger.handle_event(obj)
+		self.logger.handleProcessEvent(obj, self)
 
 	def register(self, register):
 		regs = PyFlxInstrument.registers()
@@ -183,7 +182,6 @@ class TracedProcess(processinfo.Process):
 		for dll,fname,handlerclass in handlers:
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
-	@RegisteredCallback
 	def handle_breakpoint(self, addr):
 		try:
 			breakpoint = self.breakpoints[addr]
@@ -191,7 +189,6 @@ class TracedProcess(processinfo.Process):
 			raise Exception("Unregistered breakpoint has been triggered!")
 		breakpoint.trigger()
 
-	@RegisteredCallback
 	def handle_ret(self, fromaddr, toaddr):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		# keep callstack up to date
@@ -211,7 +208,6 @@ class TracedProcess(processinfo.Process):
 			pass
 		self.memory.stack.update()
 
-	@RegisteredCallback
 	def handle_syscall(self, eax):
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(eax)
@@ -231,12 +227,10 @@ class TracedProcess(processinfo.Process):
 				print "New Process has been created by %s"%self.name
 				self.log(SyscallEvent(syscall_name))
 
-	@RegisteredCallback
 	def handle_call(self, fromaddr, toaddr, nextaddr):
 		""" Call Opcode handler. """
 		self._handle_call_filter(fromaddr, toaddr, nextaddr)
 
-	@RegisteredCallback
 	def handle_memtrace(self, address, value, size, iswrite):
 		eip = PyFlxInstrument.registers()["eip"]
 		if iswrite:
@@ -244,17 +238,14 @@ class TracedProcess(processinfo.Process):
 		else:
 			self.log("Read:  0x%x , Addr: 0x%x, BBL: 0x%x"%(value,address,eip))
 
-	@RegisteredCallback
 	def handle_bbl(self, eip, icount):
 		self.log("BBL start at 0x%x, containing %d instructions"%(eip,icount))
 
-	@RegisteredCallback
 	def handle_optrace(self, eip, opcode):
 		if self.imagestart > eip or self.imagestop < eip:
 			print "EIP NOT IN RANGE!!!"
 		print "Executed opcode 0x%x at eip 0x%x"%(opcode,eip)
 
-	@RegisteredCallback
 	def handle_jmp(self, fromaddr, toaddr):
 		#self.logger.handle_event("JMP: "+hex(toaddr))
 		if not self._is_jmp_pad(toaddr):
@@ -336,7 +327,7 @@ class TracedProcess(processinfo.Process):
 				for image in self.images:
 					base = image
 					image = self.get_image_by_address(image)
-					self.dllhandler.loadDLL(image.get_basedllname(), base)
+					self.dllhandler.loadPE(image.get_basedllname(), base)
 				self.detected_dlls = len(self.images)
 			lib = self.dllhandler.getLib(addr)
 			if lib is not None and lib.has_key(addr):
@@ -442,3 +433,5 @@ class UntracedProcess(processinfo.Process):
 		print "UNTRACED PROCESS MEMTRACE! %s"%str(args)
 	def handle_bblstart(self, *args):
 		print "UNTRACED PROCESS BBLSTART! %s"%str(args)
+	def handleEvent(self, *args):
+		print "UNTRACED PROCESS HANDLE EVENT! %s"%str(args)
