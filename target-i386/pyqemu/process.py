@@ -23,9 +23,11 @@ from event import *
 from fhandle import *
 from config import *
 from msg import *
+from memory import *
 
 class Breakpoint:
 	def __init__(self, addr, callback):
+		PyFlxInstrument.breakpoint_insert(addr)
 		self.addr = addr
 		self.callback = callback
 
@@ -46,6 +48,7 @@ class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
 
 	def __init__(self, options, os, logger, imagefilename, hardware):
+		self.os = os
 		self.hardware = hardware
 		self.detected_dlls       = 0
 		self.threadcount         = 0
@@ -96,6 +99,7 @@ class TracedProcess(processinfo.Process):
 			self.handle_bbl(event)
 
 	def addBreakpoint(self, addr, callback):
+		self.hardware.instrumentation.retranslate()
 		if not self.breakpoints.has_key(addr):
 			self.breakpoints[addr] = Breakpoint(addr, callback)
 
@@ -182,18 +186,19 @@ class TracedProcess(processinfo.Process):
 		for dll,fname,handlerclass in handlers:
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
-	def handle_breakpoint(self, addr):
+	def handle_breakpoint(self, bp):
+		print "BREAKPOINT TRIGGERED!!!!!!!!"
 		try:
-			breakpoint = self.breakpoints[addr]
+			breakpoint = self.breakpoints[bp.addr]
 		except KeyError:
 			raise Exception("Unregistered breakpoint has been triggered!")
 		breakpoint.trigger()
 
-	def handle_ret(self, fromaddr, toaddr):
+	def handle_ret(self, ret):
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		# keep callstack up to date
 		try:
-			if self.callstack.top().isReturning(toaddr):
+			if self.callstack.top().isReturning(ret.toaddr):
 				f = self.callstack.pop()
 				self.log(RetEvent(f))
 				f.doReturn()
@@ -208,14 +213,14 @@ class TracedProcess(processinfo.Process):
 			pass
 		self.memory.stack.update()
 
-	def handle_syscall(self, eax):
+	def handle_syscall(self, syscall):
 		# NtCreateThread
-		syscall_name = syscalls.getSyscallByNumber(eax)
+		syscall_name = syscalls.getSyscallByNumber(syscall.number)
 		if syscall_name is not None:
 			self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtTerminateProcess":
 				global cleanup_processes
-				cleanup_processes.append((self,PyFlxInstrument.registers()["cr3"]))
+				self.os.terminating_processes.append((self,PyFlxInstrument.registers()["cr3"]))
 				self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtCreateThread":
 				print "New Thread has been created by %s"%self.name
@@ -227,28 +232,28 @@ class TracedProcess(processinfo.Process):
 				print "New Process has been created by %s"%self.name
 				self.log(SyscallEvent(syscall_name))
 
-	def handle_call(self, fromaddr, toaddr, nextaddr):
+	def handle_call(self, event):
 		""" Call Opcode handler. """
-		self._handle_call_filter(fromaddr, toaddr, nextaddr)
+		self._handle_call_filter(event.fromaddr, event.toaddr, event.nextaddr)
 
-	def handle_memtrace(self, address, value, size, iswrite):
+	def handle_memtrace(self, event):
 		eip = PyFlxInstrument.registers()["eip"]
-		if iswrite:
-			self.log("Write: 0x%x , Addr: 0x%x, BBL: 0x%x"%(value,address,eip))
+		if event.writes:
+			self.log("Write: 0x%x , Addr: 0x%x, BBL: 0x%x"%(event.value,event.addr,eip))
 		else:
-			self.log("Read:  0x%x , Addr: 0x%x, BBL: 0x%x"%(value,address,eip))
+			self.log("Read:  0x%x , Addr: 0x%x, BBL: 0x%x"%(event.value,event.addr,eip))
 
-	def handle_bbl(self, eip, icount):
-		self.log("BBL start at 0x%x, containing %d instructions"%(eip,icount))
+	def handle_bbl(self, event):
+		self.log("BBL start at 0x%x, containing %d instructions"%(event.eip,event.instructions))
 
-	def handle_optrace(self, eip, opcode):
-		if self.imagestart > eip or self.imagestop < eip:
+	def handle_optrace(self, event):
+		if self.imagestart > event.eip or self.imagestop < event.eip:
 			print "EIP NOT IN RANGE!!!"
-		print "Executed opcode 0x%x at eip 0x%x"%(opcode,eip)
+		print "Executed opcode 0x%x at eip 0x%x"%(event.opcode, event.eip)
 
-	def handle_jmp(self, fromaddr, toaddr):
+	def handle_jmp(self, event):
 		#self.logger.handle_event("JMP: "+hex(toaddr))
-		if not self._is_jmp_pad(toaddr):
+		if not self._is_jmp_pad(event.toaddr):
 			pass
 			#self.logger.handle_event("Blacklisting: "+str(toaddr))
 		else:
@@ -262,9 +267,9 @@ class TracedProcess(processinfo.Process):
 				return
 			if self.callFromExe():
 				self.log("Resolved through jump pad:")
-				self._handle_interesting_call(self.thread.previous_call[0], toaddr, self.thread.previous_call[2], False)
+				self._handle_interesting_call(self.thread.previous_call[0], event.toaddr, self.thread.previous_call[2], False)
 			else:
-				PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_JMP)
+				PyFlxInstrument.blacklist(event.fromaddr, PyFlxInstrument.SLOT_JMP)
 			self.thread.previous_call = None
 
 

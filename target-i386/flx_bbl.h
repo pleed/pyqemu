@@ -13,19 +13,16 @@ extern avl_tree_t* bbl_trees[NUM_FILTER_TREES];
 
 typedef struct {
 	uint32_t eip;
-	uint32_t num_mov;
-	uint32_t num_ins;
-	uint32_t num_arith;
+	uint32_t icount;
+	uint32_t arithcount;
 } flx_bbl;
 
-void flx_bbl_init(void);
-void flx_bbl_destroy(void);
-int flx_bbl_search_by_addr(uint32_t address);
-int flx_bbl_del_by_addr(uint32_t address);
-int flx_bbl_add_by_addr(uint32_t address);
-int flx_bbl_add_by_range(uint32_t start, uint32_t end);
+void flx_bbltrace_init(void);
+void flx_bbltrace_enable(void);
+void flx_bbltrace_disable(void);
 
-int flx_bbl_new_current(uint32_t address);
-int flx_bbl_get_current(void);
-int flx_bbl_del_current(
+void flx_bbltrace_arith(void);
+void flx_bbltrace_next(uint32_t eip);
+flx_bbl* flx_bbltrace_cur(void);
+
 #endif

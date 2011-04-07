@@ -32,6 +32,10 @@ typedef struct {
 	uint8_t jmp_active;
 	uint8_t call_active;
 	uint8_t ret_active;
+
+	// heuristics
+	uint8_t wang_active;
+	uint8_t caballero_active;
 } FLX_STATE;
 
 extern FLX_STATE flx_state;
@@ -56,6 +60,7 @@ int flxinstrument_breakpoint_event(uint32_t eip);
 int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite);
 int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode);
 int flxinstrument_bblstart_event(uint32_t eip, uint32_t ins_count);
+int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount);
 
 void flxinstrument_blacklist_alloc(void);
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);

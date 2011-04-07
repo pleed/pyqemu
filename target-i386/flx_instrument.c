@@ -41,6 +41,7 @@
 #include "flx_memtrace.h"
 #include "flx_optrace.h"
 #include "flx_filter.h"
+#include "flx_wang.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -67,6 +68,7 @@ PyObject *PyFlx_ev_ret = NULL;
 PyObject *PyFlx_ev_bp = NULL;
 PyObject *PyFlx_ev_memtrace = NULL;
 PyObject *PyFlx_ev_optrace = NULL;
+PyObject *PyFlx_ev_wang = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
 
 static PyObject *PyFlx_REG_EAX;
@@ -667,6 +669,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_memtrace);
    PyFlx_ev_optrace = PyObject_GetAttrString(Py_Python_Module, "ev_optrace");
    Py_XINCREF(PyFlx_ev_optrace);
+   PyFlx_ev_wang = PyObject_GetAttrString(Py_Python_Module, "ev_wang");
+   Py_XINCREF(PyFlx_ev_wang);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -742,6 +746,7 @@ void flxinstrument_init(void) {
    flx_breakpoint_init();
    flx_optrace_init((optrace_handler)flxinstrument_optrace_event);
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
+   flx_wang_init((wang_handler)flxinstrument_wang_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -854,6 +859,39 @@ int flxinstrument_bblstart_event(uint32_t eip, uint32_t icount) {
 				 (char*) "(II)",
 				 eip,
 				 icount);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_wang_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_wang)) {
+    fprintf(stderr, "No registered wang event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_wang,
+				 (char*) "(III)",
+				 eip,
+				 icount,
+				 arithcount);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
