@@ -75,8 +75,9 @@ class TracedProcess(processinfo.Process):
 		self.imagestop  = self.imagestart + image.SizeOfImage
 		self.hardware.instrumentation.filter_add(self.imagestart,self.imagestop)
 		self.hardware.instrumentation.filter_enable()
-		self.hardware.instrumentation.optrace_enable()
-		self.hardware.instrumentation.memtrace_enable()
+		#self.hardware.instrumentation.optrace_enable()
+		self.hardware.instrumentation.wang_enable()
+		#self.hardware.instrumentation.memtrace_enable()
 		self.hardware.instrumentation.retranslate()
 		print "INITIALIZING FILTER DONE!!!"
 
@@ -97,6 +98,8 @@ class TracedProcess(processinfo.Process):
 			self.handle_optrace(event)
 		elif isinstance(event, QemuBBLEvent):
 			self.handle_bbl(event)
+		elif isinstance(event, QemuWangEvent):
+			self.handle_wang(event)
 
 	def addBreakpoint(self, addr, callback):
 		self.hardware.instrumentation.retranslate()
@@ -245,6 +248,9 @@ class TracedProcess(processinfo.Process):
 
 	def handle_bbl(self, event):
 		self.log("BBL start at 0x%x, containing %d instructions"%(event.eip,event.instructions))
+
+	def handle_wang(self, event):
+		self.log("Wang event at 0x%x, %d instruction, %d arithmetic"%(event.eip, event.icount, event.arith))
 
 	def handle_optrace(self, event):
 		if self.imagestart > event.eip or self.imagestop < event.eip:

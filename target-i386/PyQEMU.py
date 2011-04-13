@@ -29,6 +29,7 @@ from pyqemu.instrumentation import QemuInstrumentation
 from pyqemu.operatingsystem import OperatingSystem
 
 class QemuFlxLogger:
+	BUFFERSIZE = 1000
 	def __init__(self, config):
 		self.config = config
 		self.logfiles = {}
@@ -42,14 +43,29 @@ class QemuFlxLogger:
 	def debug(self, message):
 		if self.config["debug"] == 1:
 			print "DEBUG: %s"%message
+
+	def buildLogfile(self, process):
+		logfile = "%s-%s-%s.log"%(process.imagefilename(),process.cur_tid,time.asctime())
+		logfile = self.config["logger"]["logdir"]+"/"+logfile
+		return logfile
+		
+
+	def getLogfile(self, process):
+		index = hash((process.imagefilename(), process.cur_tid))
+		if not self.logfiles.has_key(index):
+			logfile = self.buildLogfile(process)
+			self.logfiles[index] = io.open(logfile,"w")
+		return self.logfiles[index]
+
+	def shutdown(self):
+		self.closeAll()
+
 	def handleProcessEvent(self, obj, process):
-		logfile = "%s-%s.log"%(process.imagefilename(),process.cur_tid)
-		if not self.logfiles.has_key(logfile):
-			self.logfiles[logfile] = open(logfile,"w")
-		self.logfiles[logfile].write("%s\n"%obj)
+		self.getLogfile(process).write(u"%s\n"%obj)
 
 	def closeAll(self):
 		for key,value in self.logfiles.items():
+			value.flush()
 			value.close()
 			del(self.logfiles[key])
 
@@ -75,8 +91,11 @@ class VirtualMachine:
 		self.config = ConfigLoaderFactory.create("json", configfile, QemuFlxConfig)
 
 	def handleQemuEvent(self, ev, *args):
-		event = createEventObject(ev, *args)
-		self.os.handleEvent(event)
+		if ev == "shutdown":
+			self.logger.shutdown()
+		else:
+			event = createEventObject(ev, *args)
+			self.os.handleEvent(event)
 
 vm = None
 def init(sval):	
@@ -123,3 +142,5 @@ ev_memtrace   = ensure_error_handling_helper(lambda *args: getVirtualMachine().h
 ev_optrace    = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("optrace",*args))
 ev_bblstart   = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("bbl",*args))
 ev_update_cr3 = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("schedule",*args))
+ev_wang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("wang",*args))
+ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("shutdown",*args))

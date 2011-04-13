@@ -9,7 +9,8 @@
 
 #include "flx_instrument.h"
 
-#define FLX_WANG_NOTIFY do{if(flx_state.wang_active) flx_wang_arith();}while(0)
+#define FLX_WANG_HOOK(function) do{if(flx_state.global_active && flx_state.wang_active && (flx_state.filter_active && flx_filter_search_by_addr(pc_ptr))) function;}while(0)
+//#define FLX_WANG_NOTIFY do{if(flx_state.global_active && flx_state.wang_active && (flx_state.filter_active && flx_filter_search_by_addr(pc_ptr))) flx_wang_arith();}while(0)
 /*
 Arithmetic/Binary/logic/bit/shift instructions that will trigger hooks
 

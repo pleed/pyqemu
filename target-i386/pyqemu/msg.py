@@ -4,6 +4,17 @@ class QemuEvent:
 	def __init__(self, *args):
 		self.args = args
 
+class QemuWangEvent(QemuEvent):
+	def getEIP(self):
+		return self.args[0]
+	def getICount(self):
+		return self.args[1]
+	def getArithCount(self):
+		return self.args[2]
+	eip    = property(getEIP)
+	icount = property(getICount)
+	arith  = property(getArithCount)
+
 class QemuBranchEvent(QemuEvent):
 	def getFrom(self):
 		return self.args[0]
@@ -82,6 +93,7 @@ QemuEventTypes = {
 	"optrace":QemuOptraceEvent,
 	"schedule":QemuScheduleEvent,
 	"bbl":QemuBBLEvent,
+	"wang":QemuWangEvent,
 }
 
 

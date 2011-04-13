@@ -62,6 +62,8 @@ int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode);
 int flxinstrument_bblstart_event(uint32_t eip, uint32_t ins_count);
 int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount);
 
+int flxinstrument_shutdown_event(void);
+
 void flxinstrument_blacklist_alloc(void);
 int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);
 void flxinstrument_blacklist(uint32_t addr, uint32_t type);

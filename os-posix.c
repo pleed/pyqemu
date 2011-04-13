@@ -38,6 +38,7 @@
 #include "sysemu.h"
 #include "net/slirp.h"
 #include "qemu-options.h"
+extern int flxinstrument_shutdown_event(void);
 
 #ifdef CONFIG_LINUX
 #include <sys/prctl.h>
@@ -59,6 +60,7 @@ void os_setup_early_signal_handling(void)
 
 static void termsig_handler(int signal)
 {
+    flxinstrument_shutdown_event();
     qemu_system_shutdown_request();
 }
 

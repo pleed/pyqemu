@@ -70,6 +70,7 @@ PyObject *PyFlx_ev_memtrace = NULL;
 PyObject *PyFlx_ev_optrace = NULL;
 PyObject *PyFlx_ev_wang = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
+PyObject *PyFlx_ev_shutdown = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -207,6 +208,33 @@ static PyObject* PyFlxC_optrace_disable(PyObject *self, PyObject *args) {
 	fprintf(stderr," - NO EXC\n");
 #endif
   flx_optrace_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_wang_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_wang_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_wang_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_wang_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_wang_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_wang_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -556,6 +584,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"creg", (PyCFunction)PyFlxC_creg, METH_VARARGS,
      "Returns a control register"
     },
+    {"wang_disable", (PyCFunction)PyFlxC_wang_disable, METH_VARARGS,
+     "Stop wang opcode execution"
+    },
+    {"wang_enable", (PyCFunction)PyFlxC_wang_enable, METH_VARARGS,
+     "Start wang opcode execution"
+    },
     {"optrace_enable", (PyCFunction)PyFlxC_optrace_enable, METH_VARARGS,
      "Start tracing opcode execution"
     },
@@ -683,6 +717,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_update_cr3);   
    PyFlx_ev_bblstart = PyObject_GetAttrString(Py_Python_Module, "ev_bblstart");
    Py_XINCREF(PyFlx_ev_bblstart);
+   PyFlx_ev_shutdown = PyObject_GetAttrString(Py_Python_Module, "ev_shutdown");
+   Py_XINCREF(PyFlx_ev_shutdown);
    printf("done!\n");
 }
 
@@ -827,6 +863,36 @@ int flxinstrument_syscall_event(uint32_t eax) {
   result = PyObject_CallFunction(PyFlx_ev_syscall,
 				 (char*) "(I)",
 				 eax);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_shutdown_event(void) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_shutdown_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_shutdown)) {
+    fprintf(stderr, "No registered memtrace event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_shutdown,
+				 (char*) "()" );
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

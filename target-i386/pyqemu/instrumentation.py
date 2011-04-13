@@ -37,3 +37,8 @@ class QemuInstrumentation:
 
 	def filter_del(self, start, end):
 		PyFlxInstrument.filter_del(start, stop)
+
+	def wang_enable(self):
+		PyFlxInstrument.wang_enable()
+	def wang_disable(self):
+		PyFlxInstrument.wang_disable()
