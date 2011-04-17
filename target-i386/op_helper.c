@@ -2248,6 +2248,13 @@ void helper_flx_bblstart(target_ulong eip, uint64_t tb){
 	}
 }
 
+void helper_flx_bbl_wang(target_ulong eip){
+	if(flx_state.global_active){
+		flx_helper_debug("Block start: 0x%x, num ins: %d\n",env->eip, t->icount);
+		flxinstrument_bblwang_event(env->eip);
+	}
+}
+
 void helper_flx_opcode(target_ulong eip, target_ulong opcode){
 	if(flx_state.global_active){
 		flx_helper_debug("Opcode: %d at 0x%x\n",opcode, env->eip);

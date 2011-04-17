@@ -27,14 +27,17 @@ void flx_wang_disable(void){
 }
 
 void flx_wang_bbl_new(uint32_t eip){
-	if(current_bbl){
-		flx_wang_handler(current_bbl->eip, current_bbl->icount, current_bbl->arithcount);
-		free(current_bbl);
-	}
 	current_bbl = malloc(sizeof(*current_bbl));
 	current_bbl->eip = eip;
 	current_bbl->icount = 0;
 	current_bbl->arithcount = 0;
+}
+
+void flx_wang_bbl_end(void){
+	if(current_bbl){
+		flx_wang_handler(current_bbl->eip, current_bbl->icount, current_bbl->arithcount);
+		free(current_bbl);
+	}
 }
 
 void flx_wang_arith(void){

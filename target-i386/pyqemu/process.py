@@ -58,6 +58,8 @@ class TracedProcess(processinfo.Process):
 		# stores registerd callbacks
 		self.callonfunction      = {}
 		self.breakpoints         = {}
+		self.options             = options
+		self.initialized         = False
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks([])
@@ -67,13 +69,13 @@ class TracedProcess(processinfo.Process):
 		self.optrace = False
 
 	def entryPointReached(self, addr):
-		image = self.get_image_by_address(addr)
-		if image is None:
-			print "MAIN IMAGE IS NONE!!!"
-			return
-		self.imagestart = image.DllBase
-		self.imagestop  = self.imagestart + image.SizeOfImage
-		self.hardware.instrumentation.filter_add(self.imagestart,self.imagestop)
+		self.update_images()
+		for image in self.images.values():
+			if image.BaseDllName.lower() in map(lambda x: x.lower(), self.options["instrument"]):
+				self.hardware.instrumentation.filter_add(image.DllBase, image.DllBase+image.SizeOfImage)
+				self.logger.info("Instrumenting %s"%image.FullDllName)
+			else:
+				self.logger.info("Not Instrumenting %s"%image.FullDllName)
 		self.hardware.instrumentation.filter_enable()
 		#self.hardware.instrumentation.optrace_enable()
 		self.hardware.instrumentation.wang_enable()
@@ -96,10 +98,12 @@ class TracedProcess(processinfo.Process):
 			self.handle_memtrace(event)
 		elif isinstance(event, QemuOptraceEvent):
 			self.handle_optrace(event)
-		elif isinstance(event, QemuBBLEvent):
-			self.handle_bbl(event)
 		elif isinstance(event, QemuWangEvent):
 			self.handle_wang(event)
+		elif isinstance(event, QemuBBLWangEvent):
+			self.handle_wang_bbl(event)
+		elif isinstance(event, QemuBBLEvent):
+			self.handle_bbl(event)
 
 	def addBreakpoint(self, addr, callback):
 		self.hardware.instrumentation.retranslate()
@@ -190,7 +194,9 @@ class TracedProcess(processinfo.Process):
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	def handle_breakpoint(self, bp):
-		print "BREAKPOINT TRIGGERED!!!!!!!!"
+		self.logger.info("------------------------------------")
+		self.logger.info("Instrumentation starting for %s"%self.imagefilename())
+		self.logger.info("------------------------------------")
 		try:
 			breakpoint = self.breakpoints[bp.addr]
 		except KeyError:
@@ -247,10 +253,13 @@ class TracedProcess(processinfo.Process):
 			self.log("Read:  0x%x , Addr: 0x%x, BBL: 0x%x"%(event.value,event.addr,eip))
 
 	def handle_bbl(self, event):
-		self.log("BBL start at 0x%x, containing %d instructions"%(event.eip,event.instructions))
+		self.log("BBL(0x%x,%d)"%(event.eip,event.instructions))
+
+	def handle_wang_bbl(self, event):
+		self.log("WangCall(0x%x)"%(event.eip))
 
 	def handle_wang(self, event):
-		self.log("Wang event at 0x%x, %d instruction, %d arithmetic"%(event.eip, event.icount, event.arith))
+		self.log("WangBlock(0x%x,%d,%d)"%(event.eip, event.icount, event.arith))
 
 	def handle_optrace(self, event):
 		if self.imagestart > event.eip or self.imagestop < event.eip:

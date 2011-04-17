@@ -66,6 +66,11 @@ class QemuBBLEvent(QemuEvent):
 	eip = property(getEIP)
 	instructions = property(getInstructionCount)
 
+class QemuBBLWangEvent(QemuBBLEvent):
+	def getEIP(self):
+		return self.args[0]
+	eip = property(getEIP)
+
 class QemuOptraceEvent(QemuEvent):
 	def getEIP(self):
 		return self.args[0]
@@ -93,6 +98,7 @@ QemuEventTypes = {
 	"optrace":QemuOptraceEvent,
 	"schedule":QemuScheduleEvent,
 	"bbl":QemuBBLEvent,
+	"bblwang":QemuBBLWangEvent,
 	"wang":QemuWangEvent,
 }
 

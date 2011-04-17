@@ -3,6 +3,7 @@
 import traceback
 import json
 import sys
+import io
 import os as pyos
 import glob
 import struct
@@ -141,6 +142,9 @@ ev_bp         = ensure_error_handling_helper(lambda *args: getVirtualMachine().h
 ev_memtrace   = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("memtrace",*args))
 ev_optrace    = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("optrace",*args))
 ev_bblstart   = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("bbl",*args))
+
 ev_update_cr3 = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("schedule",*args))
-ev_wang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("wang",*args))
 ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("shutdown",*args))
+
+ev_wang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("wang",*args))
+ev_bblwang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("bblwang",*args))

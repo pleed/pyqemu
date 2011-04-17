@@ -2769,7 +2769,11 @@ static void gen_interrupt(DisasContext *s, int intno,
 
 static void gen_flx_bblstart(target_ulong cur_eip, TranslationBlock* tb, DisasContext* s){
     uint64_t ptr = (uint64_t)tb;
-    flx_hook(FLX_ON_FILTERED | FLX_ON_OPTRACE | FLX_ON_WANG, s, gen_helper_flx_bblstart, tcg_const_i32(cur_eip), tcg_const_i64(ptr));
+    flx_hook(FLX_ON_FILTERED | FLX_ON_OPTRACE , s, gen_helper_flx_bblstart, tcg_const_i32(cur_eip), tcg_const_i64(ptr));
+}
+
+static void gen_flx_bbl_wang(target_ulong cur_eip, DisasContext* s){
+    flx_hook(FLX_ON_FILTERED | FLX_ON_WANG , s, gen_helper_flx_bbl_wang, tcg_const_i32(cur_eip));
 }
 
 /*static void gen_flx_bblstop(DisasContext* s){
@@ -4749,7 +4753,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_movtl_T1_im(next_eip);
             gen_push_T1(s);
 
-			flx_global_hook(FLX_ON_CALL_ACTIVE ,
+			flx_global_hook(FLX_ON_CALL_ACTIVE | FLX_ON_FILTERED,
 					s,
 					 gen_helper_flx_call,
           			 tcg_const_i32(pc_start - s->cs_base),
@@ -6325,7 +6329,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         val = ldsw_code(s->pc);
         s->pc += 2;
         gen_pop_T0(s);
-	flx_global_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
+	flx_global_hook(FLX_ON_RET_ACTIVE | FLX_ON_FILTERED, s, gen_helper_flx_ret, cpu_T[0]);
         if (CODE64(s) && s->dflag)
             s->dflag = 2;
         gen_stack_update(s, val + (2 << s->dflag));
@@ -6336,7 +6340,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xc3: /* ret */
         gen_pop_T0(s);
-		flx_global_hook(FLX_ON_RET_ACTIVE, s, gen_helper_flx_ret, cpu_T[0]);
+		flx_global_hook(FLX_ON_RET_ACTIVE | FLX_ON_FILTERED, s, gen_helper_flx_ret, cpu_T[0]);
         gen_pop_update(s);
         if (s->dflag == 0)
             gen_op_andl_T0_ffff();
@@ -6414,7 +6418,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_movtl_T0_im(next_eip);
             gen_push_T0(s);
 			
-			flx_global_hook(FLX_ON_CALL_ACTIVE ,
+			flx_global_hook(FLX_ON_CALL_ACTIVE | FLX_ON_FILTERED,
 					 s,
 					 gen_helper_flx_call,
           			 tcg_const_i32(pc_start - s->cs_base),
@@ -7975,6 +7979,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
     uint32_t next_breakpoint;
     int breakpoint_reached = 0;
     flx_breakpoint_search_addr(pc_ptr, &next_breakpoint);
+    gen_flx_bbl_wang(pc_start, dc);
     gen_flx_bblstart(pc_start, tb, dc);
     FLX_WANG_HOOK(flx_wang_bbl_new(pc_start));
     gen_icount_start();
@@ -8047,6 +8052,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
             break;
 	}
     }
+    FLX_WANG_HOOK(flx_wang_bbl_end());
     if (tb->cflags & CF_LAST_IO)
         gen_io_end();
     gen_icount_end(tb, num_insns);

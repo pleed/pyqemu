@@ -70,6 +70,7 @@ PyObject *PyFlx_ev_memtrace = NULL;
 PyObject *PyFlx_ev_optrace = NULL;
 PyObject *PyFlx_ev_wang = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
+PyObject *PyFlx_ev_bblwang = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 
 static PyObject *PyFlx_REG_EAX;
@@ -686,10 +687,10 @@ flxinstrument_state_init(void){
 	flx_state.python_active = 0;
    else{
 	flx_state.python_active = 1;
-	flx_state.syscall_active = 1;
+	flx_state.syscall_active = 0;
 	flx_state.ret_active = 1;
 	flx_state.call_active = 1;
-        flx_state.jmp_active = 1;
+        flx_state.jmp_active = 0;
    }
 
 }
@@ -717,6 +718,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_update_cr3);   
    PyFlx_ev_bblstart = PyObject_GetAttrString(Py_Python_Module, "ev_bblstart");
    Py_XINCREF(PyFlx_ev_bblstart);
+   PyFlx_ev_bblwang = PyObject_GetAttrString(Py_Python_Module, "ev_bblwang");
+   Py_XINCREF(PyFlx_ev_bblwang);
    PyFlx_ev_shutdown = PyObject_GetAttrString(Py_Python_Module, "ev_shutdown");
    Py_XINCREF(PyFlx_ev_shutdown);
    printf("done!\n");
@@ -893,6 +896,37 @@ int flxinstrument_shutdown_event(void) {
 
   result = PyObject_CallFunction(PyFlx_ev_shutdown,
 				 (char*) "()" );
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_bblwang_event(uint32_t eip) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_bblwang_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_bblwang)) {
+    fprintf(stderr, "No registered memtrace event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_bblwang,
+				 (char*) "(I)",
+				 eip);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

@@ -61,6 +61,7 @@ int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size,
 int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode);
 int flxinstrument_bblstart_event(uint32_t eip, uint32_t ins_count);
 int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount);
+int flxinstrument_bblwang_event(uint32_t eip);
 
 int flxinstrument_shutdown_event(void);
 

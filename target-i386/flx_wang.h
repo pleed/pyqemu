@@ -31,6 +31,7 @@ void flx_wang_init(wang_handler handler);
 void flx_wang_enable(void);
 void flx_wang_disable(void);
 void flx_wang_bbl_new(uint32_t eip);
+void flx_wang_bbl_end(void);
 void flx_wang_arith(void);
 void flx_wang_insn(void);
 
