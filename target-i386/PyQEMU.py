@@ -34,6 +34,7 @@ class QemuFlxLogger:
 	def __init__(self, config):
 		self.config = config
 		self.logfiles = {}
+		self.starttimes = {}
 
 	def error(self, message):
 		print "ERROR: %s"%message
@@ -46,7 +47,10 @@ class QemuFlxLogger:
 			print "DEBUG: %s"%message
 
 	def buildLogfile(self, process):
-		logfile = "%s-%s-%s.log"%(process.imagefilename(),process.cur_tid,time.asctime())
+		if not self.starttimes.has_key(process.pid):
+			self.starttimes[process.pid] = time.asctime()
+		timestamp = self.starttimes[process.pid]
+		logfile = "%s-%s-%s.log"%(process.imagefilename(),process.cur_tid,timestamp)
 		logfile = self.config["logger"]["logdir"]+"/"+logfile
 		return logfile
 		
@@ -58,17 +62,24 @@ class QemuFlxLogger:
 			self.logfiles[index] = io.open(logfile,"w")
 		return self.logfiles[index]
 
-	def shutdown(self):
-		self.closeAll()
+	def shutdown(self, process = None):
+		if not process:
+			self.closeAll()
+		else:
+			self.getLogfile(process).flush()
+			self.getLogfile(process).close()
 
 	def handleProcessEvent(self, obj, process):
 		self.getLogfile(process).write(u"%s\n"%obj)
 
 	def closeAll(self):
 		for key,value in self.logfiles.items():
-			value.flush()
-			value.close()
-			del(self.logfiles[key])
+			try:
+				value.flush()
+				value.close()
+				del(self.logfiles[key])
+			except ValueError:
+				continue
 
 	def __del__(self):
 		self.closeAll()

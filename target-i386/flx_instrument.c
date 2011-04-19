@@ -348,6 +348,7 @@ static PyObject* PyFlxC_blacklist(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+
 static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "registers");  
@@ -426,7 +427,25 @@ static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
   return retval;
 }
 
+static PyObject* PyFlxC_filter_filtered(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "filter_filtered");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t addr;
+   PyObject *retval;
 
+   if(!PyArg_ParseTuple(args, "I", &addr)) {
+      // raise exception, too?
+      return NULL;
+   }
+   retval = Py_BuildValue("I", flx_filter_search_by_addr(addr));
+   //Py_XINCREF(retval);
+   return retval;
+}
 
 static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -582,6 +601,10 @@ static PyMethodDef PyFlxC_methods[] = {
     {"genreg", (PyCFunction)PyFlxC_genreg, METH_VARARGS,
      "Returns a general purpose register"
     },
+    {"filtered", (PyCFunction)PyFlxC_filter_filtered, METH_VARARGS,
+     "Returns true if address is in filter range"
+    },
+
     {"creg", (PyCFunction)PyFlxC_creg, METH_VARARGS,
      "Returns a control register"
     },
@@ -687,8 +710,8 @@ flxinstrument_state_init(void){
 	flx_state.python_active = 0;
    else{
 	flx_state.python_active = 1;
-	flx_state.syscall_active = 0;
-	flx_state.ret_active = 1;
+	flx_state.syscall_active = 1;
+	flx_state.ret_active = 0;
 	flx_state.call_active = 1;
         flx_state.jmp_active = 0;
    }
@@ -908,7 +931,7 @@ int flxinstrument_shutdown_event(void) {
   return retval;
 }
 
-int flxinstrument_bblwang_event(uint32_t eip) {
+int flxinstrument_bblwang_event(uint32_t eip, uint32_t esp) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bblwang_event");  
   if(PyErr_Occurred())
@@ -925,8 +948,9 @@ int flxinstrument_bblwang_event(uint32_t eip) {
   }
 
   result = PyObject_CallFunction(PyFlx_ev_bblwang,
-				 (char*) "(I)",
-				 eip);
+				 (char*) "(II)",
+				 eip,
+				 esp);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
@@ -1070,7 +1094,7 @@ int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size,
   return retval;
 }
 
-int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, uint32_t next_eip) {
+int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, uint32_t next_eip, uint32_t esp) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_call_event");  
   if(PyErr_Occurred())
@@ -1087,10 +1111,11 @@ int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, ui
   }
 
   result = PyObject_CallFunction(PyFlx_ev_call,
-				 (char*) "(III)",
+				 (char*) "(IIII)",
 				 call_origin,
 				 call_destination,
-				 next_eip);
+				 next_eip,
+                                 esp);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

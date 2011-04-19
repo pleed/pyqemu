@@ -25,15 +25,6 @@ from config import *
 from msg import *
 from memory import *
 
-class Breakpoint:
-	def __init__(self, addr, callback):
-		PyFlxInstrument.breakpoint_insert(addr)
-		self.addr = addr
-		self.callback = callback
-
-	def trigger(self):
-		self.callback(self.addr)
-
 class Thread:
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
 		if callstack is None:
@@ -43,6 +34,29 @@ class Thread:
 		self.memory  = MemoryManager(process, heap, stack, data, unknown)
 		self.previous_call = None
 		self.process = process
+
+	def __del__(self):
+		self.terminate()
+
+	def terminate(self):
+		while len(self.callstack) > 0:
+			call_event = self.callstack.pop()
+			self.process.log("Ret(0x%x)"%call_event[0])
+
+class EventHandler:
+	def __init__(self, process):
+		self.observers = {}
+		self.process   = process
+
+	def __call__(self, event):
+		for observer,function in self.observers.items():
+			function(self.process, event)
+
+	def attach(self, name, function):
+		self.observers[name] = function
+
+	def detach(self, name):
+		del(self.observers[name])
 
 class TracedProcess(processinfo.Process):
 	""" A traced process with functionality to register callbacks for vm inspection """
@@ -63,12 +77,15 @@ class TracedProcess(processinfo.Process):
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks([])
-
+		self.setupEventHandlers()
 		self.pe_image = PEFile("%s/%s"%(options["exedir"], imagefilename), 0)
 		self.addBreakpoint(self.pe_image.calculateEntryPoint(), self.entryPointReached)
 		self.optrace = False
 
 	def entryPointReached(self, addr):
+		self.logger.info("------------------------------------")
+		self.logger.info("Instrumentation starting for %s at address 0x%x"%(self.imagefilename(),addr))
+		self.logger.info("------------------------------------")
 		self.update_images()
 		for image in self.images.values():
 			if image.BaseDllName.lower() in map(lambda x: x.lower(), self.options["instrument"]):
@@ -81,29 +98,27 @@ class TracedProcess(processinfo.Process):
 		self.hardware.instrumentation.wang_enable()
 		#self.hardware.instrumentation.memtrace_enable()
 		self.hardware.instrumentation.retranslate()
-		print "INITIALIZING FILTER DONE!!!"
+
+		self.callstack.push((addr, self.hardware.cpu.esp))
+		self.log("Call(0x%x)"%addr)
+		self.logger.info("Instrumentation initialized!!!")
+
+	def setupEventHandlers(self):
+		self.eventHandlers = {
+			"call":EventHandler(self),
+			"jmp":EventHandler(self),
+			"ret":EventHandler(self),
+			"syscall":EventHandler(self),
+			"breakpoint":EventHandler(self),
+			"memtrace":EventHandler(self),
+			"optrace":EventHandler(self),
+			"bbl":EventHandler(self),
+			"bblwang":EventHandler(self),
+			"wang":EventHandler(self),
+		}
 
 	def handleEvent(self, event):
-		if isinstance(event, QemuCallEvent):
-			self.handle_call(event)
-		elif isinstance(event, QemuJmpEvent):
-			self.handle_jmp(event)
-		elif isinstance(event, QemuRetEvent):
-			self.handle_ret(event)
-		elif isinstance(event, QemuSyscallEvent):
-			self.handle_syscall(event)
-		elif isinstance(event, QemuBreakpointEvent):
-			self.handle_breakpoint(event)
-		elif isinstance(event, QemuMemtraceEvent):
-			self.handle_memtrace(event)
-		elif isinstance(event, QemuOptraceEvent):
-			self.handle_optrace(event)
-		elif isinstance(event, QemuWangEvent):
-			self.handle_wang(event)
-		elif isinstance(event, QemuBBLWangEvent):
-			self.handle_wang_bbl(event)
-		elif isinstance(event, QemuBBLEvent):
-			self.handle_bbl(event)
+		self.eventHandlers[event.event_type](event)
 
 	def addBreakpoint(self, addr, callback):
 		self.hardware.instrumentation.retranslate()
@@ -132,7 +147,8 @@ class TracedProcess(processinfo.Process):
 			                                          anythread.memory.data, \
 													  anythread.memory.unknown,\
 													  None)
-		print "Thread %d registered"%self.cur_tid
+		self.threads[self.cur_tid].callstack.push((self.hardware.cpu.eip, 0xffffffff))
+		self.logger.info("Thread %d registered"%self.cur_tid)
 
 	def getThread(self):
 		try:
@@ -194,56 +210,59 @@ class TracedProcess(processinfo.Process):
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	def handle_breakpoint(self, bp):
-		self.logger.info("------------------------------------")
-		self.logger.info("Instrumentation starting for %s"%self.imagefilename())
-		self.logger.info("------------------------------------")
 		try:
 			breakpoint = self.breakpoints[bp.addr]
 		except KeyError:
 			raise Exception("Unregistered breakpoint has been triggered!")
 		breakpoint.trigger()
 
-	def handle_ret(self, ret):
+	def handle_call(self, event):
+		self.log("Call(0x%x)"%event.toaddr)
+		self.callstack.push((event.toaddr,event.esp))
+
+	def handle_ret(self, event):
+		raise Exception("should not be called!")
 		""" Will be called on ret opcode - updates callstack and triggers handlers """
 		# keep callstack up to date
-		try:
-			if self.callstack.top().isReturning(ret.toaddr):
-				f = self.callstack.pop()
-				self.log(RetEvent(f))
-				f.doReturn()
-			else:
-				esp = self.register("esp")
-				f = self.callstack.top()
-				while f.top() < esp:
-					self.log(LateRetEvent(f))
-					del(f)
+		if self.hardware.instrumentation.filter_filtered(event.fromaddr):
+			try:
+				if self.callstack.top().isReturning(event.toaddr):
 					f = self.callstack.pop()
-		except IndexError:
-			pass
-		self.memory.stack.update()
+					self.log(RetEvent(f))
+					f.doReturn()
+				else:
+					esp = self.register("esp")
+					f = self.callstack.top()
+					lateRet = True
+					while f.top() < esp:
+						if lateRet:
+							self.log(LateRetEvent(f))
+							lateRet = False
+						del(f)
+						f = self.callstack.pop()
+			except IndexError:
+				pass
+			self.memory.stack.update()
 
 	def handle_syscall(self, syscall):
 		# NtCreateThread
 		syscall_name = syscalls.getSyscallByNumber(syscall.number)
 		if syscall_name is not None:
-			self.log(SyscallEvent(syscall_name))
 			if syscall_name == "NtTerminateProcess":
-				global cleanup_processes
 				self.os.terminating_processes.append((self,PyFlxInstrument.registers()["cr3"]))
-				self.log(SyscallEvent(syscall_name))
+				self.log(syscall_name)
+				self.thread.terminate()
+				self.logger.shutdown(self)
 			if syscall_name == "NtCreateThread":
-				print "New Thread has been created by %s"%self.name
-				self.log(SyscallEvent(syscall_name))
+				self.logger.info("Creating Thread")
+				self.log(syscall_name)
 			if syscall_name == "NtTerminateThread":
-				print "Thread %d terminated"%self.cur_tid
-				self.log(SyscallEvent(syscall_name))
+				self.logger.info("Thread %d terminated"%self.cur_tid)
+				self.log(syscall_name)
+				self.thread.terminate()
 			if syscall_name == "NtCreateProcess" or syscall_name == "NtCreateProcessEx":
-				print "New Process has been created by %s"%self.name
-				self.log(SyscallEvent(syscall_name))
-
-	def handle_call(self, event):
-		""" Call Opcode handler. """
-		self._handle_call_filter(event.fromaddr, event.toaddr, event.nextaddr)
+				self.logger.info("New Process has been created by %s"%self.name)
+				self.log(syscall_name)
 
 	def handle_memtrace(self, event):
 		eip = PyFlxInstrument.registers()["eip"]
@@ -256,37 +275,27 @@ class TracedProcess(processinfo.Process):
 		self.log("BBL(0x%x,%d)"%(event.eip,event.instructions))
 
 	def handle_wang_bbl(self, event):
+		while event.esp > self.callstack[-1][1]:
+			call_event = self.callstack.pop()
+			self.log("Ret(0x%x)"%call_event[0])
+
 		self.log("WangCall(0x%x)"%(event.eip))
+
+	def handle_call(self, event):
+		if self.hardware.instrumentation.filter_filtered(event.toaddr):
+			self.log("Call(0x%x)"%event.toaddr)
+			self.callstack.push((event.toaddr,event.esp))
 
 	def handle_wang(self, event):
 		self.log("WangBlock(0x%x,%d,%d)"%(event.eip, event.icount, event.arith))
 
-	def handle_optrace(self, event):
-		if self.imagestart > event.eip or self.imagestop < event.eip:
-			print "EIP NOT IN RANGE!!!"
-		print "Executed opcode 0x%x at eip 0x%x"%(event.opcode, event.eip)
+	#def handle_optrace(self, event):
+	#	if self.imagestart > event.eip or self.imagestop < event.eip:
+	#		print "EIP NOT IN RANGE!!!"
+	#	print "Executed opcode 0x%x at eip 0x%x"%(event.opcode, event.eip)
 
 	def handle_jmp(self, event):
-		#self.logger.handle_event("JMP: "+hex(toaddr))
-		if not self._is_jmp_pad(event.toaddr):
-			pass
-			#self.logger.handle_event("Blacklisting: "+str(toaddr))
-		else:
-			try:
-				f = self.callstack.top()
-				# did we push the previous call onto the callstack?
-				if (f.fromaddr, f.toaddr, f.nextaddr) == self.thread.previous_call:
-					f = self.callstack.pop()
-					del(f)
-			except IndexError:
-				return
-			if self.callFromExe():
-				self.log("Resolved through jump pad:")
-				self._handle_interesting_call(self.thread.previous_call[0], event.toaddr, self.thread.previous_call[2], False)
-			else:
-				PyFlxInstrument.blacklist(event.fromaddr, PyFlxInstrument.SLOT_JMP)
-			self.thread.previous_call = None
-
+		pass
 
 	def addrInExe(self, addr):
 		""" check if address is located in main executable image """
@@ -295,42 +304,6 @@ class TracedProcess(processinfo.Process):
 			return image.get_basedllname().lower() == self.imagefilename()
 		else:
 			return False
-
-	def _handle_call_filter(self, fromaddr, toaddr, nextaddr):
-		""" test for interesting calls/jmps and trigger next stage handlers """
-		if self.hasSymbol(toaddr):
-			# Call comes from exe and so is interesting for us
-			if self.callFromExe():
-				#self.log("Resolved early:")
-				self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
-			# Call in library is not interesting, log it for debugging
-			else:
-				#self.log_call(CalledFunction(fromaddr, toaddr, nextaddr, self), "Not interesting:")
-				PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_CALL)
-				#self.logger.handle_event("Blacklisting: "+str(toaddr))
-				pass
-		else:
-			# try to resolve call
-			from_image = self.get_image_by_address(fromaddr)
-			to_image   = self.get_image_by_address(toaddr)
-			if from_image is None or to_image is None:
-				try:
-					self.update_images()
-				except PageFaultException:
-					return
-			if from_image is not None and to_image is not None:
-				if self.callFromExe():
-					self.thread.previous_call = (fromaddr, toaddr, nextaddr)
-					if not self.hasSymbol(toaddr):
-						to_image.update()
-					# log it in all cases
-					#self.log("Resolved late:")
-					self._handle_interesting_call(fromaddr, toaddr, nextaddr, True)
-				else:
-					# blacklist call target
-					PyFlxInstrument.blacklist(fromaddr, PyFlxInstrument.SLOT_CALL)
-					pass
-					#self.logger.handle_event("Blacklisting: "+str(hex(toaddr)))
 
 	def callFromExe(self):
 		try:
@@ -363,34 +336,11 @@ class TracedProcess(processinfo.Process):
 				return True
 		return False
 
-	def _is_jmp_pad(self, toaddr):
-		# if target is a known function, check if address pushed by previous call is still on $esp
-		if self.thread.previous_call is None:
-			return False
-		if self.hasSymbol(toaddr) and \
-		struct.unpack("I",self.backend.read(self.register("esp"),4))[0] == self.thread.previous_call[2]:
-			return True
-		return False
-
-	def _is_jmp(self, fromaddr, toaddr, nextaddr):
-		#jumps will set fromaddr/nextaddr to 0, calls *should* not
-		return (fromaddr == 0) and (nextaddr == 0)
-
 	def log_call(self, function, prefix = ""):
-		if prefix != "":
-			self.log(prefix)
 		try:
 			self.log(CallEvent(function, self.callstack[-1]))
 		except IndexError:
 			self.log(CallEvent(function))
-
-	def _handle_interesting_call(self, fromaddr, toaddr, nextaddr, iscall):
-		""" if call/jmp could generate interesting event, this function will handle it """
-		global emulate_functions
-		function = CalledFunction(fromaddr, toaddr, nextaddr, self)
-		self.log_call(function)
-		self.callstack.push(function)
-		self.runCallbacks(function,"enter")
 
 	def runCallbacks(self, function, event_type):
 		""" Run registered Callbacks for (dll, function) tuple. """
@@ -424,6 +374,7 @@ class TracedProcess(processinfo.Process):
 		self.terminate()
 
 	def terminate(self):
+		self.log.info("Terminating process: %s"%self.imagefilename())
 		try:
 			for tid,thread in self.threads.items():
 				del(thread)

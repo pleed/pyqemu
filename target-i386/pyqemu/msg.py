@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 class QemuEvent:
-	def __init__(self, *args):
+	def __init__(self, event_type, *args):
+		self.event_type = event_type
 		self.args = args
 
 class QemuWangEvent(QemuEvent):
@@ -26,7 +27,10 @@ class QemuBranchEvent(QemuEvent):
 class QemuCallEvent(QemuBranchEvent):
 	def getNext(self):
 		return self.args[2]
+	def getESP(self):
+		return self.args[3]
 	nextaddr = property(getNext)
+	esp      = property(getESP)
 
 class QemuJmpEvent(QemuBranchEvent):
 	pass
@@ -69,7 +73,10 @@ class QemuBBLEvent(QemuEvent):
 class QemuBBLWangEvent(QemuBBLEvent):
 	def getEIP(self):
 		return self.args[0]
+	def getESP(self):
+		return self.args[1]
 	eip = property(getEIP)
+	esp = property(getESP)
 
 class QemuOptraceEvent(QemuEvent):
 	def getEIP(self):
@@ -106,6 +113,6 @@ QemuEventTypes = {
 
 def createEventObject(ev, *args):
 	try:
-		return QemuEventTypes[ev](*args)
+		return QemuEventTypes[ev](ev, *args)
 	except KeyError:
 		raise Exception("Unknown event type: %s"%ev)

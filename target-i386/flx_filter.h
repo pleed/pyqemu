@@ -26,6 +26,5 @@ int flx_filter_del_by_range(uint32_t start, uint32_t end);
 int flx_filter_search_by_range(uint32_t start, uint32_t end);
 int flx_filter_add_by_addr(uint32_t address);
 int flx_filter_add_by_range(uint32_t start, uint32_t end);
-int flx_filter_filtered(uint32_t address);
 
 #endif

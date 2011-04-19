@@ -23,9 +23,6 @@ class QemuCPU:
 	@classmethod
 	def getReg(cls, register):
 		regs = registers()
-		print "-----------------------"
-		print regs
-		print "-----------------------"
 		return registers()[register]
 
 	@classmethod

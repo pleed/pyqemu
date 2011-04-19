@@ -2251,7 +2251,7 @@ void helper_flx_bblstart(target_ulong eip, uint64_t tb){
 void helper_flx_bbl_wang(target_ulong eip){
 	if(flx_state.global_active){
 		flx_helper_debug("Block start: 0x%x, num ins: %d\n",env->eip, t->icount);
-		flxinstrument_bblwang_event(env->eip);
+		flxinstrument_bblwang_event(env->eip, env->regs[R_ESP]);
 	}
 }
 
@@ -2597,9 +2597,9 @@ int get_current_register(int index);
 /* regular calls in protected mode */
 void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong next_eip)
 {
-	if(flx_state.global_active){
+	if(flx_state.global_active && flx_filter_search_by_addr(new_eip)){
 		flx_helper_debug("Call from 0x%x, to 0x%x , next: 0x%x\n",env->eip, new_eip, next_eip);
-		flxinstrument_call_event(env->eip, new_eip, next_eip);
+		flxinstrument_call_event(env->eip, new_eip, next_eip, env->regs[R_ESP]);
 	}
 }
 
