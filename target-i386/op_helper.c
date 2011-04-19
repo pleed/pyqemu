@@ -26,7 +26,7 @@
 #include "disas.h"
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
-#include "flx_optrace.h"
+#include "flx_bbltrace.h"
 
 extern struct FILE *stdout;
 extern struct FILE *stderr;
@@ -2237,36 +2237,14 @@ void helper_flx_memtrace_write(uint64_t value, uint64_t address, uint32_t size){
 */
 }
 
-void helper_flx_bblstart(target_ulong eip, uint64_t tb){
+void helper_flx_bblstart(target_ulong eip){
 	if(flx_state.global_active){
 		if(env->eip != eip){
 			flx_helper_debug("Block start eip: 0x%x, env->eip: 0x%x\n",env->eip, eip);
 		}
-		TranslationBlock* t = (TranslationBlock*)tb;
-		flx_helper_debug("Block start: 0x%x, num ins: %d\n",env->eip, t->icount);
-		flxinstrument_bblstart_event(env->eip, t->icount);
+		flx_bbltrace_event(env->eip, env->regs[R_ESP]);
 	}
 }
-
-void helper_flx_bbl_wang(target_ulong eip){
-	if(flx_state.global_active){
-		flx_helper_debug("Block start: 0x%x, num ins: %d\n",env->eip, t->icount);
-		flxinstrument_bblwang_event(env->eip, env->regs[R_ESP]);
-	}
-}
-
-void helper_flx_opcode(target_ulong eip, target_ulong opcode){
-	if(flx_state.global_active){
-		flx_helper_debug("Opcode: %d at 0x%x\n",opcode, env->eip);
-		flx_optrace_event(env->eip,opcode);
-	}
-}
-/*
-void helper_opcode_event(target_ulong eip, target_ulong opcode){
-	printf("opcode event start\n");
-	flx_optrace_event(eip, opcode);
-	printf("opcode event stop\n");
-}*/
 
 void helper_flx_ret(target_ulong new_eip){
 	if(flx_state.global_active){

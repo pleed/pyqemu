@@ -83,13 +83,16 @@ class TracedProcess(processinfo.Process):
 		self.breakpoints         = {}
 		self.options             = options
 		self.initialized         = False
+		self.instrumentation_initializers = []
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks([])
 		self.setupEventHandlers()
 		self.pe_image = PEFile("%s/%s"%(options["exedir"], imagefilename), 0)
 		self.addBreakpoint(self.pe_image.calculateEntryPoint(), self.entryPointReached)
-		self.optrace = False
+
+	def onInstrumentationInit(self, function):
+		self.instrumentation_initializers.append(function)
 
 	def entryPointReached(self, addr):
 		""" Instrumentation starts here after entry point has been reached """
@@ -104,13 +107,14 @@ class TracedProcess(processinfo.Process):
 			else:
 				self.logger.info("Not Instrumenting %s"%image.FullDllName)
 		self.hardware.instrumentation.filter_enable()
-		#self.hardware.instrumentation.optrace_enable()
-		self.hardware.instrumentation.wang_enable()
+		for initializer in self.instrumentation_initializers:
+			initializer()
+
 		#self.hardware.instrumentation.memtrace_enable()
 		self.hardware.instrumentation.retranslate()
 
 		self.callstack.push((addr, self.hardware.cpu.esp))
-		self.log("Call(0x%x)"%addr)
+		#self.log("Call(0x%x)"%addr)
 		self.logger.info("Instrumentation initialized!!!")
 
 	def setupEventHandlers(self):
@@ -122,10 +126,9 @@ class TracedProcess(processinfo.Process):
 			#"breakpoint":EventHandler(self),
 			"breakpoint":self.handle_breakpoint,
 			"memtrace":EventHandler(self),
-			"optrace":EventHandler(self),
 			"bbl":EventHandler(self),
-			"bblwang":EventHandler(self),
-			"wang":EventHandler(self),
+			"bblcaballero":EventHandler(self),
+			"caballero":EventHandler(self),
 		}
 
 	def handleEvent(self, event):
@@ -285,25 +288,20 @@ class TracedProcess(processinfo.Process):
 	def handle_bbl(self, event):
 		self.log("BBL(0x%x,%d)"%(event.eip,event.instructions))
 
-	def handle_wang_bbl(self, event):
+	def handle_caballero_bbl(self, event):
 		while event.esp > self.callstack[-1][1]:
 			call_event = self.callstack.pop()
 			self.log("Ret(0x%x)"%call_event[0])
 
-		self.log("WangCall(0x%x)"%(event.eip))
+		self.log("CaballeroCall(0x%x)"%(event.eip))
 
 	def handle_call(self, event):
 		if self.hardware.instrumentation.filter_filtered(event.toaddr):
 			self.log("Call(0x%x)"%event.toaddr)
 			self.callstack.push((event.toaddr,event.esp))
 
-	def handle_wang(self, event):
-		self.log("WangBlock(0x%x,%d,%d)"%(event.eip, event.icount, event.arith))
-
-	#def handle_optrace(self, event):
-	#	if self.imagestart > event.eip or self.imagestop < event.eip:
-	#		print "EIP NOT IN RANGE!!!"
-	#	print "Executed opcode 0x%x at eip 0x%x"%(event.opcode, event.eip)
+	def handle_caballero(self, event):
+		self.log("CaballeroBlock(0x%x,%d,%d)"%(event.eip, event.icount, event.arith))
 
 	def handle_jmp(self, event):
 		pass
@@ -399,7 +397,6 @@ class TracedProcess(processinfo.Process):
 class UntracedProcess(processinfo.Process):
 	def __init__(self, callhandler):
 		processinfo.Process.__init__(self)
-		self.optrace = False
 
 	def handle_call(self, *args):
 		print "UNTRACED PROCESS CALL! %s"%str(args)
@@ -409,8 +406,6 @@ class UntracedProcess(processinfo.Process):
 		print "UNTRACED PROCESS RET! %s"%str(args)
 	def handle_jmp(self, *args):
 		print "UNTRACED PROCESS JMP! %s"%str(args)
-	def handle_optrace(self, *args):
-		print "UNTRACED PROCESS OPTRACE! %s"%str(args)
 	def handle_memtrace(self, *args):
 		print "UNTRACED PROCESS MEMTRACE! %s"%str(args)
 	def handle_bblstart(self, *args):

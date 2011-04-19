@@ -157,5 +157,4 @@ ev_bblstart   = ensure_error_handling_helper(lambda *args: getVirtualMachine().h
 ev_update_cr3 = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("schedule",*args))
 ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("shutdown",*args))
 
-ev_wang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("wang",*args))
-ev_bblwang = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("bblwang",*args))
+ev_caballero = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("caballero",*args))

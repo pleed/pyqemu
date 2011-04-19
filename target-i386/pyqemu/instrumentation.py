@@ -11,12 +11,6 @@ class QemuInstrumentation:
 	def deactivate(self):
 		PyFlxInstrument.set_instrumentation_active(0)
 
-	def optrace_enable(self):
-		PyFlxInstrument.optrace_enable()
-
-	def optrace_disable(self):
-		PyFlxInstrument.optrace_disable()
-
 	def memtrace_enable(self):
 		PyFlxInstrument.memtrace_enable()
 
@@ -41,7 +35,13 @@ class QemuInstrumentation:
 	def filter_filtered(self, addr):
 		return PyFlxInstrument.filtered(addr)
 
-	def wang_enable(self):
-		PyFlxInstrument.wang_enable()
-	def wang_disable(self):
-		PyFlxInstrument.wang_disable()
+	def bbltrace_enable(self):
+		PyFlxInstrument.bbltrace_enable()
+
+	def bbltrace_disable(self):
+		PyFlxInstrument.bbltrace_disable()
+
+	def caballero_enable(self, min_icount, threshold):
+		PyFlxInstrument.caballero_enable(min_icount, threshold)
+	def caballero_disable(self):
+		PyFlxInstrument.caballero_disable()

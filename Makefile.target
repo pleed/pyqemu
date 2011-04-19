@@ -48,7 +48,7 @@ all: $(PROGS)
 
 #########################################################
 # cpu emulator library
-libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o flx_breakpoint.o flx_memtrace.o flx_optrace.o flx_filter.o flx_tbrestoring.o flx_caballero.o
+libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o flx_breakpoint.o flx_memtrace.o flx_bbltrace.o flx_filter.o flx_tbrestoring.o flx_caballero.o
 libobj-y += tcg/tcg.o
 libobj-$(CONFIG_SOFTFLOAT) += fpu/softfloat.o
 libobj-$(CONFIG_NOSOFTFLOAT) += fpu/softfloat-native.o

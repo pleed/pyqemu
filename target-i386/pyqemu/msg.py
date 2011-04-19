@@ -5,7 +5,7 @@ class QemuEvent:
 		self.event_type = event_type
 		self.args = args
 
-class QemuWangEvent(QemuEvent):
+class QemuCaballeroEvent(QemuEvent):
 	def getEIP(self):
 		return self.args[0]
 	def getICount(self):
@@ -62,30 +62,14 @@ class QemuMemtraceEvent(QemuEvent):
 	value   = property(getValue)
 	size    = property(getSize)
 	writes  = property(isWrite)
-class QemuBBLEvent(QemuEvent):
-	def getEIP(self):
-		return self.args[0]
-	def getInstructionCount(self):
-		return self.args[1]
-	eip = property(getEIP)
-	instructions = property(getInstructionCount)
 
-class QemuBBLWangEvent(QemuBBLEvent):
+class QemuBBLEvent(QemuEvent):
 	def getEIP(self):
 		return self.args[0]
 	def getESP(self):
 		return self.args[1]
 	eip = property(getEIP)
 	esp = property(getESP)
-
-class QemuOptraceEvent(QemuEvent):
-	def getEIP(self):
-		return self.args[0]
-	def getOpcode(self):
-		return self.args[1]
-
-	eip = property(getEIP)
-	opcode = property(getOpcode)
 
 class QemuScheduleEvent(QemuEvent):
 	def getPrevious(self):
@@ -102,11 +86,9 @@ QemuEventTypes = {
 	"syscall":QemuSyscallEvent,
 	"breakpoint":QemuBreakpointEvent,
 	"memtrace":QemuMemtraceEvent,
-	"optrace":QemuOptraceEvent,
 	"schedule":QemuScheduleEvent,
 	"bbl":QemuBBLEvent,
-	"bblwang":QemuBBLWangEvent,
-	"wang":QemuWangEvent,
+	"caballero":QemuCaballeroEvent,
 }
 
 

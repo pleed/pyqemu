@@ -39,9 +39,9 @@
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
 #include "flx_memtrace.h"
-#include "flx_optrace.h"
 #include "flx_filter.h"
-#include "flx_wang.h"
+#include "flx_caballero.h"
+#include "flx_bbltrace.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -67,10 +67,8 @@ PyObject *PyFlx_ev_update_cr3 = NULL;
 PyObject *PyFlx_ev_ret = NULL;
 PyObject *PyFlx_ev_bp = NULL;
 PyObject *PyFlx_ev_memtrace = NULL;
-PyObject *PyFlx_ev_optrace = NULL;
-PyObject *PyFlx_ev_wang = NULL;
+PyObject *PyFlx_ev_caballero = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
-PyObject *PyFlx_ev_bblwang = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 
 static PyObject *PyFlx_REG_EAX;
@@ -200,56 +198,61 @@ static PyObject* PyFlxC_filter_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
-static PyObject* PyFlxC_optrace_disable(PyObject *self, PyObject *args) {
+static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_optrace_disable");  
+  fprintf(stderr, "flxinstrument_bbltrace_disable");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_optrace_disable();
+  flx_bbltrace_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-static PyObject* PyFlxC_wang_enable(PyObject *self, PyObject *args) {
+static PyObject* PyFlxC_caballero_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_wang_enable");  
+  fprintf(stderr, "flxinstrument_caballero_enable");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_wang_enable();
+   uint32_t min_bbl_size;
+   float min_percentage;
+   if(!PyArg_ParseTuple(args, "If", &min_bbl_size, &min_percentage))
+     return NULL;
+
+  flx_caballero_enable(min_bbl_size, min_percentage);
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-static PyObject* PyFlxC_wang_disable(PyObject *self, PyObject *args) {
+static PyObject* PyFlxC_caballero_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_wang_disable");  
+  fprintf(stderr, "flxinstrument_caballero_disable");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_wang_disable();
+  flx_caballero_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
 }
 
-static PyObject* PyFlxC_optrace_enable(PyObject *self, PyObject *args) {
+static PyObject* PyFlxC_bbltrace_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_optrace_enable");  
+  fprintf(stderr, "flxinstrument_bbltrace_enable");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_optrace_enable();
+  flx_bbltrace_enable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -608,17 +611,17 @@ static PyMethodDef PyFlxC_methods[] = {
     {"creg", (PyCFunction)PyFlxC_creg, METH_VARARGS,
      "Returns a control register"
     },
-    {"wang_disable", (PyCFunction)PyFlxC_wang_disable, METH_VARARGS,
-     "Stop wang opcode execution"
+    {"caballero_disable", (PyCFunction)PyFlxC_caballero_disable, METH_VARARGS,
+     "Stop caballero opcode execution"
     },
-    {"wang_enable", (PyCFunction)PyFlxC_wang_enable, METH_VARARGS,
-     "Start wang opcode execution"
+    {"caballero_enable", (PyCFunction)PyFlxC_caballero_enable, METH_VARARGS,
+     "Start caballero opcode execution"
     },
-    {"optrace_enable", (PyCFunction)PyFlxC_optrace_enable, METH_VARARGS,
-     "Start tracing opcode execution"
+    {"bbltrace_enable", (PyCFunction)PyFlxC_bbltrace_enable, METH_VARARGS,
+     "Start bbltrace execution events"
     },
-    {"optrace_disable", (PyCFunction)PyFlxC_optrace_disable, METH_VARARGS,
-     "Stop tracing opcode execution"
+    {"bbltrace_disable", (PyCFunction)PyFlxC_bbltrace_disable, METH_VARARGS,
+     "Stop bbltrace execution events"
     },
     {"filter_enable", (PyCFunction)PyFlxC_filter_enable, METH_VARARGS,
      "Activate translation filtering"
@@ -711,9 +714,6 @@ flxinstrument_state_init(void){
    else{
 	flx_state.python_active = 1;
 	flx_state.syscall_active = 1;
-	flx_state.ret_active = 0;
-	flx_state.call_active = 0;
-        flx_state.jmp_active = 0;
    }
 
 }
@@ -725,10 +725,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_call);
    PyFlx_ev_memtrace = PyObject_GetAttrString(Py_Python_Module, "ev_memtrace");
    Py_XINCREF(PyFlx_ev_memtrace);
-   PyFlx_ev_optrace = PyObject_GetAttrString(Py_Python_Module, "ev_optrace");
-   Py_XINCREF(PyFlx_ev_optrace);
-   PyFlx_ev_wang = PyObject_GetAttrString(Py_Python_Module, "ev_wang");
-   Py_XINCREF(PyFlx_ev_wang);
+   PyFlx_ev_caballero = PyObject_GetAttrString(Py_Python_Module, "ev_caballero");
+   Py_XINCREF(PyFlx_ev_caballero);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -741,8 +739,6 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_update_cr3);   
    PyFlx_ev_bblstart = PyObject_GetAttrString(Py_Python_Module, "ev_bblstart");
    Py_XINCREF(PyFlx_ev_bblstart);
-   PyFlx_ev_bblwang = PyObject_GetAttrString(Py_Python_Module, "ev_bblwang");
-   Py_XINCREF(PyFlx_ev_bblwang);
    PyFlx_ev_shutdown = PyObject_GetAttrString(Py_Python_Module, "ev_shutdown");
    Py_XINCREF(PyFlx_ev_shutdown);
    printf("done!\n");
@@ -760,8 +756,6 @@ flxinstrument_unregister_callbacks(void){
      PyFlx_ev_call = NULL;
      Py_XDECREF(PyFlx_ev_memtrace);
      PyFlx_ev_memtrace = NULL;
-     Py_XDECREF(PyFlx_ev_optrace);
-     PyFlx_ev_optrace = NULL;
      Py_XDECREF(PyFlx_ev_jmp);
      PyFlx_ev_jmp = NULL;
      Py_XDECREF(PyFlx_ev_ret);
@@ -806,9 +800,9 @@ void flxinstrument_init(void) {
    flxinstrument_blacklist_alloc();
    flx_filter_init();
    flx_breakpoint_init();
-   flx_optrace_init((optrace_handler)flxinstrument_optrace_event);
+   flx_bbltrace_init((bbltrace_handler)flxinstrument_bbltrace_event);
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
-   flx_wang_init((wang_handler)flxinstrument_wang_event);
+   flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -931,39 +925,7 @@ int flxinstrument_shutdown_event(void) {
   return retval;
 }
 
-int flxinstrument_bblwang_event(uint32_t eip, uint32_t esp) {
-#ifdef DEBUG
-  fprintf(stderr, "flxinstrument_bblwang_event");  
-  if(PyErr_Occurred())
-	fprintf(stderr," - EXCEPTION THROWN\n");
-  else
-	fprintf(stderr," - NO EXC\n");
-#endif
-  PyObject *result;
-  int retval = 0;
-
-  if (!PyCallable_Check(PyFlx_ev_bblwang)) {
-    fprintf(stderr, "No registered memtrace event handler\n");
-    return retval;
-  }
-
-  result = PyObject_CallFunction(PyFlx_ev_bblwang,
-				 (char*) "(II)",
-				 eip,
-				 esp);
-
-  if (result != Py_None) {
-    retval = PyInt_AsLong(result);
-    Py_XDECREF(result);
-  }
-  else {
-    PyErr_Print();
-  }
-  
-  return retval;
-}
-
-int flxinstrument_bblstart_event(uint32_t eip, uint32_t icount) {
+int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bblstart_event");  
   if(PyErr_Occurred())
@@ -982,7 +944,7 @@ int flxinstrument_bblstart_event(uint32_t eip, uint32_t icount) {
   result = PyObject_CallFunction(PyFlx_ev_bblstart,
 				 (char*) "(II)",
 				 eip,
-				 icount);
+				 esp);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
@@ -995,9 +957,9 @@ int flxinstrument_bblstart_event(uint32_t eip, uint32_t icount) {
   return retval;
 }
 
-int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount) {
+int flxinstrument_caballero_event(uint32_t eip, uint32_t icount, uint32_t arithcount) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_wang_event");  
+  fprintf(stderr, "flxinstrument_caballero_event");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
@@ -1006,48 +968,16 @@ int flxinstrument_wang_event(uint32_t eip, uint32_t icount, uint32_t arithcount)
   PyObject *result;
   int retval = 0;
 
-  if (!PyCallable_Check(PyFlx_ev_wang)) {
-    fprintf(stderr, "No registered wang event handler\n");
+  if (!PyCallable_Check(PyFlx_ev_caballero)) {
+    fprintf(stderr, "No registered caballero event handler\n");
     return retval;
   }
 
-  result = PyObject_CallFunction(PyFlx_ev_wang,
+  result = PyObject_CallFunction(PyFlx_ev_caballero,
 				 (char*) "(III)",
 				 eip,
 				 icount,
 				 arithcount);
-
-  if (result != Py_None) {
-    retval = PyInt_AsLong(result);
-    Py_XDECREF(result);
-  }
-  else {
-    PyErr_Print();
-  }
-  
-  return retval;
-}
-
-int flxinstrument_optrace_event(uint32_t eip, uint32_t opcode) {
-#ifdef DEBUG
-  fprintf(stderr, "flxinstrument_optrace_event");  
-  if(PyErr_Occurred())
-	fprintf(stderr," - EXCEPTION THROWN\n");
-  else
-	fprintf(stderr," - NO EXC\n");
-#endif
-  PyObject *result;
-  int retval = 0;
-
-  if (!PyCallable_Check(PyFlx_ev_optrace)) {
-    fprintf(stderr, "No registered memtrace event handler\n");
-    return retval;
-  }
-
-  result = PyObject_CallFunction(PyFlx_ev_optrace,
-				 (char*) "(II)",
-				 eip,
-				 opcode);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);
