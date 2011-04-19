@@ -25,6 +25,15 @@ from config import *
 from msg import *
 from memory import *
 
+class Breakpoint:
+	def __init__(self, addr, callback):
+		PyFlxInstrument.breakpoint_insert(addr)
+		self.addr = addr
+		self.callback = callback
+
+	def trigger(self):
+		self.callback(self.addr)
+
 class Thread:
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
 		if callstack is None:
@@ -83,6 +92,7 @@ class TracedProcess(processinfo.Process):
 		self.optrace = False
 
 	def entryPointReached(self, addr):
+		""" Instrumentation starts here after entry point has been reached """
 		self.logger.info("------------------------------------")
 		self.logger.info("Instrumentation starting for %s at address 0x%x"%(self.imagefilename(),addr))
 		self.logger.info("------------------------------------")
@@ -109,7 +119,8 @@ class TracedProcess(processinfo.Process):
 			"jmp":EventHandler(self),
 			"ret":EventHandler(self),
 			"syscall":EventHandler(self),
-			"breakpoint":EventHandler(self),
+			#"breakpoint":EventHandler(self),
+			"breakpoint":self.handle_breakpoint,
 			"memtrace":EventHandler(self),
 			"optrace":EventHandler(self),
 			"bbl":EventHandler(self),

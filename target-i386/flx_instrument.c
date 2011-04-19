@@ -712,7 +712,7 @@ flxinstrument_state_init(void){
 	flx_state.python_active = 1;
 	flx_state.syscall_active = 1;
 	flx_state.ret_active = 0;
-	flx_state.call_active = 1;
+	flx_state.call_active = 0;
         flx_state.jmp_active = 0;
    }
 

@@ -14,3 +14,6 @@ class PyQemuHeuristic:
 
 	def detach(self, event_type):
 		self.process.eventHandlers[event_type].detach(self.PREFIX)
+
+	def log(self, msg):
+		self.process.log(msg)

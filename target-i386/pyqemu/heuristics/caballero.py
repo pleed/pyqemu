@@ -7,7 +7,7 @@ class CaballeroHeuristic(PyQemuHeuristic):
 	def setupCallbacks(self):
 		self.attach("wang",    self.onBBLTranslate)
 
-	def onBBLTranslate(self, event):
+	def onBBLTranslate(self, process, event):
 		if event.icount >= self.options["min_icount"]:
 			percentage = float(event.arith)/float(event.icount)
 			if percentage >= self.options["threshold"]:

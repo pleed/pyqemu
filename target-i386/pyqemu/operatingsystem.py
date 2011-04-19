@@ -3,6 +3,7 @@
 from msg import *
 from process import *
 import heuristics
+from heuristics import *
 
 class OperatingSystem:
 	def __init__(self, config, hardware, logger):
@@ -71,10 +72,12 @@ class OperatingSystem:
 		return 0
 
 	def setupHeuristics(self, process):
-		for heuristic,options in self.config["os"]["heuristics"].values():
-			module = __import__("heuristics."+heuristic)
-			heuristicmodule = getattr(module,heuristic)
-			heuristic_class = getattr(heuristicmodule,"heuristic")
+		for heuristic,options in self.config["os"]["heuristics"].items():
+			module = __import__("pyqemu")
+			module = getattr(module, "heuristics")
+			module = getattr(module, heuristic)
+			heuristic_class = getattr(module,"heuristic")
+			self.logger.info("Activating heuristic: %s"%heuristic)
 			heuristic_class(process, self.config["os"]["heuristics"][heuristic])
 
 	def exitPendingProcesses(self):
