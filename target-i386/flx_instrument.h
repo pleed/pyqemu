@@ -23,6 +23,7 @@ typedef struct {
 	uint8_t python_active;
 
 	// feature flags
+	uint8_t bbltranslate_active;
 	uint8_t bbltrace_active;
 	uint8_t memtrace_active;
 	uint8_t filter_active;

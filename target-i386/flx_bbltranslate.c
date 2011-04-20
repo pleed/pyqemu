@@ -1,0 +1,76 @@
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <inttypes.h>
+#include <avl.h>
+
+#include "flx_instrument.h"
+#include "flx_bbltranslate.h"
+
+bbltranslate_handler[MAX_BBLTRANSLATE_HANDLERS] flx_bbltranslate_handlers;
+flx_bbl flx_current_bbl;
+
+void flx_bbltranslate_init(void){
+	memset(flx_bbltranslate_handlers, 0, sizeof(flx_bbltranslate_handlers));
+	memset(&flx_current_bbl, 0, sizeof(flx_bbl));
+}
+
+void flx_bbltranslate_enable(void){
+	flx_state.bbltranslate_active = 1;
+}
+
+void flx_bbltranslate_disable(void){
+	flx_state.bbltranslate_active = 0;
+}
+
+void flx_bbltranslate_bbl_new(uint32_t eip){
+	flx_current_bbl.eip = eip;
+	flx_current_bbl.icount = 0;
+	flx_current_bbl.arithcount = 0;
+}
+
+void flx_bbltranslate_arith(void){
+	++flx_current_bbl.arithcount:
+}
+
+void flx_bbltranslate_insn(void){
+	++flx_current_bbl.icount:
+}
+
+void flx_bbltranslate_bbl_end(void){
+	uint8_t i;
+	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
+		if(!flx_bbltranslate_handlers[i])
+			break;
+		flx_bbltranslate_handlers[i](&flx_current_bbl);
+	}
+}
+
+void flx_bbltranslate_register_handler(bbltranslate_handler handler){
+	uint8_t i;
+	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
+		if(!flx_bbltranslate_handlers[i]){
+			flx_bbltranslate_handlers[i] = handler
+			return
+		}
+	}
+	printf("WARNING, MAX_BBLTRANSLATE_HANDLERS reached!!!\n");
+	exit(-1);
+	return;
+}
+
+void flx_bbltranslate_unregister_handler(bbltranslate_handler handler){
+	uint8_t i;
+	uint8_t handler_index;
+	uint8_t last_handler_index;
+	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
+		if(flx_bbltranslate_handlers[i]){
+			last_handler_index = i;
+			if(flx_bbltranslate_handlers[i] == handler){
+				handler_index = i;
+			}
+		}
+	}
+	flx_bbltranslate_handlers[handler_index] = flx_bbltranslate_handlers[last_handler_index];
+	flx_bbltranslate_handlers[last_handler_index] = NULL;
+}

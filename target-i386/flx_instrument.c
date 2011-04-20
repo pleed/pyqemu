@@ -42,6 +42,7 @@
 #include "flx_filter.h"
 #include "flx_caballero.h"
 #include "flx_bbltrace.h"
+#include "flx_bbl.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -410,6 +411,7 @@ static PyObject* PyFlxC_retranslate(PyObject *self, PyObject *args) {
 	fprintf(stderr," - NO EXC\n");
 #endif
   PyObject *retval = Py_None;
+  flx_bbl_flush();
   tb_flush(current_environment);
   return retval;
 }
@@ -800,7 +802,8 @@ void flxinstrument_init(void) {
    flxinstrument_blacklist_alloc();
    flx_filter_init();
    flx_breakpoint_init();
-   flx_bbltrace_init((bbltrace_handler)flxinstrument_bbltrace_event);
+   flx_bbltrace_init();
+   flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    printf("initializing flxinstrument subsystems done\n");
@@ -842,20 +845,6 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
     retval = PyInt_AsLong(result);
     Py_XDECREF(result);
 
-	// Flush translation cache before and after
-	// a monitored process is scheduled
-	
-	/*if(last_monitored)
-		printf("flushing chache\n");
-		tb_flush(current_environment);
-	if(retval){
-		printf("flushing chache\n");
-		tb_flush(current_environment);
-		last_monitored = 1;
-	}
-	else{
-		last_monitored = 0;
-	}*/
   }
   else {
     PyErr_Print();
