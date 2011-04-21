@@ -100,9 +100,9 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 
 	if(flx_bbl_window.instructions > flx_bbl_window.window_size){
 		if((float)flx_bbl_window.arith_instructions / (float)flx_bbl_window.instructions >= flx_bbl_window.arith_percentage &&
-		    !flx_arithwindow_cache_search(flx_bbl_window.bbls[flx_bbl_window.start_index]->addr)){
-			flx_arithwindow_handler(flx_bbl_window.bbls[flx_bbl_window.start_index]->addr);
-			flx_arithwindow_cache_add(flx_bbl_window.bbls[flx_bbl_window.start_index]->addr);
+		    !flx_arithwindow_cache_search(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr)){
+			flx_arithwindow_handler(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr);
+			flx_arithwindow_cache_add(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr);
 		}
 		flx_bbl_window.instructions       -= flx_bbl_window.bbls[flx_bbl_window.start_index]->icount;
 		flx_bbl_window.arith_instructions -= flx_bbl_window.bbls[flx_bbl_window.start_index]->arithcount;

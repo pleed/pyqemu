@@ -301,7 +301,7 @@ static PyObject* PyFlxC_memtrace_disable(PyObject *self, PyObject *args) {
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_memtrace_stop();
+  flx_memtrace_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -315,7 +315,7 @@ static PyObject* PyFlxC_memtrace_enable(PyObject *self, PyObject *args) {
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_memtrace_start();
+  flx_memtrace_enable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -848,8 +848,8 @@ void flxinstrument_init(void) {
    flx_breakpoint_init();
    flx_bbltrace_init();
    flx_bbltranslate_init();
-   flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
-   flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
+   //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
+   //flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    printf("initializing flxinstrument subsystems done\n");
