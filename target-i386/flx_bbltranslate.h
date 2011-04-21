@@ -8,16 +8,11 @@
 #include <inttypes.h>
 
 #include "flx_instrument.h"
+#include "flx_bbl.h"
 
 #define MAX_BBLTRANSLATE_HANDLERS 16
 
 #define FLX_BBLTRANSLATE_HOOK(function) do{if(flx_state.global_active && flx_state.bbltranslate_active && (flx_state.filter_active && flx_filter_search_by_addr(pc_ptr))) function;}while(0)
-
-typedef struct {
-	uint32_t eip;
-	uint32_t icount;
-	uint32_t arithcount;
-} flx_bbl;
 
 typedef int(*bbltranslate_handler)(flx_bbl*);
 

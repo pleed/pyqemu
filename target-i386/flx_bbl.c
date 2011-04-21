@@ -70,7 +70,11 @@ void flx_bbl_add(flx_bbl* bbl){
 	avl_tree_t* tree = flx_bbl_addrtotree(bbl->addr);
 	flx_bbl* new_bbl = malloc(sizeof(*bbl));
 	memcpy(new_bbl, bbl, sizeof(*bbl));
+	avl_node_t* node = malloc(sizeof(*node));
+	node->item = new_bbl;
+	avl_delete(tree, node);
 	avl_insert(tree, new_bbl);
+	free(node);
 }
 
 void flx_bbl_flush(void){

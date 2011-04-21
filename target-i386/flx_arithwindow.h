@@ -12,11 +12,10 @@
 
 typedef int(*arithwindow_handler)(uint32_t);
 
-extern arithwindow_handler flx_arithwindow_handler;
-
-void flx_arithwindow_init(arithwindow_handler, uint32_t, float):
+void flx_arithwindow_init(arithwindow_handler);
 void flx_arithwindow_enable(uint32_t, float);
 void flx_arithwindow_disable(void);
+void flx_arithwindow_destroy(void);
 int flx_arithwindow_bblexec(uint32_t, uint32_t);
 int flx_arithwindow_bbltranslate(flx_bbl* bbl);
 

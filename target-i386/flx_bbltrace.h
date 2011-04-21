@@ -15,7 +15,7 @@ typedef int(*bbltrace_handler)(uint32_t, uint32_t);
 
 extern bbltrace_handler flx_bbltrace_handler;
 
-void flx_bbltrace_init(bbltrace_handler handler);
+void flx_bbltrace_init(void);
 void flx_bbltrace_register_handler(bbltrace_handler handler);
 void flx_bbltrace_unregister_handler(bbltrace_handler handler);
 void flx_bbltrace_enable(void);

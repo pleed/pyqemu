@@ -43,5 +43,12 @@ class QemuInstrumentation:
 
 	def caballero_enable(self, min_icount, threshold):
 		PyFlxInstrument.caballero_enable(min_icount, threshold)
+
 	def caballero_disable(self):
 		PyFlxInstrument.caballero_disable()
+
+	def arithwindow_enable(self, window_size, threshold):
+		PyFlxInstrument.arithwindow_enable(window_size, threshold)
+		
+	def arithwindow_disable(self):
+		PyFlxInstrument.arithwindow_disable()

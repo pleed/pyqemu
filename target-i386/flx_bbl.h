@@ -10,12 +10,12 @@
 #define NUM_BBL_TREES 256
 #define BBL_CACHE_SIZE 4096
 
-extern avl_tree_t* page_trees[NUM_BBL_TREES];
+extern avl_tree_t* bbl_trees[NUM_BBL_TREES];
 
 typedef struct {
 	uint32_t addr;
-	uint32_t num_insn;
-	uint32_t num_arith;
+	uint32_t icount;
+	uint32_t arithcount;
 } flx_bbl;
 
 typedef struct {

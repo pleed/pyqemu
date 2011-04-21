@@ -7,7 +7,7 @@
 #include "flx_instrument.h"
 #include "flx_bbltranslate.h"
 
-bbltranslate_handler[MAX_BBLTRANSLATE_HANDLERS] flx_bbltranslate_handlers;
+bbltranslate_handler flx_bbltranslate_handlers[MAX_BBLTRANSLATE_HANDLERS];
 flx_bbl flx_current_bbl;
 
 void flx_bbltranslate_init(void){
@@ -23,18 +23,18 @@ void flx_bbltranslate_disable(void){
 	flx_state.bbltranslate_active = 0;
 }
 
-void flx_bbltranslate_bbl_new(uint32_t eip){
-	flx_current_bbl.eip = eip;
+void flx_bbltranslate_bbl_new(uint32_t addr){
+	flx_current_bbl.addr = addr;
 	flx_current_bbl.icount = 0;
 	flx_current_bbl.arithcount = 0;
 }
 
 void flx_bbltranslate_arith(void){
-	++flx_current_bbl.arithcount:
+	++flx_current_bbl.arithcount;
 }
 
 void flx_bbltranslate_insn(void){
-	++flx_current_bbl.icount:
+	++flx_current_bbl.icount;
 }
 
 void flx_bbltranslate_bbl_end(void){
@@ -50,8 +50,8 @@ void flx_bbltranslate_register_handler(bbltranslate_handler handler){
 	uint8_t i;
 	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
 		if(!flx_bbltranslate_handlers[i]){
-			flx_bbltranslate_handlers[i] = handler
-			return
+			flx_bbltranslate_handlers[i] = handler;
+			return;
 		}
 	}
 	printf("WARNING, MAX_BBLTRANSLATE_HANDLERS reached!!!\n");
@@ -61,8 +61,8 @@ void flx_bbltranslate_register_handler(bbltranslate_handler handler){
 
 void flx_bbltranslate_unregister_handler(bbltranslate_handler handler){
 	uint8_t i;
-	uint8_t handler_index;
-	uint8_t last_handler_index;
+	uint8_t handler_index = 0;
+	uint8_t last_handler_index = 0;
 	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
 		if(flx_bbltranslate_handlers[i]){
 			last_handler_index = i;

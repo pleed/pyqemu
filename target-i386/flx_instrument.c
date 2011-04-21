@@ -41,6 +41,8 @@
 #include "flx_memtrace.h"
 #include "flx_filter.h"
 #include "flx_caballero.h"
+#include "flx_bbltranslate.h"
+#include "flx_arithwindow.h"
 #include "flx_bbltrace.h"
 #include "flx_bbl.h"
 
@@ -69,6 +71,7 @@ PyObject *PyFlx_ev_ret = NULL;
 PyObject *PyFlx_ev_bp = NULL;
 PyObject *PyFlx_ev_memtrace = NULL;
 PyObject *PyFlx_ev_caballero = NULL;
+PyObject *PyFlx_ev_arithwindow = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 
@@ -208,6 +211,38 @@ static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
 	fprintf(stderr," - NO EXC\n");
 #endif
   flx_bbltrace_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_arithwindow_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_arithwindow_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t window_size;
+   float min_percentage;
+   if(!PyArg_ParseTuple(args, "If", &window_size, &min_percentage))
+     return NULL;
+
+  flx_arithwindow_enable(window_size, min_percentage);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_arithwindow_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_arithwindow_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_arithwindow_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -613,6 +648,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"creg", (PyCFunction)PyFlxC_creg, METH_VARARGS,
      "Returns a control register"
     },
+    {"arithwindow_enable", (PyCFunction)PyFlxC_arithwindow_enable, METH_VARARGS,
+     "Start arithwindow opcode execution"
+    },
+    {"arithwindow_disable", (PyCFunction)PyFlxC_arithwindow_disable, METH_VARARGS,
+     "Stop arithwindow opcode execution"
+    },
     {"caballero_disable", (PyCFunction)PyFlxC_caballero_disable, METH_VARARGS,
      "Stop caballero opcode execution"
     },
@@ -729,6 +770,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_memtrace);
    PyFlx_ev_caballero = PyObject_GetAttrString(Py_Python_Module, "ev_caballero");
    Py_XINCREF(PyFlx_ev_caballero);
+   PyFlx_ev_arithwindow = PyObject_GetAttrString(Py_Python_Module, "ev_arithwindow");
+   Py_XINCREF(PyFlx_ev_arithwindow);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -801,11 +844,14 @@ void flxinstrument_init(void) {
    printf("initializing flxinstrument subsystems\n");
    flxinstrument_blacklist_alloc();
    flx_filter_init();
+   flx_bbl_init();
    flx_breakpoint_init();
    flx_bbltrace_init();
+   flx_bbltranslate_init();
    flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
    flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
+   flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -934,6 +980,37 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
 				 (char*) "(II)",
 				 eip,
 				 esp);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_arithwindow_event(uint32_t eip) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_arithwindow_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_arithwindow)) {
+    fprintf(stderr, "No registered arithwindow event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_arithwindow,
+				 (char*) "(I)",
+				 eip);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

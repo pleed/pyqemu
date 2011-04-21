@@ -7,11 +7,10 @@
 #include "flx_instrument.h"
 #include "flx_bbltrace.h"
 
-bbltrace_handler[MAX_BBLTRACE_HANDLERS] flx_bbltrace_handlers;
+bbltrace_handler flx_bbltrace_handlers[MAX_BBLTRACE_HANDLERS];
 
-void flx_bbltrace_init(bbltrace_handler handler){
+void flx_bbltrace_init(void){
 	memset(flx_bbltrace_handlers, 0, sizeof(flx_bbltrace_handlers));
-	flx_bbltrace_handlers[0] = handler;
 }
 
 void flx_bbltrace_enable(void){
@@ -27,7 +26,7 @@ void flx_bbltrace_event(uint32_t eip, uint32_t esp){
 	for(i=0; i<MAX_BBLTRACE_HANDLERS; ++i){
 		if(!flx_bbltrace_handlers[i])
 			break;
-		flx_bbltrace_handlers[i](eip, esp)
+		flx_bbltrace_handlers[i](eip, esp);
 	}
 }
 
@@ -35,8 +34,8 @@ void flx_bbltrace_register_handler(bbltrace_handler handler){
 	uint8_t i;
 	for(i=0; i<MAX_BBLTRACE_HANDLERS; ++i){
 		if(!flx_bbltrace_handlers[i]){
-			flx_bbltrace_handlers[i] = handler
-			return
+			flx_bbltrace_handlers[i] = handler;
+			return;
 		}
 	}
 	printf("WARNING, MAX_BBLTRACE_HANDLERS reached!!!\n");
@@ -46,16 +45,16 @@ void flx_bbltrace_register_handler(bbltrace_handler handler){
 
 void flx_bbltrace_unregister_handler(bbltrace_handler handler){
 	uint8_t i;
-	uint8_t handler_index;
-	uint8_t last_handler_index;
+	uint8_t handler_index = 0;
+	uint8_t last_handler_index = 0;
 	for(i=0; i<MAX_BBLTRACE_HANDLERS; ++i){
 		if(flx_bbltrace_handlers[i]){
 			last_handler_index = i;
 			if(flx_bbltrace_handlers[i] == handler){
 				handler_index = i;
 			}
-		}
 	}
+}
 	flx_bbltrace_handlers[handler_index] = flx_bbltrace_handlers[last_handler_index];
 	flx_bbltrace_handlers[last_handler_index] = NULL;
 }
