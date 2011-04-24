@@ -98,17 +98,22 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	flx_bbl_window.end_index += 1;
 	flx_bbl_window.end_index %= flx_bbl_window.window_size;
 
-	if(flx_bbl_window.instructions > flx_bbl_window.window_size){
-		if((float)flx_bbl_window.arith_instructions / (float)flx_bbl_window.instructions >= flx_bbl_window.arith_percentage &&
-		    !flx_arithwindow_cache_search(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr)){
-			flx_arithwindow_handler(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr);
-			flx_arithwindow_cache_add(flx_bbl_window.bbls[flx_bbl_window.end_index]->addr);
-		}
+	if(flx_bbl_window.instructions >= flx_bbl_window.window_size){
 		flx_bbl_window.instructions       -= flx_bbl_window.bbls[flx_bbl_window.start_index]->icount;
 		flx_bbl_window.arith_instructions -= flx_bbl_window.bbls[flx_bbl_window.start_index]->arithcount;
 
 		flx_bbl_window.start_index += 1;
 		flx_bbl_window.start_index %= flx_bbl_window.window_size;
+
+		if((float)flx_bbl_window.arith_instructions / (float)flx_bbl_window.instructions >= flx_bbl_window.arith_percentage){
+			uint32_t i;
+			for(i=flx_bbl_window.start_index; i!= flx_bbl_window.end_index; i=(i+1)%flx_bbl_window.window_size){
+		    		if(!flx_arithwindow_cache_search(flx_bbl_window.bbls[i]->addr)){
+					flx_arithwindow_handler(flx_bbl_window.bbls[i]->addr);
+					flx_arithwindow_cache_add(flx_bbl_window.bbls[i]->addr);
+				}
+			}
+		}
 	}
 	return 0;
 }
@@ -118,6 +123,7 @@ int flx_arithwindow_bbltranslate(flx_bbl* bbl){
 	memcpy(new_bbl, bbl, sizeof(*new_bbl));
 	flx_bbl_add(new_bbl);
 
+	/* could be self modifying code */
 	if(flx_arithwindow_cache_search(bbl->addr))
 		flx_arithwindow_cache_del(bbl->addr);
 	return 0;

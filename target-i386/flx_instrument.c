@@ -849,7 +849,8 @@ void flxinstrument_init(void) {
    flx_bbltrace_init();
    flx_bbltranslate_init();
    //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
-   //flx_memtrace_init((mem_access_handler)flxinstrument_memtrace_event);
+   //flx_memtrace_init();
+   //flx_memtrace_register_handler((memtrace_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    printf("initializing flxinstrument subsystems done\n");

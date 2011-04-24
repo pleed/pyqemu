@@ -24,9 +24,10 @@
 
 #include "tcg-op.h"
 #include "disas.h"
-#include "flx_instrument.h"
+#include "flx_calltrace.h"
 #include "flx_breakpoint.h"
 #include "flx_bbltrace.h"
+#include "flx_instrument.h"
 
 extern struct FILE *stdout;
 extern struct FILE *stderr;
@@ -2578,6 +2579,7 @@ void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong ne
 	if(flx_state.global_active && flx_filter_search_by_addr(new_eip)){
 		flx_helper_debug("Call from 0x%x, to 0x%x , next: 0x%x\n",env->eip, new_eip, next_eip);
 		flxinstrument_call_event(env->eip, new_eip, next_eip, env->regs[R_ESP]);
+		flx_calltrace_event(env->eip, new_eip, next_eip, env->regs[R_ESP]);
 	}
 }
 
