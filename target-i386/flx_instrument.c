@@ -45,6 +45,7 @@
 #include "flx_arithwindow.h"
 #include "flx_bbltrace.h"
 #include "flx_bbl.h"
+#include "flx_functiontrace.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -74,6 +75,7 @@ PyObject *PyFlx_ev_caballero = NULL;
 PyObject *PyFlx_ev_arithwindow = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
+PyObject *PyFlx_ev_functiontrace = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -212,6 +214,34 @@ static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
 #endif
   flx_bbltrace_disable();
 
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_functiontrace_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontrace_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_functiontrace_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_functiontrace_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontrace_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_functiontrace_disable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -654,6 +684,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"arithwindow_disable", (PyCFunction)PyFlxC_arithwindow_disable, METH_VARARGS,
      "Stop arithwindow opcode execution"
     },
+    {"functiontrace_enable", (PyCFunction)PyFlxC_functiontrace_enable, METH_VARARGS,
+     "Enable function tracing"
+    },
+    {"functiontrace_disable", (PyCFunction)PyFlxC_functiontrace_disable, METH_VARARGS,
+     "Disable function tracing"
+    },
     {"caballero_disable", (PyCFunction)PyFlxC_caballero_disable, METH_VARARGS,
      "Stop caballero opcode execution"
     },
@@ -755,6 +791,7 @@ flxinstrument_state_init(void){
    if(ptr)
 	flx_state.python_active = 0;
    else{
+	flx_state.call_active = 1;
 	flx_state.python_active = 1;
 	flx_state.syscall_active = 1;
    }
@@ -772,6 +809,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_caballero);
    PyFlx_ev_arithwindow = PyObject_GetAttrString(Py_Python_Module, "ev_arithwindow");
    Py_XINCREF(PyFlx_ev_arithwindow);
+   PyFlx_ev_functiontrace = PyObject_GetAttrString(Py_Python_Module, "ev_functiontrace");
+   Py_XINCREF(PyFlx_ev_functiontrace);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -853,6 +892,7 @@ void flxinstrument_init(void) {
    //flx_memtrace_register_handler((memtrace_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
+   flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -981,6 +1021,38 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
 				 (char*) "(II)",
 				 eip,
 				 esp);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontrace_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_functiontrace)) {
+    fprintf(stderr, "No registered functiontrace event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_functiontrace,
+				 (char*) "(II)",
+				 eip,
+				 type);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

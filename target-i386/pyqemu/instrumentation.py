@@ -52,3 +52,9 @@ class QemuInstrumentation:
 		
 	def arithwindow_disable(self):
 		PyFlxInstrument.arithwindow_disable()
+
+	def functiontrace_enable(self):
+		PyFlxInstrument.functiontrace_enable()
+
+	def functiontrace_disable(self):
+		PyFlxInstrument.functiontrace_disable()

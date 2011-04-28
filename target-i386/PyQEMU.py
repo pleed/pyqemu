@@ -159,3 +159,4 @@ ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().han
 ev_arithwindow = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("arithwindow",*args))
 
 ev_caballero = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("caballero",*args))
+ev_functiontrace = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functiontrace",*args))

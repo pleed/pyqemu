@@ -5,6 +5,21 @@ class QemuEvent:
 		self.event_type = event_type
 		self.args = args
 
+class QemuFunctiontraceEvent(QemuEvent):
+	def getEIP(self):
+		return self.args[0]
+	def getType(self):
+		return self.args[1]
+
+	def isCall(self):
+		return self.args[1] == 0
+	def isRet(self):
+		return self.args[1] == 1
+	def isLateRet(self):
+		return self.args[1] == 2
+	eip = property(getEIP)
+	type = property(getType)
+
 class QemuArithwindowEvent(QemuEvent):
 	def getEIP(self):
 		return self.args[0]
@@ -94,7 +109,8 @@ QemuEventTypes = {
 	"schedule":QemuScheduleEvent,
 	"bbl":QemuBBLEvent,
 	"caballero":QemuCaballeroEvent,
-	"arithwindow":QemuArithwindowEvent
+	"arithwindow":QemuArithwindowEvent,
+	"functiontrace":QemuFunctiontraceEvent,
 }
 
 

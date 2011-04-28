@@ -4,4 +4,5 @@ __all__ = [
 	"caballero",
 	"bblexec",
 	"arithwindow",
+	"functiontrace",
 	  ]

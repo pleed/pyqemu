@@ -15,8 +15,8 @@ typedef uint8_t flx_call_type;
 
 enum {
 	FLX_CALLTRACE_CALL = 0,
-	FLX_CALLTRACE_RET,
-	FLX_CALLTRACE_MISSED_RET,
+	FLX_CALLTRACE_RET  = 1,
+	FLX_CALLTRACE_MISSED_RET = 2,
 };
 
 typedef int(*calltrace_handler)(uint32_t old_eip, uint32_t new_eip, uint32_t next_eip, uint32_t esp, flx_call_type type);

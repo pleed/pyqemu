@@ -130,6 +130,7 @@ class TracedProcess(processinfo.Process):
 			"bblcaballero":EventHandler(self),
 			"caballero":EventHandler(self),
 			"arithwindow":EventHandler(self),
+			"functiontrace":EventHandler(self),
 		}
 
 	def handleEvent(self, event):

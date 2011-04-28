@@ -29,6 +29,7 @@ typedef struct {
 	uint8_t filter_active;
 	uint8_t arithwindow_active;
 	uint8_t calltrace_active;
+	uint8_t functiontrace_active;
 
 	// specific opcode flags
 	uint8_t syscall_active;
@@ -63,6 +64,7 @@ int flxinstrument_memtrace_event(uint32_t address, uint32_t value, uint8_t size,
 int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp);
 int flxinstrument_caballero_event(uint32_t eip, uint32_t icount, uint32_t arithcount);
 int flxinstrument_arithwindow_event(uint32_t eip);
+int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type);
 
 int flxinstrument_shutdown_event(void);
 
