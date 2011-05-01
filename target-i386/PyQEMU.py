@@ -64,6 +64,7 @@ class QemuFlxLogger:
 
 	def shutdown(self, process = None):
 		if not process:
+			print "SHUTTING DOWN!!!"
 			self.closeAll()
 		else:
 			self.getLogfile(process).flush()

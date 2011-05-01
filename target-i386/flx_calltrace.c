@@ -24,7 +24,6 @@ typedef struct {
 } flx_stackframes;
 
 flx_stackframes stackframes;
-uint8_t flx_calltrace_last_call = 0;
 
 static void flx_calltrace_stackframes_push(uint32_t esp, uint32_t eip);
 static inline uint32_t flx_calltrace_stackframes_left(uint32_t esp);
@@ -35,7 +34,7 @@ static inline uint32_t
 flx_calltrace_stackframes_left(uint32_t esp){
 	uint32_t stackframes_left = 0;
 	uint32_t i = stackframes.cur_element;
-	while(i>0 && esp > stackframes.frames[i].esp){
+	while(i>0 && esp > stackframes.frames[i-1].esp){
 		++stackframes_left;
 		--i;
 	}
@@ -93,25 +92,34 @@ void flx_calltrace_disable(void){
 }
 
 int flx_calltrace_bblexec(uint32_t eip, uint32_t esp){
-	if(flx_calltrace_last_call){
-		flx_calltrace_last_call = 0;
+	uint32_t cur_esp = 0;
+	uint32_t cur_eip = 0;
+	uint32_t frames_left = 0; 
+
+	if(stackframes.cur_element == 0){
 		return 0;
 	}
 
-	uint32_t cur_esp = 0;
-	uint32_t cur_eip = 0;
-	uint32_t frames_left = flx_calltrace_stackframes_left(esp);
-	while(frames_left > 1){
-		flx_calltrace_stackframes_pop(&cur_esp,&cur_eip);
+	else if(eip == stackframes.frames[stackframes.cur_element-1].eip){
+		flx_calltrace_stackframes_pop(&cur_esp, &cur_eip);
 		uint8_t i;
 		for(i=0; i<MAX_CALLTRACE_HANDLERS; ++i){
 			if(!flx_calltrace_handlers[i])
 				break;
-			flx_calltrace_handlers[i](0, cur_eip, 0, cur_esp, FLX_CALLTRACE_MISSED_RET);
+			flx_calltrace_handlers[i](0, cur_eip, 0, cur_esp, FLX_CALLTRACE_RET);
 		}
-		frames_left--;
 	}
-	if(frames_left==1){
+	else if((frames_left = flx_calltrace_stackframes_left(esp)) > 0){
+		while(frames_left > 1){
+			flx_calltrace_stackframes_pop(&cur_esp,&cur_eip);
+			uint8_t i;
+			for(i=0; i<MAX_CALLTRACE_HANDLERS; ++i){
+				if(!flx_calltrace_handlers[i])
+					break;
+				flx_calltrace_handlers[i](0, cur_eip, 0, cur_esp, FLX_CALLTRACE_MISSED_RET);
+			}
+			frames_left--;
+		}
 		flx_calltrace_stackframes_pop(&cur_esp, &cur_eip);
 		uint8_t i;
 		for(i=0; i<MAX_CALLTRACE_HANDLERS; ++i){
@@ -124,7 +132,6 @@ int flx_calltrace_bblexec(uint32_t eip, uint32_t esp){
 }
 
 void flx_calltrace_event(uint32_t old_eip, uint32_t new_eip, uint32_t next_eip, uint32_t esp){
-	flx_calltrace_last_call = 1;
 	flx_calltrace_stackframes_push(esp, next_eip);
 
 	uint8_t i;

@@ -1,5 +1,7 @@
 - besseres thread handling
-- typen beim Auslesen der Funktionsargumente besser beruecksichtigen
+- frueherer "entry point"
+- blacklist statt white list (pagefilter fuer instrumentation)
+- self modifying code checken! (bbl translate updates ueberall!!!)
 
 Ideen:
 
