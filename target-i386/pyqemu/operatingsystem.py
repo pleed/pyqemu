@@ -39,9 +39,11 @@ class OperatingSystem:
 			if isinstance(self.active_process, UntracedProcess):
 				self.active_process.watched = False
 				self.hardware.instrumentation.deactivate()
-				return 0
 			else:
-				self.hardware.instrumentation.activate()
+				try:
+					self.hardware.instrumentation.activate(self.active_process.pid, self.active_process.cur_tid)
+				except:
+					self.hardware.instrumentation.activate(-1, -1)
 
 	def createProcess(self, cr3):
 		kpcr_addr = self.hardware.cpu.fs
@@ -61,7 +63,7 @@ class OperatingSystem:
 					self.active_process = TracedProcess(self.config["os"]["processes"][filename], self, self.logger, filename, self.hardware)
 					self.setupHeuristics(self.active_process)
 					self.hardware.instrumentation.retranslate()
-					self.hardware.instrumentation.activate()
+					self.hardware.instrumentation.activate(-1,-1)
 
 				else:
 					self.logger.info("New Process: %s"%filename)

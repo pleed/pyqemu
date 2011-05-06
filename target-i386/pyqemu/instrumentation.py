@@ -5,8 +5,9 @@ import PyFlxInstrument
 class QemuInstrumentation:
 	def __init__(self):
 		pass
-	def activate(self):
+	def activate(self, pid, tid):
 		PyFlxInstrument.set_instrumentation_active(1)
+		PyFlxInstrument.set_context(pid,tid)
 
 	def deactivate(self):
 		PyFlxInstrument.set_instrumentation_active(0)
@@ -58,3 +59,6 @@ class QemuInstrumentation:
 
 	def functiontrace_disable(self):
 		PyFlxInstrument.functiontrace_disable()
+
+	def set_context(self, pid, tid):
+		PyFlxInstrument.set_context(pid, tid)

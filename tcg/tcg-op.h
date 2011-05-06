@@ -2244,39 +2244,40 @@ static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
 
 static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
 {
+    flx_memtrace_write(arg, addr, 8);
 #if TARGET_LONG_BITS == 32
     tcg_gen_op3i_i32(INDEX_op_qemu_st8, arg, addr, mem_index);
 #else
     tcg_gen_op4i_i32(INDEX_op_qemu_st8, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
-    flx_memtrace_write(arg, addr, 8);
 }
 
 static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
 {
+    flx_memtrace_write(arg, addr, 16);
 #if TARGET_LONG_BITS == 32
     tcg_gen_op3i_i32(INDEX_op_qemu_st16, arg, addr, mem_index);
 #else
     tcg_gen_op4i_i32(INDEX_op_qemu_st16, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
-    flx_memtrace_write(arg, addr, 16);
 }
 
 static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 {
+    flx_memtrace_write(arg, addr, 32);
 #if TARGET_LONG_BITS == 32
     tcg_gen_op3i_i32(INDEX_op_qemu_st32, arg, addr, mem_index);
 #else
     tcg_gen_op4i_i32(INDEX_op_qemu_st32, TCGV_LOW(arg), TCGV_LOW(addr),
                      TCGV_HIGH(addr), mem_index);
 #endif
-    flx_memtrace_write(arg, addr, 32);
 }
 
 static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 {
+    flx_memtrace_write(arg, addr, 64);
 #if TARGET_LONG_BITS == 32
     tcg_gen_op4i_i32(INDEX_op_qemu_st64, TCGV_LOW(arg), TCGV_HIGH(arg), addr,
                      mem_index);
@@ -2284,7 +2285,6 @@ static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
     tcg_gen_op5i_i32(INDEX_op_qemu_st64, TCGV_LOW(arg), TCGV_HIGH(arg),
                      TCGV_LOW(addr), TCGV_HIGH(addr), mem_index);
 #endif
-    flx_memtrace_write(arg, addr, 64);
 }
 
 #define tcg_gen_ld_ptr tcg_gen_ld_i32
@@ -2344,26 +2344,26 @@ static inline void tcg_gen_qemu_ld64(TCGv_i64 ret, TCGv addr, int mem_index)
 
 static inline void tcg_gen_qemu_st8(TCGv arg, TCGv addr, int mem_index)
 {
-    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st8, arg, addr, mem_index);
     flx_memtrace_write(arg, addr, 8);
+    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st8, arg, addr, mem_index);
 }
 
 static inline void tcg_gen_qemu_st16(TCGv arg, TCGv addr, int mem_index)
 {
-    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st16, arg, addr, mem_index);
     flx_memtrace_write(arg, addr, 16);
+    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st16, arg, addr, mem_index);
 }
 
 static inline void tcg_gen_qemu_st32(TCGv arg, TCGv addr, int mem_index)
 {
-    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st32, arg, addr, mem_index);
     flx_memtrace_write(arg, addr, 32);
+    tcg_gen_qemu_ldst_op(INDEX_op_qemu_st32, arg, addr, mem_index);
 }
 
 static inline void tcg_gen_qemu_st64(TCGv_i64 arg, TCGv addr, int mem_index)
 {
-    tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_st64, arg, addr, mem_index);
     flx_memtrace_write(arg, addr, 64);
+    tcg_gen_qemu_ldst_op_i64(INDEX_op_qemu_st64, arg, addr, mem_index);
 }
 
 #define tcg_gen_ld_ptr tcg_gen_ld_i64

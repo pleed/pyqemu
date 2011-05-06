@@ -60,30 +60,4 @@
 					}
 
 #endif
-/*
-						if(flx_state.global_active){\
-							printf("Condition debugging: \n\n");\
-							if(flx_state.global_active){\
-								if(!FLX_TEST_CONDITION_GLOBAL_ACTIVE(conditions))\
-									printf("GLOBAL_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_USERSPACE(conditions))\
-									printf("USERSPACE_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_CALL_ACTIVE(conditions))\
-									printf("CALL_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_JMP_ACTIVE(conditions))\
-									printf("JMP_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_RET_ACTIVE(conditions))\
-									printf("RET_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditions))\
-									printf("SYSCALL_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_BBLTRACE(conditions))\
-									printf("BBLTRACE_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_MEMTRACE(conditions))\
-									printf("MEMTRACE_ACTIVE!\n");\
-								if(!FLX_TEST_CONDITION_FILTERED(conditions))\
-									printf("FILTERED_ACTIVE!\n");\
-							}\
-							printf("-------------------\n\n");\
-						}\
 
-*/

@@ -46,6 +46,7 @@
 #include "flx_bbltrace.h"
 #include "flx_bbl.h"
 #include "flx_functiontrace.h"
+#include "flx_context.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -621,6 +622,26 @@ static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
    return retval;
 }
 
+static PyObject* PyFlxC_set_context(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_active");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  int pid;
+  int tid;
+  
+  if(!PyArg_ParseTuple(args, "II", &pid, &tid)) {
+    return NULL;
+  }
+
+  flx_context_set(pid,tid);
+  
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -720,8 +741,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"memtrace_disable", (PyCFunction)PyFlxC_memtrace_disable, METH_VARARGS,
      "Stop tracing memory access"
     },
+    {"set_context", (PyCFunction)PyFlxC_set_context,
+     METH_VARARGS, "Set instrumentation process/thread context"
+    },
     {"set_instrumentation_active", (PyCFunction)PyFlxC_set_instrumentation_active,
-     METH_VARARGS, "Set instrumentation active/inactive"},
+     METH_VARARGS, "Set instrumentation active/inactive"
+    },
     {NULL}  /* Sentinel */
 };
 
@@ -791,6 +816,7 @@ flxinstrument_state_init(void){
    if(ptr)
 	flx_state.python_active = 0;
    else{
+	flx_state.ret_active = 0;
 	flx_state.call_active = 1;
 	flx_state.python_active = 1;
 	flx_state.syscall_active = 1;
@@ -882,6 +908,7 @@ void flxinstrument_init(void) {
    // initialize subsystems
    printf("initializing flxinstrument subsystems\n");
    flxinstrument_blacklist_alloc();
+   flx_context_init();
    flx_filter_init();
    flx_bbl_init();
    flx_breakpoint_init();
