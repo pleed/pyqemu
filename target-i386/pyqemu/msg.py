@@ -4,6 +4,14 @@ class QemuEvent:
 	def __init__(self, event_type, *args):
 		self.event_type = event_type
 		self.args = args
+	
+class QemuFunctionEntropyEvent(QemuEvent):
+	def getStart(self):
+		return self.args[0]
+	def getEntropyChange(self):
+		return self.args[1]
+	start = property(getStart)
+	entropychange = property(getEntropyChange)
 
 class QemuFunctiontraceEvent(QemuEvent):
 	def getEIP(self):
@@ -111,6 +119,7 @@ QemuEventTypes = {
 	"caballero":QemuCaballeroEvent,
 	"arithwindow":QemuArithwindowEvent,
 	"functiontrace":QemuFunctiontraceEvent,
+	"functionentropy":QemuFunctionEntropyEvent,
 }
 
 

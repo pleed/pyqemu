@@ -47,6 +47,7 @@
 #include "flx_bbl.h"
 #include "flx_functiontrace.h"
 #include "flx_context.h"
+#include "flx_functionentropy.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -77,6 +78,7 @@ PyObject *PyFlx_ev_arithwindow = NULL;
 PyObject *PyFlx_ev_bblstart = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 PyObject *PyFlx_ev_functiontrace = NULL;
+PyObject *PyFlx_ev_functionentropy = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -274,6 +276,42 @@ static PyObject* PyFlxC_arithwindow_disable(PyObject *self, PyObject *args) {
 	fprintf(stderr," - NO EXC\n");
 #endif
   flx_arithwindow_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_functionentropy_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functionentropy_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   float threshold;
+   if(!PyArg_ParseTuple(args, "f", &threshold))
+     return NULL;
+
+  flx_functionentropy_enable(threshold);
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_functionentropy_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functionentropy_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   float threshold;
+   if(!PyArg_ParseTuple(args, "f", &threshold))
+     return NULL;
+
+  flx_functionentropy_disable();
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -711,6 +749,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"functiontrace_disable", (PyCFunction)PyFlxC_functiontrace_disable, METH_VARARGS,
      "Disable function tracing"
     },
+    {"functionentropy_disable", (PyCFunction)PyFlxC_functionentropy_disable, METH_VARARGS,
+     "Stop functionentropy measurement"
+    },
+    {"functionentropy_enable", (PyCFunction)PyFlxC_functionentropy_enable, METH_VARARGS,
+     "Start functionentropy measurement"
+    },
     {"caballero_disable", (PyCFunction)PyFlxC_caballero_disable, METH_VARARGS,
      "Stop caballero opcode execution"
     },
@@ -837,6 +881,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_arithwindow);
    PyFlx_ev_functiontrace = PyObject_GetAttrString(Py_Python_Module, "ev_functiontrace");
    Py_XINCREF(PyFlx_ev_functiontrace);
+   PyFlx_ev_functionentropy = PyObject_GetAttrString(Py_Python_Module, "ev_functionentropy");
+   Py_XINCREF(PyFlx_ev_functionentropy);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -920,6 +966,7 @@ void flxinstrument_init(void) {
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
+   flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -1048,6 +1095,38 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
 				 (char*) "(II)",
 				 eip,
 				 esp);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
+  return retval;
+}
+
+int flxinstrument_functionentropy_event(uint32_t start, float entropychange) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functionentropy_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_functionentropy)) {
+    fprintf(stderr, "No registered functionentropy event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_functionentropy,
+				 (char*) "(If)",
+				 start,
+				 entropychange);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

@@ -133,7 +133,7 @@ int flx_breakpoint_search_addr(uint32_t addr, uint32_t *next){
 	if(!node){
 		return 0;
 	}
-	else if(closest > 0){
+	else if(closest < 0){
 		if(node->next){
 			bp = node->next->item;
 			*next = bp->addr;
@@ -141,7 +141,7 @@ int flx_breakpoint_search_addr(uint32_t addr, uint32_t *next){
 		else
 			*next = 0xffffffff;
 	}
-	else if(closest <=0){
+	else if(closest >=0){
 		bp = node->item;
 		*next = bp->addr;
 	}

@@ -27,7 +27,6 @@ typedef struct {
 	uint8_t bbltrace_active;
 	uint8_t memtrace_active;
 	uint8_t filter_active;
-	uint8_t arithwindow_active;
 	uint8_t calltrace_active;
 	uint8_t functiontrace_active;
 
@@ -39,6 +38,8 @@ typedef struct {
 
 	// heuristics
 	uint8_t caballero_active;
+	uint8_t arithwindow_active;
+	uint8_t functionentropy_active;
 } FLX_STATE;
 
 extern FLX_STATE flx_state;
@@ -65,6 +66,7 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp);
 int flxinstrument_caballero_event(uint32_t eip, uint32_t icount, uint32_t arithcount);
 int flxinstrument_arithwindow_event(uint32_t eip);
 int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type);
+int flxinstrument_functionentropy_event(uint32_t start, float entropychange);
 
 int flxinstrument_shutdown_event(void);
 

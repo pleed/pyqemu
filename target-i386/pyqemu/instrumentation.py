@@ -62,3 +62,9 @@ class QemuInstrumentation:
 
 	def set_context(self, pid, tid):
 		PyFlxInstrument.set_context(pid, tid)
+
+	def functionentropy_enable(self, threshold):
+		PyFlxInstrument.functionentropy_enable(threshold)
+
+	def functionentropy_disable(self):
+		PyFlxInstrument.functionentropy_disable()
