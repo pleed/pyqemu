@@ -66,7 +66,7 @@ void
 flx_memtrack_merge(memtracker* dst, memtracker* src, uint8_t overwrite){
 	memtrack_iterator iter = flx_memtrack_iterator();
 	memory_byte* current;
-	while(current = flx_memtrack_iterate(src, &iter)){
+	while((current = flx_memtrack_iterate(src, &iter))){
 		flx_memtrack_store(dst, current->addr, current->value, overwrite);
 	}
 }

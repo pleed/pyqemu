@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 #include <sys/types.h>
+#include <avl.h>
 
 typedef avl_tree_t memtracker;
 typedef uint32_t memtrack_iterator;

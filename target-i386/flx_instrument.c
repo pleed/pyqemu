@@ -1107,7 +1107,7 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
   return retval;
 }
 
-int flxinstrument_functionentropy_event(uint32_t start, float entropychange) {
+int flxinstrument_functionentropy_event(float entropychange, uint32_t start) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functionentropy_event");  
   if(PyErr_Occurred())
