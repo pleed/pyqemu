@@ -17,6 +17,7 @@ struct function_stack {
 	memtracker* after;
 	uint32_t eip;
 	float diff;
+	uint32_t depth;
 	function_stack* next;
 };
 
@@ -65,6 +66,7 @@ flx_functionentropy_stackframe_alloc(void){
 	memset(frame, 0, sizeof(*frame));
 	frame->before = flx_memtrack_new();
 	frame->after  = flx_memtrack_new();
+	frame->depth  = 1;
 	return frame;
 }
 
@@ -88,26 +90,36 @@ flx_functionentropy_current_stackframe(void){
 }
 
 static float
-flx_functionentropy_calculate_entropy(memtracker* tracker){
+flx_functionentropy_calculate_entropy(memtracker* tracker, uint32_t *bytes){
 	memtrack_iterator iter = flx_memtrack_iterator();
 	memory_byte* current;
 
 	uint32_t byte_counter = 0;
-	uint8_t values[256];
+	uint32_t values[256];
 	memset(values, 0, sizeof(values));
 
+	//printf("values: ");
 	while((current = flx_memtrack_iterate(tracker, &iter))){
 		uint8_t current_value = current->value;
 		values[current_value] += 1;
 		byte_counter += 1;
+		//printf(" %d ",current_value);
 	}
+	//printf("\n");
+	*bytes = byte_counter;
+	if(byte_counter == 0)
+		return 0;
 
-	
 	/* calculate scaled entropy */
 	float e_sum = 0;
 	uint16_t i;
 	for(i=0; i<256; ++i){
-		e_sum += ((float)values[i])/byte_counter*(log(((float)values[i])/byte_counter)/log(2));
+		if(values[i] > 0){
+			float tmp_1 = ((float)values[i])/byte_counter;
+			float tmp_2 = (log(((float)values[i])/byte_counter)/log(2));
+			e_sum += tmp_1*tmp_2;
+		}
+		//e_sum += ((float)values[i])/byte_counter*(log(((float)values[i])/byte_counter)/log(2));
 	}
 	float scaled_entropy = (e_sum*-1)/(log((byte_counter < 256)?byte_counter:256)/log(2));
 	return scaled_entropy;
@@ -125,17 +137,34 @@ flx_functionentropy_functionevent_call(uint32_t new_eip){
 static function_stack*
 flx_functionentropy_functionevent_ret(void){
 	function_stack** frame = flx_functionentropy_current_stackframe();
-	float before = flx_functionentropy_calculate_entropy((*frame)->before);
-	float after  = flx_functionentropy_calculate_entropy((*frame)->after);
-	float diff = after - before;
-	if(diff < 0)
-		diff *= -1;
-	(*frame)->diff = diff;
-	flx_memtrack_merge((*frame)->next->before, (*frame)->before, 0);
-	flx_memtrack_merge((*frame)->next->after, (*frame)->after, 1);
-	flx_functionentropy_stackframe_dealloc(*frame);
-	*frame = (*frame)->next;
-	return *frame;
+	function_stack* current = *frame;
+	if(current->depth + 1 > current->next->depth)
+		current->next->depth = current->depth + 1;
+	if(current->depth <= 3){
+		uint32_t bytes_touched = 0;
+		//printf("after\n");
+		float after  = flx_functionentropy_calculate_entropy(current->after, &bytes_touched);
+		//printf("entropy: %f\n", after);
+		//printf("before\n");
+		float before = flx_functionentropy_calculate_entropy(current->before, &bytes_touched);
+		//printf("entropy: %f\n", before);
+		float diff;
+		if(before == 0 || after == 0 || bytes_touched < 20)
+			diff = 0;
+		else{
+			diff = after - before;
+			if(diff < 0)
+				diff *= -1;
+		}
+		current->diff = diff;
+		flx_memtrack_merge(current->next->before, current->before, 0);
+		flx_memtrack_merge(current->next->after, current->after, 1);
+	}
+	else{
+		current->diff = 0;
+	}
+	*frame = current->next;
+	return current;
 }
 
 int flx_functionentropy_functionevent(uint32_t old_eip, uint32_t new_eip, uint32_t next_eip, uint32_t esp, flx_call_type type){
@@ -147,8 +176,12 @@ int flx_functionentropy_functionevent(uint32_t old_eip, uint32_t new_eip, uint32
 	case FLX_CALLTRACE_RET:
 	case FLX_CALLTRACE_MISSED_RET:
 					frame = flx_functionentropy_functionevent_ret();
-					if(frame && frame->diff > functionentropy_threshold){
-						flx_functionentropy_handler(frame->diff, frame->eip);
+					if(frame){
+						if(frame->diff > functionentropy_threshold){
+							//printf("entropy handling, diff: %f, eip: 0x%x\n",frame->diff, frame->eip);
+							flx_functionentropy_handler(frame->diff, frame->eip);
+						}
+						flx_functionentropy_stackframe_dealloc(frame);
 					}
 					break;
 	default:
@@ -158,7 +191,11 @@ int flx_functionentropy_functionevent(uint32_t old_eip, uint32_t new_eip, uint32
 }
 
 int flx_functionentropy_memaccess(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
-	function_stack* current = *(flx_functionentropy_current_stackframe());
+	function_stack** frame = flx_functionentropy_current_stackframe();
+	if(!*frame){
+		*frame = flx_functionentropy_stackframe_alloc();
+	}
+	function_stack* current = *frame;
 	size = size/8;
 	address += size-1;
 	while(size){
@@ -168,6 +205,7 @@ int flx_functionentropy_memaccess(uint32_t address, uint32_t value, uint8_t size
 			flx_memtrack_store(current->after, address, byte, 1);
 		}
 		else{
+			flx_memtrack_store(current->after, address, byte, 0);
 			flx_memtrack_store(current->before, address, byte, 0);
 		}
 		address -= 1;

@@ -68,6 +68,7 @@ flx_calltrace_stackframes_realloc(flx_stackframes* stackframes){
 
 
 void flx_calltrace_init(void){
+	memset(flx_calltrace_handlers, 0, sizeof(flx_calltrace_handlers));
 	return;
 }
 
@@ -82,12 +83,9 @@ flx_calltrace_stackframes_alloc(void){
 }
 
 void flx_calltrace_enable(void){
-	memset(flx_calltrace_handlers, 0, sizeof(flx_calltrace_handlers));
-
 	flx_state.bbltrace_active = 1;
 	flx_bbltrace_register_handler(flx_calltrace_bblexec);
 	flx_state.calltrace_active = 1;
-
 }
 
 void flx_calltrace_disable(void){

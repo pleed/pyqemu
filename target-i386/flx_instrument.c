@@ -960,12 +960,14 @@ void flxinstrument_init(void) {
    flx_breakpoint_init();
    flx_bbltrace_init();
    flx_bbltranslate_init();
+   flx_memtrace_init();
+   flx_calltrace_init();
+
    //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
-   //flx_memtrace_init();
    //flx_memtrace_register_handler((memtrace_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
-   flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
+   //flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");

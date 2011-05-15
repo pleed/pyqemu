@@ -12,8 +12,10 @@ typedef struct {
 	uint16_t tid;
 	void *calltrace;
 	void *memtrace;
+	void *constsearch;
 	context_destructor calltrace_destructor;
 	context_destructor memtrace_destructor;
+	context_destructor constsearch_destructor;
 } flx_context;
 
 void         flx_context_init(void);

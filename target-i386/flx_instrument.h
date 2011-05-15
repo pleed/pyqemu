@@ -40,6 +40,7 @@ typedef struct {
 	uint8_t caballero_active;
 	uint8_t arithwindow_active;
 	uint8_t functionentropy_active;
+	uint8_t constsearch_active;
 } FLX_STATE;
 
 extern FLX_STATE flx_state;
