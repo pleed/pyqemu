@@ -494,7 +494,6 @@ INSTRUMENT_DATA flx_instr_data;
 void cpu_x86_update_cr3(CPUX86State *env, target_ulong new_cr3)
 {
   target_ulong old_cr3;
-
   old_cr3 = env->cr[3];
 
     env->cr[3] = new_cr3;

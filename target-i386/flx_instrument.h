@@ -45,16 +45,6 @@ typedef struct {
 
 extern FLX_STATE flx_state;
 
-typedef struct {
-	char set;
-	char msb;
-	uint32_t cr3;
-} blacklist_slot;
-
-typedef struct {
-	blacklist_slot slots[FLX_BLACKLIST_SIZE];
-} blacklist;
-
 void flxinstrument_init(void);
 int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3);
 int flxinstrument_call_event(uint32_t call_origin, uint32_t call_destination, uint32_t next_eip, uint32_t esp);
@@ -68,12 +58,8 @@ int flxinstrument_caballero_event(uint32_t eip, uint32_t icount, uint32_t arithc
 int flxinstrument_arithwindow_event(uint32_t eip);
 int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type);
 int flxinstrument_functionentropy_event(float entropychange, uint32_t eip);
+int flxinstrument_constsearch_event(uint32_t eip, uint32_t pattern_index);
 
 int flxinstrument_shutdown_event(void);
-
-void flxinstrument_blacklist_alloc(void);
-int flxinstrument_is_blacklisted(uint32_t addr, uint32_t type);
-void flxinstrument_blacklist(uint32_t addr, uint32_t type);
-void flxinstrument_blacklist_cleanup(void);
 
 #endif

@@ -18,5 +18,6 @@ void flx_constsearch_enable(void);
 void flx_constsearch_disable(void);
 void flx_constsearch_search(void);
 int  flx_constsearch_memaccess(uint32_t, uint32_t, uint8_t, uint8_t);
+void flx_constsearch_pattern(uint8_t* , uint32_t);
 
 #endif

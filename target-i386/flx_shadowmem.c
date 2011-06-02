@@ -33,6 +33,7 @@ flx_shadowmem_find_page(shadowmem* mem, uint32_t addr){
 	avl_node_t* node = avl_search(mem, page);
 	if(!node){
 		page->mem = malloc(FLX_PAGE_SIZE);
+		page->eip = malloc(FLX_PAGE_SIZE*sizeof(uint32_t));
 		memset(page->mem, 0, FLX_PAGE_SIZE);
 		memset(page->used, 0 , sizeof(page->used));
 		node = avl_insert(mem, page);
@@ -53,11 +54,12 @@ flx_shadowmem_delete(shadowmem* mem){
 }
 
 void
-flx_shadowmem_store(shadowmem* mem, uint32_t address, uint8_t value){
+flx_shadowmem_store(shadowmem* mem, uint32_t address, uint8_t value, uint32_t eip){
 	shadow_page* page = flx_shadowmem_find_page(mem, address);
 	assert(page);
 	address &= 0xfff;
 	page->mem[address] = value;
+	page->eip[address] = eip;
 	shadowmem_setuse(page, address);
 }
 
@@ -123,7 +125,7 @@ flx_shadowmem_get_next_blockstart(shadowmem_iterator* iter){
 }
 
 static uint8_t
-flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte){
+flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte, uint32_t *eip){
 	uint8_t found = 0;
 	while(iter->current){
 		shadow_page* page = iter->current->item;
@@ -135,6 +137,7 @@ flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte){
 			uint32_t page_offset = iter->addr&0xfff;
 			if(shadowmem_inuse(page, page_offset)){
 				*byte = page->mem[page_offset];
+				*eip  = page->eip[page_offset];
 				found = 1;
 				++iter->addr;
 			}
@@ -145,14 +148,14 @@ flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte){
 }
 
 mem_block*
-flx_shadowmem_iterate(shadowmem_iterator* iter){
+flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t* eip){
 	if(!flx_shadowmem_get_next_blockstart(iter))
 		return NULL;
 
 	uint32_t byte_counter = 0;
 	uint8_t* buf = malloc(128);
 	uint8_t value;
-	while(flx_shadowmem_get_next_blockbyte(iter, &value)){
+	while(flx_shadowmem_get_next_blockbyte(iter, &value, eip)){
 		buf[byte_counter] = value;
 		byte_counter++;
 		if(!(byte_counter % 128))

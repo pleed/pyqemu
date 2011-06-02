@@ -25,14 +25,25 @@ from config import *
 from msg import *
 from memory import *
 
-class Breakpoint:
-	def __init__(self, addr, callback):
-		PyFlxInstrument.breakpoint_insert(addr)
-		self.addr = addr
-		self.callback = callback
+class BreakpointManager(dict):
+	def addBreakpoint(self, addr, handler):
+		if not self.has_key(addr):
+			self[addr] = set([])
+			PyFlxInstrument.breakpoint_insert(addr)
+		self[addr].add(handler)
+		PyFlxInstrument.retranslate()
 
-	def trigger(self):
-		self.callback(self.addr)
+	def delBreakpoint(self, handler):
+		for addr,hash in self.items:
+			if not self.isdisjoint([handler]):
+				self[addr] = self[addr]-set([handler])
+			if len(self[addr]) == 0:
+				PyFlxInstrument.breakpoint_delete(addr)
+		PyFlxInstrument.retranslate()
+
+	def trigger(self, addr):
+		for handler in self[addr]:
+			handler(addr)
 
 class Thread:
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
@@ -80,7 +91,7 @@ class TracedProcess(processinfo.Process):
 		self.dllhandler          = PEHandler(options["dlldir"])
 		# stores registerd callbacks
 		self.callonfunction      = {}
-		self.breakpoints         = {}
+		self.breakpoints         = BreakpointManager()
 		self.options             = options
 		self.initialized         = False
 		self.instrumentation_initializers = []
@@ -106,6 +117,8 @@ class TracedProcess(processinfo.Process):
 				self.logger.info("Instrumenting %s"%image.FullDllName)
 			else:
 				self.logger.info("Not Instrumenting %s"%image.FullDllName)
+			self.dllhandler.loadPE(image.BaseDllName.lower(), image.DllBase)
+
 		self.hardware.instrumentation.filter_enable()
 		for initializer in self.instrumentation_initializers:
 			initializer()
@@ -132,19 +145,17 @@ class TracedProcess(processinfo.Process):
 			"arithwindow":EventHandler(self),
 			"functiontrace":EventHandler(self),
 			"functionentropy":EventHandler(self),
+			"constsearch":EventHandler(self),
 		}
 
 	def handleEvent(self, event):
 		self.eventHandlers[event.event_type](event)
 
 	def addBreakpoint(self, addr, callback):
-		self.hardware.instrumentation.retranslate()
-		if not self.breakpoints.has_key(addr):
-			self.breakpoints[addr] = Breakpoint(addr, callback)
+		self.breakpoints.addBreakpoint(addr, callback)
 
 	def delBreakpoint(self, addr):
-		self.breakpoints[addr].delete()
-		del(self.breakpoints[addr])
+		self.breakpoints.delBreakpoint(addr, callback)
 
 	def isRegisteredThread(self):
 		try:
@@ -165,7 +176,7 @@ class TracedProcess(processinfo.Process):
 													  anythread.memory.unknown,\
 													  None)
 		self.threads[self.cur_tid].callstack.push((self.hardware.cpu.eip, 0xffffffff))
-		self.logger.info("Thread %d registered"%self.cur_tid)
+		self.logger.info("Thread %d registered in Process: %s"%(self.cur_tid, self.imagefilename()))
 
 	def getThread(self):
 		try:
@@ -227,11 +238,7 @@ class TracedProcess(processinfo.Process):
 			self.registerFunctionHandler(dll, fname, handlerclass(self))
 
 	def handle_breakpoint(self, bp):
-		try:
-			breakpoint = self.breakpoints[bp.addr]
-		except KeyError:
-			raise Exception("Unregistered breakpoint has been triggered!")
-		breakpoint.trigger()
+		self.breakpoints.trigger(bp.addr)
 
 	def handle_call(self, event):
 		self.log("Call(0x%x)"%event.toaddr)

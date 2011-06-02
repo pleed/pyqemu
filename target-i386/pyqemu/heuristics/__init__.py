@@ -6,4 +6,5 @@ __all__ = [
 	"arithwindow",
 	"functiontrace",
 	"functionentropy",
+	"api",
 	  ]

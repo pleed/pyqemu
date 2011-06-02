@@ -3,20 +3,15 @@ B	ops_sse.h	/^#define B(n) XMM_B(n)$/
 BIASEXPONENT	exec.h	/^#define BIASEXPONENT(fp) fp.l.upper = (fp.l.upper /
 BIASEXPONENT	exec.h	/^#define BIASEXPONENT(fp) fp.l.upper = (fp.l.upper /
 BUGGY_64	translate.c	/^#define BUGGY_64(x) NULL$/
-Breakpoint	PyQEMU.py	/^class Breakpoint:$/
-Buffer	PyQEMU.py	/^class Buffer:$/
 CODE64	translate.c	/^#define CODE64(s) ((s)->code64)$/
 CODE64	translate.c	/^#define CODE64(s) 0$/
-CalledFunction	PyQEMU.py	/^class CalledFunction:$/
 DEF_HELPER_2	ops_sse_header.h	/^DEF_HELPER_2(glue(psrlw, SUFFIX), void, Reg, Reg)$/
 DEF_HELPER_FLAGS_1	helper.h	/^DEF_HELPER_FLAGS_1(cc_compute_all, TCG_CALL_PURE, /
 DPRINTF	kvm.c	/^#define DPRINTF(fmt, ...) \\$/
 DPRINTF	kvm.c	/^#define DPRINTF(fmt, ...) \\$/
-DataMemoryTracer	PyQEMU.py	/^class DataMemoryTracer:$/
 EXPD	exec.h	/^#define EXPD(fp)	(fp.l.upper & 0x7fff)$/
 EXPD	exec.h	/^#define EXPD(fp)	(((fp.l.upper) >> 20) & 0x7FF)$/
 EXPD1	machine.c	/^#define EXPD1(fp)	((fp >> 52) & 0x7FF)$/
-EventLogger	PyQEMU.py	/^class EventLogger(pickle.Pickler):$/
 FABSB	ops_sse.h	/^#define FABSB(_, x) x > INT8_MAX  ? -(int8_t ) x :/
 FABSL	ops_sse.h	/^#define FABSL(_, x) x > INT32_MAX ? -(int32_t) x :/
 FABSW	ops_sse.h	/^#define FABSW(_, x) x > INT16_MAX ? -(int16_t) x :/
@@ -38,14 +33,18 @@ FCMPGTB	ops_sse.h	/^#define FCMPGTB(a, b) (int8_t)(a) > (int8_t)(b) ? /
 FCMPGTL	ops_sse.h	/^#define FCMPGTL(a, b) (int32_t)(a) > (int32_t)(b) /
 FCMPGTQ	ops_sse.h	/^#define FCMPGTQ(d, s) d > s ? -1 : 0$/
 FCMPGTW	ops_sse.h	/^#define FCMPGTW(a, b) (int16_t)(a) > (int16_t)(b) /
+FLX_BBLTRANSLATE_HOOK	flx_bbltranslate.h	/^#define FLX_BBLTRANSLATE_HOOK(function) do{if(flx_/
+FLX_MODULE	flx_module.h	/^#define FLX_MODULE(name, ...) {name, {__VA_ARGS__,/
+FLX_MODULE_CONSTRUCTOR	flx_custommodule.h	/^FLX_MODULE_CONSTRUCTOR("custommodule")$/
 FLX_TEST_CONDITION	flx_hooking.h	/^#define FLX_TEST_CONDITION(conditions, code, condi/
 FLX_TEST_CONDITIONS	flx_hooking.h	/^#define FLX_TEST_CONDITIONS(conditions) if(!FLX_TE/
+FLX_TEST_CONDITION_BBLTRACE	flx_hooking.h	/^#define FLX_TEST_CONDITION_BBLTRACE(conditions)   /
+FLX_TEST_CONDITION_CABALLERO	flx_hooking.h	/^#define FLX_TEST_CONDITION_CABALLERO(conditions)  /
 FLX_TEST_CONDITION_CALL_ACTIVE	flx_hooking.h	/^#define FLX_TEST_CONDITION_CALL_ACTIVE(conditions)/
 FLX_TEST_CONDITION_FILTERED	flx_hooking.h	/^#define FLX_TEST_CONDITION_FILTERED(conditions)   /
 FLX_TEST_CONDITION_GLOBAL_ACTIVE	flx_hooking.h	/^#define FLX_TEST_CONDITION_GLOBAL_ACTIVE(condition/
 FLX_TEST_CONDITION_JMP_ACTIVE	flx_hooking.h	/^#define FLX_TEST_CONDITION_JMP_ACTIVE(conditions) /
 FLX_TEST_CONDITION_MEMTRACE	flx_hooking.h	/^#define FLX_TEST_CONDITION_MEMTRACE(conditions)   /
-FLX_TEST_CONDITION_OPTRACE	flx_hooking.h	/^#define FLX_TEST_CONDITION_OPTRACE(conditions)    /
 FLX_TEST_CONDITION_RET_ACTIVE	flx_hooking.h	/^#define FLX_TEST_CONDITION_RET_ACTIVE(conditions) /
 FLX_TEST_CONDITION_SYSCALL_ACTIVE	flx_hooking.h	/^#define FLX_TEST_CONDITION_SYSCALL_ACTIVE(conditio/
 FLX_TEST_CONDITION_USERSPACE	flx_hooking.h	/^#define FLX_TEST_CONDITION_USERSPACE(conditions)  /
@@ -91,7 +90,6 @@ FXOR	ops_sse.h	/^#define FXOR(a, b) (a) ^ (b)$/
 GEN_REPZ	translate.c	/^#define GEN_REPZ(op)                              /
 GEN_REPZ	translate.c	/^GEN_REPZ(movs)$/
 GEN_REPZ2	translate.c	/^#define GEN_REPZ2(op)                             /
-HeapMemoryTracer	PyQEMU.py	/^class HeapMemoryTracer:$/
 L	ops_sse.h	/^#define L(n) MMX_L(n)$/
 L	ops_sse.h	/^#define L(n) XMM_L(n)$/
 LOG_PCALL	op_helper.c	/^#  define LOG_PCALL(...) qemu_log_mask(CPU_LOG_PCA/
@@ -114,9 +112,8 @@ MMX_W	cpu.h	/^#define MMX_W(n) _w[3 - (n)]$/
 MMX_W	cpu.h	/^#define MMX_W(n) _w[n]$/
 MSR_MTRRphysBase	cpu.h	/^#define MSR_MTRRphysBase(reg)		(0x200 + 2 * (reg))/
 MSR_MTRRphysMask	cpu.h	/^#define MSR_MTRRphysMask(reg)		(0x200 + 2 * (reg) /
-MemoryManager	PyQEMU.py	/^class MemoryManager:$/
-Mflx_bbl	flx_bbl.c	/^int main(int argc, char* argv[]){$/
 Mflx_filter	flx_filter.c	/^int main(int argc, char* argv[]){$/
+Mflx_shadowmem	flx_shadowmem.c	/^int main(void){$/
 POPCOUNT	ops_sse.h	/^#define POPCOUNT(n, i) (n & POPMASK(i)) + ((n >> (/
 POPL	op_helper.c	/^#define POPL(ssp, sp, sp_mask, val)\\$/
 POPMASK	ops_sse.h	/^#define POPMASK(i)     ((target_ulong) -1 \/ ((1LL /
@@ -125,32 +122,44 @@ POPW	op_helper.c	/^#define POPW(ssp, sp, sp_mask, val)\\$/
 PUSHL	op_helper.c	/^#define PUSHL(ssp, sp, sp_mask, val)\\$/
 PUSHQ	op_helper.c	/^#define PUSHQ(sp, val)\\$/
 PUSHW	op_helper.c	/^#define PUSHW(ssp, sp, sp_mask, val)\\$/
-PyFlxC_blacklist	flx_instrument.c	/^static PyObject* PyFlxC_blacklist(PyObject *self, /
-PyFlxC_blacklist_cleanup	flx_instrument.c	/^static PyObject* PyFlxC_blacklist_cleanup(PyObject/
+PyFlxC_arithwindow_disable	flx_instrument.c	/^static PyObject* PyFlxC_arithwindow_disable(PyObje/
+PyFlxC_arithwindow_enable	flx_instrument.c	/^static PyObject* PyFlxC_arithwindow_enable(PyObjec/
+PyFlxC_bbltrace_disable	flx_instrument.c	/^static PyObject* PyFlxC_bbltrace_disable(PyObject /
+PyFlxC_bbltrace_enable	flx_instrument.c	/^static PyObject* PyFlxC_bbltrace_enable(PyObject */
 PyFlxC_breakpoint_delete	flx_instrument.c	/^static PyObject* PyFlxC_breakpoint_delete(PyObject/
 PyFlxC_breakpoint_insert	flx_instrument.c	/^static PyObject* PyFlxC_breakpoint_insert(PyObject/
+PyFlxC_caballero_disable	flx_instrument.c	/^static PyObject* PyFlxC_caballero_disable(PyObject/
+PyFlxC_caballero_enable	flx_instrument.c	/^static PyObject* PyFlxC_caballero_enable(PyObject /
+PyFlxC_constsearch_disable	flx_instrument.c	/^static PyObject* PyFlxC_constsearch_disable(PyObje/
+PyFlxC_constsearch_enable	flx_instrument.c	/^static PyObject* PyFlxC_constsearch_enable(PyObjec/
+PyFlxC_constsearch_pattern	flx_instrument.c	/^static PyObject* PyFlxC_constsearch_pattern(PyObje/
 PyFlxC_creg	flx_instrument.c	/^static PyObject* PyFlxC_creg(PyObject *self, PyObj/
 PyFlxC_eip	flx_instrument.c	/^static PyObject* PyFlxC_eip(PyObject *self, PyObje/
 PyFlxC_filter_add	flx_instrument.c	/^static PyObject* PyFlxC_filter_add(PyObject *self,/
 PyFlxC_filter_del	flx_instrument.c	/^static PyObject* PyFlxC_filter_del(PyObject *self,/
 PyFlxC_filter_disable	flx_instrument.c	/^static PyObject* PyFlxC_filter_disable(PyObject *s/
 PyFlxC_filter_enable	flx_instrument.c	/^static PyObject* PyFlxC_filter_enable(PyObject *se/
+PyFlxC_filter_filtered	flx_instrument.c	/^static PyObject* PyFlxC_filter_filtered(PyObject */
+PyFlxC_functionentropy_disable	flx_instrument.c	/^static PyObject* PyFlxC_functionentropy_disable(Py/
+PyFlxC_functionentropy_enable	flx_instrument.c	/^static PyObject* PyFlxC_functionentropy_enable(PyO/
+PyFlxC_functiontrace_disable	flx_instrument.c	/^static PyObject* PyFlxC_functiontrace_disable(PyOb/
+PyFlxC_functiontrace_enable	flx_instrument.c	/^static PyObject* PyFlxC_functiontrace_enable(PyObj/
 PyFlxC_genreg	flx_instrument.c	/^static PyObject* PyFlxC_genreg(PyObject *self, PyO/
 PyFlxC_memtrace_disable	flx_instrument.c	/^static PyObject* PyFlxC_memtrace_disable(PyObject /
 PyFlxC_memtrace_enable	flx_instrument.c	/^static PyObject* PyFlxC_memtrace_enable(PyObject */
-PyFlxC_optrace_disable	flx_instrument.c	/^static PyObject* PyFlxC_optrace_disable(PyObject */
-PyFlxC_optrace_enable	flx_instrument.c	/^static PyObject* PyFlxC_optrace_enable(PyObject *s/
 PyFlxC_registers	flx_instrument.c	/^static PyObject* PyFlxC_registers(PyObject *self, /
+PyFlxC_retranslate	flx_instrument.c	/^static PyObject* PyFlxC_retranslate(PyObject *self/
+PyFlxC_set_context	flx_instrument.c	/^static PyObject* PyFlxC_set_context(PyObject *self/
 PyFlxC_set_instrumentation_active	flx_instrument.c	/^static PyObject* PyFlxC_set_instrumentation_active/
 PyFlxC_vmem_read	flx_instrument.c	/^static PyObject* PyFlxC_vmem_read(PyObject *self, /
-PyQemuEmulationInterface	PyQEMU.py	/^class PyQemuEmulationInterface:$/
 Q	ops_sse.h	/^#define Q(n) q$/
 Q	ops_sse.h	/^#define Q(n) XMM_Q(n)$/
+Qemu	PyQEMU.py	/^class Qemu:$/
+QemuFlxLogger	PyQEMU.py	/^class QemuFlxLogger:$/
 REX_B	translate.c	/^#define REX_B(s) ((s)->rex_b)$/
 REX_B	translate.c	/^#define REX_B(s) 0$/
 REX_X	translate.c	/^#define REX_X(s) ((s)->rex_x)$/
 REX_X	translate.c	/^#define REX_X(s) 0$/
-RegisteredCallback	PyQEMU.py	/^class RegisteredCallback:$/
 SEG_ADDL	op_helper.c	/^#define SEG_ADDL(ssp, sp, sp_mask) ((uint32_t)((ss/
 SET_ESP	op_helper.c	/^#define SET_ESP(val, sp_mask)\\$/
 SET_ESP	op_helper.c	/^#define SET_ESP(val, sp_mask) ESP = (ESP & ~(sp_ma/
@@ -188,16 +197,9 @@ SSE_HELPER_W	ops_sse.h	/^#define SSE_HELPER_W(name, F)\\$/
 SSE_HELPER_W	ops_sse_header.h	/^#define SSE_HELPER_W(name, F)\\$/
 SSSE3_OP	translate.c	/^#define SSSE3_OP(x) { MMX_OP2(x), CPUID_EXT_SSSE3 /
 ST	exec.h	/^#define ST(n)  (env->fpregs[(env->fpstt + (n)) & 7/
-Stack	PyQEMU.py	/^class Stack(list):$/
-StackMemoryTracer	PyQEMU.py	/^class StackMemoryTracer:$/
-StdoutEventLogger	PyQEMU.py	/^class StdoutEventLogger:$/
-Thread	PyQEMU.py	/^class Thread:$/
-TracedProcess	PyQEMU.py	/^class TracedProcess(processinfo.Process):$/
 UNPCK_OP	ops_sse.h	/^#define UNPCK_OP(base_name, base)                 /
 UNPCK_OP	ops_sse.h	/^UNPCK_OP(l, 0)$/
 UNPCK_OP	ops_sse_header.h	/^#define UNPCK_OP(base_name, base)                 /
-UnknownMemoryTracer	PyQEMU.py	/^class UnknownMemoryTracer:$/
-UntracedProcess	PyQEMU.py	/^class UntracedProcess(processinfo.Process):$/
 VMSTATE_FP_REGS	machine.c	/^#define VMSTATE_FP_REGS(_field, _state, _n)       /
 VMSTATE_FP_REGS	machine.c	/^#define VMSTATE_FP_REGS(_field, _state, _n)       /
 VMSTATE_HACK_UINT32	machine.c	/^#define VMSTATE_HACK_UINT32(_f, _s, _t)           /
@@ -206,6 +208,7 @@ VMSTATE_SEGMENT	machine.c	/^#define VMSTATE_SEGMENT(_field, _state) {         /
 VMSTATE_SEGMENT_ARRAY	machine.c	/^#define VMSTATE_SEGMENT_ARRAY(_field, _state, _n) /
 VMSTATE_XMM_REGS	machine.c	/^#define VMSTATE_XMM_REGS(_field, _state, _n)      /
 VMSTATE_YMMH_REGS_VARS	machine.c	/^#define VMSTATE_YMMH_REGS_VARS(_field, _state, _n,/
+VirtualMachine	PyQEMU.py	/^class VirtualMachine:$/
 W	ops_sse.h	/^#define W(n) MMX_W(n)$/
 W	ops_sse.h	/^#define W(n) XMM_W(n)$/
 X86_64_DEF	translate.c	/^#define X86_64_DEF(...)  __VA_ARGS__$/
@@ -226,83 +229,36 @@ XMM_S	cpu.h	/^#define XMM_S(n) _s[3 - (n)]$/
 XMM_S	cpu.h	/^#define XMM_S(n) _s[n]$/
 XMM_W	cpu.h	/^#define XMM_W(n) _w[7 - (n)]$/
 XMM_W	cpu.h	/^#define XMM_W(n) _w[n]$/
-__call__	PyQEMU.py	/^	def __call__(self, *args):$/
-__deepcopy__	PyQEMU.py	/^	def __deepcopy__(self, memo):$/
-__deepcopy__	PyQEMU.py	/^	def __deepcopy__(self, memo):$/
-__deepcopy__	PyQEMU.py	/^	def __deepcopy__(self, memo):$/
 __del__	PyQEMU.py	/^	def __del__(self):$/
-__del__	PyQEMU.py	/^	def __del__(self):$/
-__eq__	PyQEMU.py	/^	def __eq__(self, other):$/
-__eq__	PyQEMU.py	/^	def __eq__(self, other):$/
-__ge__	PyQEMU.py	/^	def __ge__(self, other):$/
-__gt__	PyQEMU.py	/^	def __gt__(self, other):$/
-__hash__	PyQEMU.py	/^	def __hash__(self):$/
-__init__	PyQEMU.py	/^	def __init__(self, *args):$/
-__init__	PyQEMU.py	/^	def __init__(self, fromaddr, toaddr, nextaddr, pr/
-__init__	PyQEMU.py	/^	def __init__(self, directory, dumpfile, cache = T/
-__init__	PyQEMU.py	/^	def __init__(self, dumpfile):$/
-__init__	PyQEMU.py	/^	def __init__(self, startaddr, size, origin = None/
-__init__	PyQEMU.py	/^	def __init__(self, process):$/
-__init__	PyQEMU.py	/^	def __init__(self, process):$/
-__init__	PyQEMU.py	/^	def __init__(self, process):$/
-__init__	PyQEMU.py	/^	def __init__(self, process):$/
-__init__	PyQEMU.py	/^	def __init__(self, process, heap = None, stack = /
-__init__	PyQEMU.py	/^	def __init__(self, address, callback):$/
-__init__	PyQEMU.py	/^	def __init__(self, func):$/
-__init__	PyQEMU.py	/^	def __init__(self, process, heap = None, stack = /
-__init__	PyQEMU.py	/^	def __init__(self, callhandler = []):$/
-__init__	PyQEMU.py	/^	def __init__(self, callhandler):$/
-__init__	PyQEMU.py	/^	def __init__(self, process):$/
-__int__	PyQEMU.py	/^	def __int__(self):$/
-__le__	PyQEMU.py	/^	def __le__(self, other):$/
-__len__	PyQEMU.py	/^	def __len__(self):$/
-__lt__	PyQEMU.py	/^	def __lt__(self, other):$/
-__ne__	PyQEMU.py	/^	def __ne__(self, other):$/
-__ne__	PyQEMU.py	/^	def __ne__(self, other):$/
-__str__	PyQEMU.py	/^	def __str__(self):$/
-__str__	PyQEMU.py	/^	def __str__(self):$/
-__str__	PyQEMU.py	/^	def __str__(self):$/
-_handle_call_filter	PyQEMU.py	/^	def _handle_call_filter(self, fromaddr, toaddr, n/
-_handle_interesting_call	PyQEMU.py	/^	def _handle_interesting_call(self, fromaddr, toad/
-_is_jmp	PyQEMU.py	/^	def _is_jmp(self, fromaddr, toaddr, nextaddr):$/
-_is_jmp_pad	PyQEMU.py	/^	def _is_jmp_pad(self, toaddr):$/
+__init__	PyQEMU.py	/^	def __init__(self, config):$/
+__init__	PyQEMU.py	/^	def __init__(self):$/
+__init__	PyQEMU.py	/^	def __init__(self, configfile):$/
 abs1	ops_sse.h	/^static inline int abs1(int a)$/
 add128	op_helper.c	/^static void add128(uint64_t *plow, uint64_t *phigh/
-addBreakpoint	PyQEMU.py	/^	def addBreakpoint(self, addr, callback):$/
-addPendingReturn	PyQEMU.py	/^	def addPendingReturn(self, function):$/
-addProcessToTrace	PyQEMU.py	/^	def addProcessToTrace(cls, process_name):$/
-addProcessToTrace	PyQEMU.py	/^	def addProcessToTrace(cls, process_name):$/
-addReturnCallback	PyQEMU.py	/^	def addReturnCallback(self, callback):$/
 add_flagname_to_bitmaps	cpuid.c	/^static void add_flagname_to_bitmaps(const char *fl/
-addrInExe	PyQEMU.py	/^	def addrInExe(self, addr):$/
-allocate	PyQEMU.py	/^	def allocate(self, address, size):$/
-allocate	PyQEMU.py	/^	def allocate(self, address):$/
-allocate	PyQEMU.py	/^	def allocate(self, address):$/
-allocated	PyQEMU.py	/^	def allocated(self, address):$/
-allocated	PyQEMU.py	/^	def allocated(self, address):$/
-allocated	PyQEMU.py	/^	def allocated(self, address):$/
-allocated	PyQEMU.py	/^	def allocated(self, address):$/
+allocated	PyQEMU.py.bak	/^	def allocated(self, address):$/
 altcmp	cpuid.c	/^static int altcmp(const char *s, const char *e, co/
 approx_rcp	op_helper.c	/^static float approx_rcp(float a)$/
 approx_rsqrt	op_helper.c	/^static float approx_rsqrt(float a)$/
+avl_bbl_cmp	flx_bbl.c	/^int avl_bbl_cmp(const flx_bbl* a, const flx_bbl* b/
+avl_bbl_free	flx_bbl.c	/^void avl_bbl_free(void* item){$/
 avl_breakpoint_cmp	flx_breakpoint.c	/^static int avl_breakpoint_cmp(const flx_breakpoint/
 avl_breakpoint_free	flx_breakpoint.c	/^static void avl_breakpoint_free(flx_breakpoint *bp/
-avl_page_cmp	flx_bbl.c	/^int avl_page_cmp(const uint16_t* a, const uint16_t/
+avl_context_cmp	flx_context.c	/^avl_context_cmp(const flx_context* a, const flx_co/
+avl_context_free	flx_context.c	/^avl_context_free(flx_context* c){$/
 avl_page_cmp	flx_filter.c	/^int avl_page_cmp(const uint16_t* a, const uint16_t/
-avl_page_free	flx_bbl.c	/^void avl_page_free(void* item){$/
 avl_page_free	flx_filter.c	/^void avl_page_free(void* item){$/
 avl_process_cmp	flx_breakpoint.c	/^static int avl_process_cmp(const uint32_t *a, cons/
 avl_process_free	flx_breakpoint.c	/^static void avl_process_free(void *item){$/
 avl_process_tb_cmp	flx_tbrestoring.c	/^static int avl_process_tb_cmp(const flx_process_tb/
 avl_process_tb_free	flx_tbrestoring.c	/^static void avl_process_tb_free(flx_process_tb* tb/
-bottom	PyQEMU.py	/^	def bottom(self):$/
 breakpoint_handler	helper.c	/^static void breakpoint_handler(CPUState *env)$/
-callFromExe	PyQEMU.py	/^	def callFromExe(self):$/
+buildLogfile	PyQEMU.py	/^	def buildLogfile(self, process):$/
 check_exception	op_helper.c	/^static int check_exception(int intno, int *error_c/
 check_features_against_host	cpuid.c	/^static int check_features_against_host(x86_def_t */
 check_hw_breakpoints	helper.c	/^int check_hw_breakpoints(CPUState *env, int force_/
 check_io	op_helper.c	/^static inline void check_io(int addr, int size)$/
-close	PyQEMU.py	/^	def close(self):$/
+closeAll	PyQEMU.py	/^	def closeAll(self):$/
 compute_all_eflags	op_helper.c	/^static int compute_all_eflags(void)$/
 compute_c_eflags	op_helper.c	/^static int compute_c_eflags(void)$/
 compute_eflags	exec.h	/^static inline uint32_t compute_eflags(void)$/
@@ -347,15 +303,9 @@ cpu_x86_update_cr4	helper.c	/^void cpu_x86_update_cr4(CPUX86State *env, uint32_t
 cpudef_register	cpuid.c	/^static int cpudef_register(QemuOpts *opts, void *o/
 cpudef_setfield	cpuid.c	/^static int cpudef_setfield(const char *name, const/
 cpyid	cpuid.c	/^static void cpyid(const char *s, uint32_t *id)$/
-createNewThread	PyQEMU.py	/^	def createNewThread(self):$/
-creg	PyQEMU.py	/^	def creg(self, register):$/
-deallocate	PyQEMU.py	/^	def deallocate(self, address):$/
-debug	PyQEMU.py	/^def debug(msg):$/
-delBreakpoint	PyQEMU.py	/^	def delBreakpoint(self, addr):$/
-delete	PyQEMU.py	/^	def delete(self):$/
+debug	PyQEMU.py	/^	def debug(self, message):$/
 disas_insn	translate.c	/^static target_ulong disas_insn(DisasContext *s, ta/
 div64	op_helper.c	/^static int div64(uint64_t *plow, uint64_t *phigh, /
-doReturn	PyQEMU.py	/^	def doReturn(self):$/
 do_cpu_init	helper.c	/^void do_cpu_init(CPUState *env)$/
 do_cpu_init	helper.c	/^void do_cpu_init(CPUState *env)$/
 do_cpu_sipi	helper.c	/^void do_cpu_sipi(CPUState *env)$/
@@ -368,20 +318,49 @@ do_interrupt_real	op_helper.c	/^static void do_interrupt_real(int intno, int is_
 do_interrupt_user	op_helper.c	/^void do_interrupt_user(int intno, int is_int, int /
 do_smm_enter	op_helper.c	/^void do_smm_enter(void)$/
 do_smm_enter	op_helper.c	/^void do_smm_enter(void)$/
-dump_memory	PyQEMU.py	/^def dump_memory(process, address, len, filename):$/
-eip	PyQEMU.py	/^	def eip(self):$/
-empty	PyQEMU.py	/^	def empty(self):$/
-emulate_function	PyQEMU.py	/^def emulate_function(process, eip):$/
 ensure_error_handling_helper	PyQEMU.py	/^def ensure_error_handling_helper(func):$/
-entryPointReached	PyQEMU.py	/^	def entryPointReached(self, addr):$/
+error	PyQEMU.py	/^	def error(self, message):$/
 error_dummy	PyQEMU.py	/^def error_dummy(func, *args):$/
-event_update_cr3	PyQEMU.py	/^def event_update_cr3(old_cr3, new_cr3):$/
 exeption_has_error_code	op_helper.c	/^static int exeption_has_error_code(int intno)$/
 ffs1	ops_sse.h	/^static inline int ffs1(unsigned int val)$/
 find_hw_breakpoint	kvm.c	/^static int find_hw_breakpoint(target_ulong addr, i/
 float64_to_floatx	exec.h	/^#define float64_to_floatx(x, e) (x)$/
 floatx_to_float64	exec.h	/^#define floatx_to_float64(x, e) (x)$/
-flushEvents	PyQEMU.py	/^	def flushEvents(self):$/
+flx_arithwindow_bblexec	flx_arithwindow.c	/^int flx_arithwindow_bblexec(uint32_t eip, uint32_t/
+flx_arithwindow_bbltranslate	flx_arithwindow.c	/^int flx_arithwindow_bbltranslate(flx_bbl* bbl){$/
+flx_arithwindow_cache_add	flx_arithwindow.c	/^static inline void flx_arithwindow_cache_add(uint3/
+flx_arithwindow_cache_del	flx_arithwindow.c	/^static inline void flx_arithwindow_cache_del(uint3/
+flx_arithwindow_cache_init	flx_arithwindow.c	/^static inline void flx_arithwindow_cache_init(void/
+flx_arithwindow_cache_search	flx_arithwindow.c	/^static inline int flx_arithwindow_cache_search(uin/
+flx_arithwindow_destroy	flx_arithwindow.c	/^void flx_arithwindow_destroy(void){$/
+flx_arithwindow_disable	flx_arithwindow.c	/^void flx_arithwindow_disable(void){$/
+flx_arithwindow_enable	flx_arithwindow.c	/^void flx_arithwindow_enable(uint32_t window_size, /
+flx_arithwindow_init	flx_arithwindow.c	/^void flx_arithwindow_init(arithwindow_handler hand/
+flx_bbl_add	flx_bbl.c	/^void flx_bbl_add(flx_bbl* bbl){$/
+flx_bbl_addrtotree	flx_bbl.c	/^flx_bbl_addrtotree(uint32_t addr){$/
+flx_bbl_cache_hit	flx_bbl.c	/^flx_bbl_cache_hit(uint32_t address){$/
+flx_bbl_cache_index	flx_bbl.c	/^flx_bbl_cache_index(uint32_t address){$/
+flx_bbl_cache_invalidate	flx_bbl.c	/^flx_bbl_cache_invalidate(void){$/
+flx_bbl_cache_update	flx_bbl.c	/^flx_bbl_cache_update(flx_bbl* bbl){$/
+flx_bbl_destroy	flx_bbl.c	/^void flx_bbl_destroy(void){$/
+flx_bbl_flush	flx_bbl.c	/^void flx_bbl_flush(void){$/
+flx_bbl_init	flx_bbl.c	/^void flx_bbl_init(void){$/
+flx_bbl_search	flx_bbl.c	/^flx_bbl_search(uint32_t address){$/
+flx_bbltrace_disable	flx_bbltrace.c	/^void flx_bbltrace_disable(void){$/
+flx_bbltrace_enable	flx_bbltrace.c	/^void flx_bbltrace_enable(void){$/
+flx_bbltrace_event	flx_bbltrace.c	/^void flx_bbltrace_event(uint32_t eip, uint32_t esp/
+flx_bbltrace_init	flx_bbltrace.c	/^void flx_bbltrace_init(void){$/
+flx_bbltrace_register_handler	flx_bbltrace.c	/^void flx_bbltrace_register_handler(bbltrace_handle/
+flx_bbltrace_unregister_handler	flx_bbltrace.c	/^void flx_bbltrace_unregister_handler(bbltrace_hand/
+flx_bbltranslate_arith	flx_bbltranslate.c	/^void flx_bbltranslate_arith(void){$/
+flx_bbltranslate_bbl_end	flx_bbltranslate.c	/^void flx_bbltranslate_bbl_end(void){$/
+flx_bbltranslate_bbl_new	flx_bbltranslate.c	/^void flx_bbltranslate_bbl_new(uint32_t addr){$/
+flx_bbltranslate_disable	flx_bbltranslate.c	/^void flx_bbltranslate_disable(void){$/
+flx_bbltranslate_enable	flx_bbltranslate.c	/^void flx_bbltranslate_enable(void){$/
+flx_bbltranslate_init	flx_bbltranslate.c	/^void flx_bbltranslate_init(void){$/
+flx_bbltranslate_insn	flx_bbltranslate.c	/^void flx_bbltranslate_insn(void){$/
+flx_bbltranslate_register_handler	flx_bbltranslate.c	/^void flx_bbltranslate_register_handler(bbltranslat/
+flx_bbltranslate_unregister_handler	flx_bbltranslate.c	/^void flx_bbltranslate_unregister_handler(bbltransl/
 flx_breakpoint_alloc	flx_breakpoint.c	/^static flx_breakpoint* flx_breakpoint_alloc(uint32/
 flx_breakpoint_delete	flx_breakpoint.c	/^int flx_breakpoint_delete(uint32_t addr, uint32_t /
 flx_breakpoint_free	flx_breakpoint.c	/^static void flx_breakpoint_free(flx_breakpoint* bp/
@@ -389,49 +368,109 @@ flx_breakpoint_init	flx_breakpoint.c	/^void flx_breakpoint_init(void){$/
 flx_breakpoint_insert	flx_breakpoint.c	/^void flx_breakpoint_insert(uint32_t addr, uint32_t/
 flx_breakpoint_search	flx_breakpoint.c	/^int flx_breakpoint_search(uint32_t addr, uint32_t /
 flx_breakpoint_search_addr	flx_breakpoint.c	/^int flx_breakpoint_search_addr(uint32_t addr, uint/
-flx_filter_add_by_addr	flx_bbl.c	/^int flx_filter_add_by_addr(uint32_t address){$/
+flx_caballero_disable	flx_caballero.c	/^void flx_caballero_disable(void){$/
+flx_caballero_enable	flx_caballero.c	/^void flx_caballero_enable(uint32_t min_icount, flo/
+flx_caballero_event	flx_caballero.c	/^int flx_caballero_event(flx_bbl* bbl){$/
+flx_caballero_init	flx_caballero.c	/^void flx_caballero_init(caballero_handler handler)/
+flx_calltrace_bblexec	flx_calltrace.c	/^int flx_calltrace_bblexec(uint32_t eip, uint32_t e/
+flx_calltrace_current_stackframes	flx_calltrace.c	/^flx_calltrace_current_stackframes(void){$/
+flx_calltrace_disable	flx_calltrace.c	/^void flx_calltrace_disable(void){$/
+flx_calltrace_enable	flx_calltrace.c	/^void flx_calltrace_enable(void){$/
+flx_calltrace_event	flx_calltrace.c	/^void flx_calltrace_event(uint32_t old_eip, uint32_/
+flx_calltrace_init	flx_calltrace.c	/^void flx_calltrace_init(void){$/
+flx_calltrace_register_handler	flx_calltrace.c	/^void flx_calltrace_register_handler(calltrace_hand/
+flx_calltrace_stackframes_alloc	flx_calltrace.c	/^flx_calltrace_stackframes_alloc(void){$/
+flx_calltrace_stackframes_destroy	flx_calltrace.c	/^flx_calltrace_stackframes_destroy(flx_context* con/
+flx_calltrace_stackframes_left	flx_calltrace.c	/^flx_calltrace_stackframes_left(flx_stackframes* st/
+flx_calltrace_stackframes_pop	flx_calltrace.c	/^flx_calltrace_stackframes_pop(flx_stackframes* sta/
+flx_calltrace_stackframes_push	flx_calltrace.c	/^flx_calltrace_stackframes_push(flx_stackframes* st/
+flx_calltrace_stackframes_realloc	flx_calltrace.c	/^flx_calltrace_stackframes_realloc(flx_stackframes*/
+flx_calltrace_unregister_handler	flx_calltrace.c	/^void flx_calltrace_unregister_handler(calltrace_ha/
+flx_constsearch_current_memory	flx_constsearch.c	/^flx_constsearch_current_memory(void){$/
+flx_constsearch_destructor	flx_constsearch.c	/^flx_constsearch_destructor(flx_context* c){$/
+flx_constsearch_disable	flx_constsearch.c	/^void flx_constsearch_disable(void){$/
+flx_constsearch_enable	flx_constsearch.c	/^void flx_constsearch_enable(void){$/
+flx_constsearch_init	flx_constsearch.c	/^void flx_constsearch_init(constsearch_handler hand/
+flx_constsearch_match	flx_constsearch.c	/^flx_constsearch_match(mem_block* block){$/
+flx_constsearch_memaccess	flx_constsearch.c	/^int flx_constsearch_memaccess(uint32_t address, ui/
+flx_constsearch_pattern	flx_constsearch.c	/^void flx_constsearch_pattern(uint8_t* pattern, uin/
+flx_constsearch_search	flx_constsearch.c	/^void flx_constsearch_search(void){$/
+flx_context_alloc	flx_context.c	/^flx_context_alloc(uint16_t pid, uint16_t tid){$/
+flx_context_current	flx_context.c	/^flx_context_current(void){$/
+flx_context_init	flx_context.c	/^void flx_context_init(void){$/
+flx_context_set	flx_context.c	/^void flx_context_set(int32_t p, int32_t t){$/
+flx_entropy_callevent	flx_entropy.c	/^int flx_entropy_callevent(uint32_t old_eip, uint32/
+flx_entropy_disable	flx_entropy.c	/^void flx_entropy_disable(void){$/
+flx_entropy_enable	flx_entropy.c	/^void flx_entropy_enable(uint32_t min_icount, float/
+flx_entropy_init	flx_entropy.c	/^void flx_entropy_init(entropy_handler handler){$/
+flx_entropy_memaccess	flx_entropy.c	/^int flx_entropy_memaccess(uint32_t address, uint32/
+flx_entropy_start	flx_entropy.c	/^static void flx_entropy_start(void){$/
+flx_entropy_stop	flx_entropy.c	/^static void flx_entropy_stop(void){$/
 flx_filter_add_by_addr	flx_filter.c	/^int flx_filter_add_by_addr(uint32_t address){$/
-flx_filter_add_by_range	flx_bbl.c	/^int flx_filter_add_by_range(uint32_t start, uint32/
 flx_filter_add_by_range	flx_filter.c	/^int flx_filter_add_by_range(uint32_t start, uint32/
-flx_filter_addrtopage	flx_bbl.c	/^flx_filter_addrtopage(uint32_t addr){$/
 flx_filter_addrtopage	flx_filter.c	/^flx_filter_addrtopage(uint32_t addr){$/
-flx_filter_addrtotree	flx_bbl.c	/^flx_filter_addrtotree(uint32_t addr){$/
 flx_filter_addrtotree	flx_filter.c	/^flx_filter_addrtotree(uint32_t addr){$/
-flx_filter_addrtovalue	flx_bbl.c	/^flx_filter_addrtovalue(uint32_t addr){$/
 flx_filter_addrtovalue	flx_filter.c	/^flx_filter_addrtovalue(uint32_t addr){$/
-flx_filter_cache_hit	flx_bbl.c	/^flx_filter_cache_hit(uint32_t address){$/
 flx_filter_cache_hit	flx_filter.c	/^flx_filter_cache_hit(uint32_t address){$/
-flx_filter_cache_index	flx_bbl.c	/^flx_filter_cache_index(uint32_t address){$/
 flx_filter_cache_index	flx_filter.c	/^flx_filter_cache_index(uint32_t address){$/
-flx_filter_cache_invalidate	flx_bbl.c	/^flx_filter_cache_invalidate(uint32_t address){$/
 flx_filter_cache_invalidate	flx_filter.c	/^flx_filter_cache_invalidate(uint32_t address){$/
-flx_filter_cache_update	flx_bbl.c	/^flx_filter_cache_update(uint32_t address){$/
 flx_filter_cache_update	flx_filter.c	/^flx_filter_cache_update(uint32_t address){$/
-flx_filter_del_by_addr	flx_bbl.c	/^int flx_filter_del_by_addr(uint32_t address){$/
 flx_filter_del_by_addr	flx_filter.c	/^int flx_filter_del_by_addr(uint32_t address){$/
-flx_filter_del_by_range	flx_bbl.c	/^int flx_filter_del_by_range(uint32_t start, uint32/
 flx_filter_del_by_range	flx_filter.c	/^int flx_filter_del_by_range(uint32_t start, uint32/
-flx_filter_destroy	flx_bbl.c	/^void flx_filter_destroy(void){$/
 flx_filter_destroy	flx_filter.c	/^void flx_filter_destroy(void){$/
-flx_filter_disable	flx_bbl.c	/^void flx_filter_disable(void){$/
 flx_filter_disable	flx_filter.c	/^void flx_filter_disable(void){$/
-flx_filter_enable	flx_bbl.c	/^void flx_filter_enable(void){$/
 flx_filter_enable	flx_filter.c	/^void flx_filter_enable(void){$/
-flx_filter_init	flx_bbl.c	/^void flx_filter_init(void){$/
 flx_filter_init	flx_filter.c	/^void flx_filter_init(void){$/
-flx_filter_search_by_addr	flx_bbl.c	/^int flx_filter_search_by_addr(uint32_t address){$/
 flx_filter_search_by_addr	flx_filter.c	/^int flx_filter_search_by_addr(uint32_t address){$/
-flx_filter_search_by_range	flx_bbl.c	/^int flx_filter_search_by_range(uint32_t start, uin/
 flx_filter_search_by_range	flx_filter.c	/^int flx_filter_search_by_range(uint32_t start, uin/
+flx_functionentropy_calculate_entropy	flx_functionentropy.c	/^flx_functionentropy_calculate_entropy(memtracker* /
+flx_functionentropy_current_stackframe	flx_functionentropy.c	/^flx_functionentropy_current_stackframe(void){$/
+flx_functionentropy_disable	flx_functionentropy.c	/^void flx_functionentropy_disable(void){$/
+flx_functionentropy_enable	flx_functionentropy.c	/^void flx_functionentropy_enable(float threshold){$/
+flx_functionentropy_functionevent	flx_functionentropy.c	/^int flx_functionentropy_functionevent(uint32_t old/
+flx_functionentropy_functionevent_call	flx_functionentropy.c	/^flx_functionentropy_functionevent_call(uint32_t ne/
+flx_functionentropy_functionevent_ret	flx_functionentropy.c	/^flx_functionentropy_functionevent_ret(void){$/
+flx_functionentropy_init	flx_functionentropy.c	/^void flx_functionentropy_init(functionentropy_hand/
+flx_functionentropy_memaccess	flx_functionentropy.c	/^int flx_functionentropy_memaccess(uint32_t address/
+flx_functionentropy_stackframe_alloc	flx_functionentropy.c	/^flx_functionentropy_stackframe_alloc(void){$/
+flx_functionentropy_stackframe_dealloc	flx_functionentropy.c	/^flx_functionentropy_stackframe_dealloc(function_st/
+flx_functionentropy_stackframe_destroy	flx_functionentropy.c	/^flx_functionentropy_stackframe_destroy(flx_context/
+flx_functiontrace_disable	flx_functiontrace.c	/^void flx_functiontrace_disable(void){$/
+flx_functiontrace_enable	flx_functiontrace.c	/^void flx_functiontrace_enable(void){$/
+flx_functiontrace_event	flx_functiontrace.c	/^int flx_functiontrace_event(uint32_t old_eip, uint/
+flx_functiontrace_init	flx_functiontrace.c	/^void flx_functiontrace_init(functiontrace_handler /
 flx_get_vmem_dword	op_helper.c	/^int flx_get_vmem_dword(uint32_t address, uint32_t /
 flx_get_vmem_word	op_helper.c	/^int flx_get_vmem_word(uint32_t address, uint16_t */
-flx_helper_debug	op_helper.c	/^#define flx_helper_debug(s, ...) printf(s, __VA_AR/
+flx_global_hook	flx_hooking.h	/^#define flx_global_hook(conditions, context, hook,/
+flx_helper_debug	op_helper.c	/^#define flx_helper_debug(s, ...) do{}while(0)$/
 flx_hex_dump	op_helper.c	/^void flx_hex_dump(uint32_t address, uint32_t len)$/
 flx_hook	flx_hooking.h	/^#define flx_hook(conditions, context, hook, ...) d/
+flx_memtrace_disable	flx_memtrace.c	/^void flx_memtrace_disable(void){$/
+flx_memtrace_enable	flx_memtrace.c	/^void flx_memtrace_enable(void){$/
 flx_memtrace_event	flx_memtrace.c	/^void flx_memtrace_event(uint32_t address, uint32_t/
-flx_memtrace_init	flx_memtrace.c	/^void flx_memtrace_init(mem_access_handler handler)/
-flx_memtrace_start	flx_memtrace.c	/^void flx_memtrace_start(void){$/
-flx_memtrace_stop	flx_memtrace.c	/^void flx_memtrace_stop(void){$/
+flx_memtrace_init	flx_memtrace.c	/^void flx_memtrace_init(void){$/
+flx_memtrace_read	translate.c	/^void flx_memtrace_read(TCGv ret, TCGv addr, uint8_/
+flx_memtrace_register_handler	flx_memtrace.c	/^void flx_memtrace_register_handler(memtrace_handle/
+flx_memtrace_unregister_handler	flx_memtrace.c	/^void flx_memtrace_unregister_handler(memtrace_hand/
+flx_memtrace_write	translate.c	/^void flx_memtrace_write(TCGv arg, TCGv addr, uint8/
+flx_memtrack_delete	flx_memtrack.c	/^flx_memtrack_delete(memtracker* tracker){$/
+flx_memtrack_iterate	flx_memtrack.c	/^flx_memtrack_iterate(memtracker* tracker, memtrack/
+flx_memtrack_iterator	flx_memtrack.c	/^flx_memtrack_iterator(void){$/
+flx_memtrack_load	flx_memtrack.c	/^flx_memtrack_load(memtracker* tracker, uint32_t ad/
+flx_memtrack_merge	flx_memtrack.c	/^flx_memtrack_merge(memtracker* dst, memtracker* sr/
+flx_memtrack_new	flx_memtrack.c	/^memtracker* flx_memtrack_new(void){$/
+flx_memtrack_store	flx_memtrack.c	/^flx_memtrack_store(memtracker* tracker, uint32_t a/
+flx_module_alloc	flx_module.c	/^flx_module_alloc(void){$/
+flx_module_byname	flx_module.c	/^flx_module_byname(flx_module_list* list, char* nam/
+flx_module_delete	flx_module.c	/^flx_module_delete(flx_module_list* list, char* nam/
+flx_module_list_alloc	flx_list.c	/^flx_module_list_alloc(void){$/
+flx_module_list_append	flx_list.c	/^flx_module_list_append(flx_module_list* list, flx_/
+flx_module_list_byname	flx_list.c	/^flx_module_list_byname(flx_module_list* list, char/
+flx_module_list_delete	flx_list.c	/^flx_module_list_delete(flx_module_list* list){$/
+flx_module_list_free	flx_list.c	/^flx_module_list_free(flx_module_list* list){$/
+flx_module_list_new	flx_list.c	/^flx_module_list_new(void){$/
+flx_module_list_remove	flx_list.c	/^flx_module_list_remove(flx_module_list* list, flx_/
+flx_module_new	flx_module.c	/^flx_module_new(flx_module_list* list, char* name){/
 flx_optrace_disable	flx_optrace.c	/^void flx_optrace_disable(void){$/
 flx_optrace_enable	flx_optrace.c	/^void flx_optrace_enable(void){$/
 flx_optrace_event	flx_optrace.c	/^void flx_optrace_event(uint32_t eip, uint32_t opco/
@@ -439,25 +478,37 @@ flx_optrace_init	flx_optrace.c	/^void flx_optrace_init(optrace_handler handler){
 flx_optrace_status	flx_optrace.c	/^int flx_optrace_status(void){$/
 flx_process_tb_alloc	flx_tbrestoring.c	/^flx_process_tb_alloc(uint32_t cr3){$/
 flx_process_tb_free	flx_tbrestoring.c	/^flx_process_tb_free(flx_process_tb* tb){$/
+flx_shadowmem_block_dealloc	flx_shadowmem.c	/^flx_shadowmem_block_dealloc(mem_block* block){$/
+flx_shadowmem_delete	flx_shadowmem.c	/^flx_shadowmem_delete(shadowmem* mem){$/
+flx_shadowmem_find_page	flx_shadowmem.c	/^flx_shadowmem_find_page(shadowmem* mem, uint32_t a/
+flx_shadowmem_get_next_blockbyte	flx_shadowmem.c	/^flx_shadowmem_get_next_blockbyte(shadowmem_iterato/
+flx_shadowmem_get_next_blockstart	flx_shadowmem.c	/^flx_shadowmem_get_next_blockstart(shadowmem_iterat/
+flx_shadowmem_iterate	flx_shadowmem.c	/^flx_shadowmem_iterate(shadowmem_iterator* iter, ui/
+flx_shadowmem_iterator_delete	flx_shadowmem.c	/^flx_shadowmem_iterator_delete(shadowmem_iterator* /
+flx_shadowmem_iterator_new	flx_shadowmem.c	/^flx_shadowmem_iterator_new(shadowmem* mem){$/
+flx_shadowmem_load	flx_shadowmem.c	/^flx_shadowmem_load(shadowmem* mem, uint32_t addres/
+flx_shadowmem_new	flx_shadowmem.c	/^flx_shadowmem_new(void){$/
+flx_shadowmem_store	flx_shadowmem.c	/^flx_shadowmem_store(shadowmem* mem, uint32_t addre/
 flx_tbrestore_delete	flx_tbrestoring.c	/^void flx_tbrestore_delete(uint32_t cr3){$/
 flx_tbrestore_init	flx_tbrestoring.c	/^void flx_tbrestore_init(void){$/
 flx_tbrestore_new	flx_tbrestoring.c	/^void flx_tbrestore_new(uint32_t cr3){$/
 flx_tbrestore_restore	flx_tbrestoring.c	/^int flx_tbrestore_restore(uint32_t cr3){$/
 flx_tbrestore_save	flx_tbrestoring.c	/^int flx_tbrestore_save(uint32_t cr3){$/
 flx_vmem_to_phys	op_helper.c	/^uint32_t flx_vmem_to_phys(uint32_t address)$/
-flxinstrument_bblstart_event	flx_instrument.c	/^int flxinstrument_bblstart_event(uint32_t eip, uin/
-flxinstrument_blacklist	flx_instrument.c	/^void flxinstrument_blacklist(uint32_t addr, uint32/
-flxinstrument_blacklist_alloc	flx_instrument.c	/^void flxinstrument_blacklist_alloc(void){$/
-flxinstrument_blacklist_cleanup	flx_instrument.c	/^void flxinstrument_blacklist_cleanup(void){$/
+flxinstrument_arithwindow_event	flx_instrument.c	/^int flxinstrument_arithwindow_event(uint32_t eip) /
+flxinstrument_bbltrace_event	flx_instrument.c	/^int flxinstrument_bbltrace_event(uint32_t eip, uin/
 flxinstrument_breakpoint_event	flx_instrument.c	/^int flxinstrument_breakpoint_event(uint32_t eip) {/
+flxinstrument_caballero_event	flx_instrument.c	/^int flxinstrument_caballero_event(uint32_t eip, ui/
 flxinstrument_call_event	flx_instrument.c	/^int flxinstrument_call_event(uint32_t call_origin,/
+flxinstrument_constsearch_event	flx_instrument.c	/^int flxinstrument_constsearch_event(uint32_t eip, /
+flxinstrument_functionentropy_event	flx_instrument.c	/^int flxinstrument_functionentropy_event(float entr/
+flxinstrument_functiontrace_event	flx_instrument.c	/^int flxinstrument_functiontrace_event(uint32_t eip/
 flxinstrument_init	flx_instrument.c	/^void flxinstrument_init(void) { $/
-flxinstrument_is_blacklisted	flx_instrument.c	/^int flxinstrument_is_blacklisted(uint32_t addr, ui/
 flxinstrument_jmp_event	flx_instrument.c	/^int flxinstrument_jmp_event(uint32_t jmp_source, u/
 flxinstrument_memtrace_event	flx_instrument.c	/^int flxinstrument_memtrace_event(uint32_t address,/
-flxinstrument_optrace_event	flx_instrument.c	/^int flxinstrument_optrace_event(uint32_t eip, uint/
 flxinstrument_register_callbacks	flx_instrument.c	/^flxinstrument_register_callbacks(void){$/
 flxinstrument_ret_event	flx_instrument.c	/^int flxinstrument_ret_event(uint32_t eip, uint32_t/
+flxinstrument_shutdown_event	flx_instrument.c	/^int flxinstrument_shutdown_event(void) {$/
 flxinstrument_state_init	flx_instrument.c	/^flxinstrument_state_init(void){$/
 flxinstrument_syscall_event	flx_instrument.c	/^int flxinstrument_syscall_event(uint32_t eax) {$/
 flxinstrument_update_cr3	flx_instrument.c	/^int flxinstrument_update_cr3(uint32_t old_cr3, uin/
@@ -472,7 +523,6 @@ fpregs_is_1_no_mmx	machine.c	/^static bool fpregs_is_1_no_mmx(void *opaque, int 
 fpu_raise_exception	op_helper.c	/^static void fpu_raise_exception(void)$/
 fpu_set_exception	op_helper.c	/^static void fpu_set_exception(int mask)$/
 fpush	exec.h	/^static inline void fpush(void)$/
-free	PyQEMU.py	/^	def free(self, address):$/
 funktionen	FLX_TODO	/^	- keine nutzung von api funktionen (syscalls)    /
 gen_add_A0_ds_seg	translate.c	/^static void gen_add_A0_ds_seg(DisasContext *s)$/
 gen_add_A0_im	translate.c	/^static void gen_add_A0_im(DisasContext *s, int val/
@@ -599,25 +649,9 @@ gen_string_movl_A0_ESI	translate.c	/^static inline void gen_string_movl_A0_ESI(D
 gen_svm_check_intercept	translate.c	/^gen_svm_check_intercept(DisasContext *s, target_ul/
 gen_svm_check_intercept_param	translate.c	/^gen_svm_check_intercept_param(DisasContext *s, tar/
 gen_update_cc_op	translate.c	/^static inline void gen_update_cc_op(DisasContext */
-genreg	PyQEMU.py	/^	def genreg(self, index):$/
-getBufFromPtr	PyQEMU.py	/^	def getBufFromPtr(self, num, size):$/
-getBuffer	PyQEMU.py	/^	def getBuffer(self, address):$/
-getBuffer	PyQEMU.py	/^	def getBuffer(self, address):$/
-getBuffer	PyQEMU.py	/^	def getBuffer(self, address):$/
-getBuffer	PyQEMU.py	/^	def getBuffer(self, address):$/
-getBuffer	PyQEMU.py	/^	def getBuffer(self, addr):$/
-getCallstack	PyQEMU.py	/^	def getCallstack(self):$/
-getFunctionArg	PyQEMU.py	/^	def getFunctionArg(self, num):$/
-getIntArg	PyQEMU.py	/^	def getIntArg(self, num):$/
-getMemory	PyQEMU.py	/^	def getMemory(self):$/
-getMemory	PyQEMU.py	/^	def getMemory(self, startaddr, length):$/
-getMemoryTracer	PyQEMU.py	/^	def getMemoryTracer(self, addr):$/
-getPage	PyQEMU.py	/^	def getPage(self, page, memory):$/
-getRandomFileName	PyQEMU.py	/^	def getRandomFileName(self):$/
-getSymbol	PyQEMU.py	/^	def getSymbol(self, addr):$/
-getThread	PyQEMU.py	/^	def getThread(self):$/
+getLogfile	PyQEMU.py	/^	def getLogfile(self, process):$/
+getVirtualMachine	PyQEMU.py	/^def getVirtualMachine():$/
 get_cpuid_vendor	cpuid.c	/^static void get_cpuid_vendor(CPUX86State *env, uin/
-get_current_process	PyQEMU.py	/^def get_current_process():$/
 get_current_register	translate.c	/^int get_current_register(int index){$/
 get_fpreg	machine.c	/^static int get_fpreg(QEMUFile *f, void *opaque, si/
 get_fpreg	machine.c	/^static int get_fpreg(QEMUFile *f, void *opaque, si/
@@ -633,7 +667,6 @@ get_seg_limit	op_helper.c	/^static inline unsigned int get_seg_limit(uint32_t /
 get_sp_mask	op_helper.c	/^static inline unsigned int get_sp_mask(unsigned in/
 get_ss_esp_from_tss	op_helper.c	/^static inline void get_ss_esp_from_tss(uint32_t *s/
 get_uint64_as_uint32	machine.c	/^static int get_uint64_as_uint32(QEMUFile *f, void /
-getstackframe	PyQEMU.py	/^	def getstackframe(self, address):$/
 glue	helper_template.h	/^static int glue(compute_all_add, SUFFIX)(void)$/
 glue	helper_template.h	/^static int glue(compute_c_add, SUFFIX)(void)$/
 glue	helper_template.h	/^static int glue(compute_all_adc, SUFFIX)(void)$/
@@ -696,24 +729,9 @@ glue	ops_sse.h	/^void glue(helper_pcmpestri, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpestrm, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpistri, SUFFIX) (Reg *d, Reg */
 glue	ops_sse.h	/^void glue(helper_pcmpistrm, SUFFIX) (Reg *d, Reg */
-handle_bblstart	PyQEMU.py	/^	def handle_bblstart(self, eip, icount):$/
-handle_breakpoint	PyQEMU.py	/^	def handle_breakpoint(self, addr):$/
-handle_call	PyQEMU.py	/^	def handle_call(self, fromaddr, toaddr, nextaddr)/
-handle_call	PyQEMU.py	/^	def handle_call(self, *args):$/
+handleProcessEvent	PyQEMU.py	/^	def handleProcessEvent(self, obj, process):$/
+handleQemuEvent	PyQEMU.py	/^	def handleQemuEvent(self, ev, *args):$/
 handle_even_inj	op_helper.c	/^static void handle_even_inj(int intno, int is_int,/
-handle_event	PyQEMU.py	/^	def handle_event(self, obj):$/
-handle_event	PyQEMU.py	/^	def handle_event(self, obj):$/
-handle_jmp	PyQEMU.py	/^	def handle_jmp(self, fromaddr, toaddr):$/
-handle_jmp	PyQEMU.py	/^	def handle_jmp(self, *args):$/
-handle_memtrace	PyQEMU.py	/^	def handle_memtrace(self, address, value, size, i/
-handle_memtrace	PyQEMU.py	/^	def handle_memtrace(self, *args):$/
-handle_optrace	PyQEMU.py	/^	def handle_optrace(self, eip, opcode):$/
-handle_optrace	PyQEMU.py	/^	def handle_optrace(self, *args):$/
-handle_ret	PyQEMU.py	/^	def handle_ret(self, fromaddr, toaddr):$/
-handle_ret	PyQEMU.py	/^	def handle_ret(self, *args):$/
-handle_syscall	PyQEMU.py	/^	def handle_syscall(self, eax):$/
-handle_syscall	PyQEMU.py	/^	def handle_syscall(self, *args):$/
-hasSymbol	PyQEMU.py	/^	def hasSymbol(self, addr):$/
 helper_aaa	op_helper.c	/^void helper_aaa(void)$/
 helper_aad	op_helper.c	/^void helper_aad(int base)$/
 helper_aam	op_helper.c	/^void helper_aam(int base)$/
@@ -828,12 +846,12 @@ helper_fldt	exec.h	/^static inline CPU86_LDouble helper_fldt(target_ulo/
 helper_fldt_ST0	op_helper.c	/^void helper_fldt_ST0(target_ulong ptr)$/
 helper_fldz_FT0	op_helper.c	/^void helper_fldz_FT0(void)$/
 helper_fldz_ST0	op_helper.c	/^void helper_fldz_ST0(void)$/
-helper_flx_bblstart	op_helper.c	/^void helper_flx_bblstart(target_ulong eip, uint64_/
-helper_flx_bblstop	op_helper.c	/^void helper_flx_bblstop(target_ulong ins_count){$/
+helper_flx_bblstart	op_helper.c	/^void helper_flx_bblstart(target_ulong eip){$/
 helper_flx_call	op_helper.c	/^void helper_flx_call(target_ulong src_eip, target_/
 helper_flx_debug	op_helper.c	/^void helper_flx_debug(void)$/
 helper_flx_jmp	op_helper.c	/^void helper_flx_jmp(target_ulong src_eip, target_u/
-helper_flx_opcode	op_helper.c	/^void helper_flx_opcode(target_ulong eip, target_ul/
+helper_flx_memtrace_read	op_helper.c	/^void helper_flx_memtrace_read(uint64_t value, uint/
+helper_flx_memtrace_write	op_helper.c	/^void helper_flx_memtrace_write(uint64_t value, uin/
 helper_flx_ret	op_helper.c	/^void helper_flx_ret(target_ulong new_eip){$/
 helper_flx_syscall	op_helper.c	/^void helper_flx_syscall(void){$/
 helper_fmov_FT0_STN	op_helper.c	/^void helper_fmov_FT0_STN(int st_index)$/
@@ -1009,16 +1027,13 @@ hw_breakpoint_len	cpu.h	/^static inline int hw_breakpoint_len(unsigned long /
 hw_breakpoint_remove	helper.c	/^void hw_breakpoint_remove(CPUState *env, int index/
 hw_breakpoint_type	cpu.h	/^static inline int hw_breakpoint_type(unsigned long/
 idiv64	op_helper.c	/^static int idiv64(uint64_t *plow, uint64_t *phigh,/
-imagefilename	PyQEMU.py	/^	def imagefilename(self):$/
-inData	PyQEMU.py	/^	def inData(self, address):$/
-includes	PyQEMU.py	/^	def includes(self, address):$/
+info	PyQEMU.py	/^	def info(self, message):$/
 init	PyQEMU.py	/^def init(sval):	$/
 initpyflxinstrument	flx_instrument.c	/^initpyflxinstrument(void)$/
 insn_const_size	translate.c	/^static inline int insn_const_size(unsigned int ot)/
 insn_get	translate.c	/^static inline uint32_t insn_get(DisasContext *s, i/
-isRegisteredThread	PyQEMU.py	/^	def isRegisteredThread(self):$/
-isReturning	PyQEMU.py	/^	def isReturning(self, nextaddr):$/
 is_fast_jcc_case	translate.c	/^static int is_fast_jcc_case(DisasContext *s, int b/
+is_used	flx_shadowmem.c	/^uint8_t is_used(shadowmem* mem, uint32_t address){/
 iswhite	cpuid.c	/^#define iswhite(c) ((c) && ((c) <= ' ' || '~' < (c/
 kernelspace	flx_instrument.h	/^#define kernelspace(x) (x&0x80000000)$/
 kvm_arch_debug	kvm.c	/^int kvm_arch_debug(struct kvm_debug_exit_arch *arc/
@@ -1065,21 +1080,17 @@ kvm_put_xcrs	kvm.c	/^static int kvm_put_xcrs(CPUState *env)$/
 kvm_put_xsave	kvm.c	/^static int kvm_put_xsave(CPUState *env)$/
 less_than_7	machine.c	/^static bool less_than_7(void *opaque, int version_/
 listflags	cpuid.c	/^static void listflags(char *buf, int bufsize, uint/
-loadCallbacks	PyQEMU.py	/^	def loadCallbacks(self,handlers):$/
+loadConfiguration	PyQEMU.py	/^	def loadConfiguration(self, configfile):$/
 load_eflags	exec.h	/^static inline void load_eflags(int eflags, int upd/
 load_seg_cache_raw_dt	op_helper.c	/^static inline void load_seg_cache_raw_dt(SegmentCa/
 load_seg_vm	op_helper.c	/^static inline void load_seg_vm(int seg, int select/
 load_segment	op_helper.c	/^static inline int load_segment(uint32_t *e1_ptr, u/
-log	PyQEMU.py	/^	def log(self, obj):$/
-logFunctionAnalysis	PyQEMU.py	/^	def logFunctionAnalysis(self, function, dotfile, /
-log_call	PyQEMU.py	/^	def log_call(self, function, prefix = ""):$/
 lookup_feature	cpuid.c	/^static int lookup_feature(uint32_t *pval, const ch/
 lshift	exec.h	/^static inline target_long lshift(target_long x, in/
 mce_init	helper.c	/^static void mce_init(CPUX86State *cenv)$/
+memory_byte_cmp	flx_memtrack.c	/^memory_byte_cmp(const memory_byte* b1, const memor/
+memory_byte_free	flx_memtrack.c	/^memory_byte_free(memory_byte* byte){$/
 neg128	op_helper.c	/^static void neg128(uint64_t *plow, uint64_t *phigh/
-onData	PyQEMU.py	/^	def onData(self, addr):$/
-onHeap	PyQEMU.py	/^	def onHeap(self, addr):$/
-onStack	PyQEMU.py	/^	def onStack(self, addr):$/
 optimize_flags_init	translate.c	/^void optimize_flags_init(void)$/
 pcmp_ilen	ops_sse.h	/^static inline int pcmp_ilen(Reg *r, uint8_t ctrl)$/
 pcmp_val	ops_sse.h	/^static inline int pcmp_val(Reg *r, uint8_t ctrl, i/
@@ -1094,15 +1105,7 @@ raise_exception_env	op_helper.c	/^void raise_exception_env(int exception_index, 
 raise_exception_err	op_helper.c	/^#define raise_exception_err(a, b)\\$/
 raise_exception_err	op_helper.c	/^void raise_exception_err(int exception_index, int /
 raise_interrupt	op_helper.c	/^static void QEMU_NORETURN raise_interrupt(int intn/
-read	PyQEMU.py	/^	def read(self, len = None):$/
-readmem	PyQEMU.py	/^	def readmem(self, address, length):$/
-register	PyQEMU.py	/^	def register(self, register):$/
-registerFunctionHandler	PyQEMU.py	/^	def registerFunctionHandler(self, dllname, functi/
-resolve	PyQEMU.py	/^	def resolve(self):$/
-resolveToName	PyQEMU.py	/^	def resolveToName(self):$/
-retval	PyQEMU.py	/^	def retval(self):$/
 rffs1	ops_sse.h	/^static inline int rffs1(unsigned int val)$/
-runCallbacks	PyQEMU.py	/^	def runCallbacks(self, function, event_type):$/
 satsb	ops_sse.h	/^static inline int satsb(int x)$/
 satsw	ops_sse.h	/^static inline int satsw(int x)$/
 satub	ops_sse.h	/^static inline int satub(int x)$/
@@ -1111,7 +1114,11 @@ set_seg	kvm.c	/^static void set_seg(struct kvm_segment *lhs, const/
 set_v8086_seg	kvm.c	/^static void set_v8086_seg(struct kvm_segment *lhs,/
 setfeatures	cpuid.c	/^static void setfeatures(uint32_t *pval, const char/
 setscalar	cpuid.c	/^#define setscalar(pval, str, perr)                /
-sizeHint	PyQEMU.py	/^	def sizeHint(self, len):$/
+shadowmem_inuse	flx_shadowmem.c	/^#define shadowmem_inuse(page, address) ((page->use/
+shadowmem_page_cmp	flx_shadowmem.c	/^shadowmem_page_cmp(const shadow_page* p1, const sh/
+shadowmem_page_free	flx_shadowmem.c	/^shadowmem_page_free(shadow_page* page){$/
+shadowmem_setuse	flx_shadowmem.c	/^#define shadowmem_setuse(page, address) do { page-/
+shutdown	PyQEMU.py	/^	def shutdown(self, process = None):$/
 sstrcmp	cpuid.c	/^static int sstrcmp(const char *s1, const char *e1,/
 svm_check_intercept	exec.h	/^static inline void svm_check_intercept(uint32_t ty/
 svm_is_rep	translate.c	/^static inline int svm_is_rep(int prefixes)$/
@@ -1120,19 +1127,14 @@ svm_load_seg_cache	op_helper.c	/^static inline void svm_load_seg_cache(target_ph
 svm_save_seg	op_helper.c	/^static inline void svm_save_seg(target_phys_addr_t/
 switch_tss	op_helper.c	/^static void switch_tss(int tss_selector,$/
 tcg_gen_lshift	translate.c	/^static inline void tcg_gen_lshift(TCGv ret, TCGv a/
-terminate	PyQEMU.py	/^	def terminate(self):$/
 tlb_fill	op_helper.c	/^void tlb_fill(target_ulong addr, int is_write, int/
-top	PyQEMU.py	/^	def top(self):$/
-top	PyQEMU.py	/^	def top(self):$/
-trigger	PyQEMU.py	/^	def trigger(self):$/
 try_get_cpuid	kvm.c	/^static struct kvm_cpuid2 *try_get_cpuid(KVMState */
 tss_load_seg	op_helper.c	/^static void tss_load_seg(int seg_reg, int selector/
 unavailable_host_feature	cpuid.c	/^static int unavailable_host_feature(struct model_f/
-update	PyQEMU.py	/^	def update(self):$/
-update	PyQEMU.py	/^	def update(self):$/
 update_fp_status	op_helper.c	/^static void update_fp_status(void)$/
 userspace	flx_instrument.h	/^#define userspace(x) (!(x&0x80000000))$/
 validate_seg	op_helper.c	/^static inline void validate_seg(int seg_reg, int c/
 version_is_5	machine.c	/^static bool version_is_5(void *opaque, int version/
+warning	PyQEMU.py	/^	def warning(self, warning):$/
 x86_cpu_list	cpuid.c	/^void x86_cpu_list (FILE *f, int (*cpu_fprintf)(FIL/
 x86_cpudef_setup	cpuid.c	/^void x86_cpudef_setup(void)$/

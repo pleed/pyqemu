@@ -33,6 +33,14 @@ class PEHandler:
 			return self.known_libs[filename]
 		return None
 
+	def getProcAddress(self, dll, function):
+		try:
+			lib = self.known_libs[dll.lower()]
+		except IndexError:
+			return None
+		return lib.getProcAddress(function)
+		
+
 	def getLib(self, address):
 		try:
 			lib = self.tree.at_most(address)
@@ -64,10 +72,16 @@ class PEFile(dict,pefile.PE):
 		if hasattr(self,"DIRECTORY_ENTRY_EXPORT"):
 			for function in self.DIRECTORY_ENTRY_EXPORT.symbols:
 				self[imagebase+function.address] = (function.ordinal, function.address, function.name)
+				self[function.name] = imagebase+function.address
 
 	def calculateEntryPoint(self):
 		return self.OPTIONAL_HEADER.ImageBase+self.OPTIONAL_HEADER.AddressOfEntryPoint
-			
+
+	def getProcAddress(self, function):
+		try:
+			return self[function]
+		except IndexError:
+			return None
 
 	def includes(self, address):
 		return self.imagebase <= address < self.imagebase+self.size

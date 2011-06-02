@@ -48,6 +48,7 @@
 #include "flx_functiontrace.h"
 #include "flx_context.h"
 #include "flx_functionentropy.h"
+#include "flx_constsearch.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -79,6 +80,7 @@ PyObject *PyFlx_ev_bblstart = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 PyObject *PyFlx_ev_functiontrace = NULL;
 PyObject *PyFlx_ev_functionentropy = NULL;
+PyObject *PyFlx_ev_constsearch = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -94,55 +96,7 @@ static PyObject *PyFlx_ISJMP;
 
 
 CPUState *current_environment = NULL;
-blacklist* bl = NULL;
 uint32_t element_counter = 0;
-
-void flxinstrument_blacklist_alloc(void){
-	bl = malloc(sizeof(blacklist));
-	memset(bl, 0, sizeof(blacklist));
-}
-
-int flxinstrument_is_blacklisted(uint32_t addr, uint32_t SLOT_TYPE){
-	blacklist_slot* bls = bl->slots+((addr)&0xffffff);
-	if(bls->set == SLOT_TYPE && \
-	   bls->cr3 == current_environment->cr[3] && \
-	   bls->msb == addr>>24)
-		return 1;
-	return 0;
-}
-
-void flxinstrument_blacklist(uint32_t addr, uint32_t SLOT_TYPE){
-	int found = 0;
-	blacklist_slot* bls;
-	bls = &(bl->slots[(addr)&0xffffff]);
-	if(bls->set == FLX_SLOT_EMPTY){
-		bls->set = SLOT_TYPE;
-		bls->msb = addr >> 24;
-		bls->cr3 = current_environment->cr[3];
-		found = 1;
-		++element_counter;
-	}
-#ifdef DEBUG
-	if(!found){
-		printf("Slot is already full! 0x%x\n",addr);
-		printf("Elements: %i\n",element_counter);
-	}
-	else{
-		printf("Slot found! 0x%x\n\n",addr);
-	}
-#endif
-}
-
-void flxinstrument_blacklist_cleanup(void){
-	int i;
-	int max = FLX_BLACKLIST_SIZE;
-	for(i=0; i<max; ++i){
-		blacklist_slot* bs = &(bl->slots[i]);
-		if(bs->set && bs->cr3 == current_environment->cr[3]){
-			memset(bs, 0, sizeof(blacklist_slot));
-		}
-	}
-}
 
 static PyObject* PyFlxC_filter_add(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -217,6 +171,34 @@ static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
 #endif
   flx_bbltrace_disable();
 
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_constsearch_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_constsearch_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_constsearch_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_constsearch_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_constsearch_disable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -313,6 +295,24 @@ static PyObject* PyFlxC_functionentropy_disable(PyObject *self, PyObject *args) 
 
   flx_functionentropy_disable();
 
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_constsearch_pattern(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_constsearch_pattern");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint8_t* pattern = NULL;
+   uint32_t pattern_len = 0;
+   if(!PyArg_ParseTuple(args, "s#", pattern, pattern_len))
+     return NULL;
+
+  flx_constsearch_pattern(pattern, pattern_len);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -419,39 +419,6 @@ static PyObject* PyFlxC_breakpoint_insert(PyObject *self, PyObject *args) {
   if(!PyArg_ParseTuple(args, "I", &address))
     return NULL;
   flx_breakpoint_insert(address, current_environment->cr[3]);
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
-static PyObject* PyFlxC_blacklist_cleanup(PyObject *self, PyObject *args) {
-#ifdef DEBUG
-  fprintf(stderr, "flxinstrument_blacklist_cleanup");  
-  if(PyErr_Occurred())
-	fprintf(stderr," - EXCEPTION THROWN\n");
-  else
-	fprintf(stderr," - NO EXC\n");
-#endif
-  flxinstrument_blacklist_cleanup();
-  Py_INCREF(Py_None);
-  return Py_None;
-}
-
-static PyObject* PyFlxC_blacklist(PyObject *self, PyObject *args) {
-#ifdef DEBUG
-  fprintf(stderr, "flxinstrument_blacklist");  
-  if(PyErr_Occurred())
-	fprintf(stderr," - EXCEPTION THROWN\n");
-  else
-	fprintf(stderr," - NO EXC\n");
-#endif
-  uint32_t address;
-  uint32_t type;
-  
-  if(!PyArg_ParseTuple(args, "II", &address, &type)) {
-    return NULL;
-  }
-  
-  flxinstrument_blacklist(address, type);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -709,12 +676,6 @@ static PyMethodDef PyFlxC_methods[] = {
     {"registers", (PyCFunction)PyFlxC_registers, METH_VARARGS,
      "Returns a dictionary containing all registers"
     },
-    {"blacklist", (PyCFunction)PyFlxC_blacklist, METH_VARARGS,
-     "Blacklist a function"
-    },
-    {"blacklist_cleanup", (PyCFunction)PyFlxC_blacklist_cleanup, METH_VARARGS,
-     "Clean blacklist from process specific entries"
-    },
     {"breakpoint_insert", (PyCFunction)PyFlxC_breakpoint_insert, METH_VARARGS,
      "Insert breakpoint into current process"
     },
@@ -743,6 +704,17 @@ static PyMethodDef PyFlxC_methods[] = {
     {"arithwindow_disable", (PyCFunction)PyFlxC_arithwindow_disable, METH_VARARGS,
      "Stop arithwindow opcode execution"
     },
+    {"constsearch_enable", (PyCFunction)PyFlxC_constsearch_enable, METH_VARARGS,
+     "Start constsearch"
+    },
+    {"constsearch_pattern", (PyCFunction)PyFlxC_constsearch_pattern, METH_VARARGS,
+     "Add constsearch pattern"
+    },
+
+    {"constsearch_disable", (PyCFunction)PyFlxC_constsearch_disable, METH_VARARGS,
+     "Stop constsearch"
+    },
+
     {"functiontrace_enable", (PyCFunction)PyFlxC_functiontrace_enable, METH_VARARGS,
      "Enable function tracing"
     },
@@ -883,6 +855,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_functiontrace);
    PyFlx_ev_functionentropy = PyObject_GetAttrString(Py_Python_Module, "ev_functionentropy");
    Py_XINCREF(PyFlx_ev_functionentropy);
+   PyFlx_ev_constsearch = PyObject_GetAttrString(Py_Python_Module, "ev_constsearch");
+   Py_XINCREF(PyFlx_ev_constsearch);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -953,7 +927,6 @@ void flxinstrument_init(void) {
 
    // initialize subsystems
    printf("initializing flxinstrument subsystems\n");
-   flxinstrument_blacklist_alloc();
    flx_context_init();
    flx_filter_init();
    flx_bbl_init();
@@ -963,12 +936,13 @@ void flxinstrument_init(void) {
    flx_memtrace_init();
    flx_calltrace_init();
 
-   //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
+   flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
    //flx_memtrace_register_handler((memtrace_handler)flxinstrument_memtrace_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    //flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
+   flx_constsearch_init((constsearch_handler)flxinstrument_constsearch_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -1106,6 +1080,37 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
     PyErr_Print();
   }
   
+  return retval;
+}
+
+int flxinstrument_constsearch_event(uint32_t eip, uint32_t pattern_index) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_constsearch_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_constsearch)) {
+    fprintf(stderr, "No registered constsearch event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_constsearch,
+				 (char*) "(II)",
+				 eip,
+				 pattern_index);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
   return retval;
 }
 

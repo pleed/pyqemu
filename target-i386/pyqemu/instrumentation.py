@@ -68,3 +68,19 @@ class QemuInstrumentation:
 
 	def functionentropy_disable(self):
 		PyFlxInstrument.functionentropy_disable()
+
+	def constsearch_pattern(self, index, pattern):
+		PyFlxInstrument.constsearch_pattern(index, pattern)
+
+	def constsearch_enable(self):
+		PyFlxInstrument.constsearch_enable()
+
+	def constsearch_disable(self):
+		PyFlxInstrument.constsearch_disable()
+
+	def breakpoint_insert(self, addr):
+		PyFlxInstrument.breakpoint_insert(addr)
+
+	def breakpoint_delete(self, addr):
+		PyFlxInstrument.breakpoint_delete(addr)
+

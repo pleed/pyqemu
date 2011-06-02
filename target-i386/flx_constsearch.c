@@ -56,10 +56,39 @@ int flx_constsearch_memaccess(uint32_t address, uint32_t value, uint8_t size, ui
 		while(size){
 			size-=1;
 			uint8_t byte = (value >> (size*8)) & 0xff;
-			flx_shadowmem_store(mem, address, byte);
+			flx_shadowmem_store(mem, address, byte, current_environment->eip);
 			address -= 1;
 		}
 	}
 	return 0;
 }
 
+static int
+flx_constsearch_match(mem_block* block){
+	uint8_t i = 0;
+	for(i=0; i<64 && i<block->len; ++i){
+		if(block->mem[i] != 0x41)
+			break;
+	}
+	if(i==64){
+		return 1;
+	}
+	return 0;
+}
+
+void flx_constsearch_search(void){
+	mem_block* block = NULL;
+	shadowmem* mem = flx_constsearch_current_memory();
+	shadowmem_iterator* iter = flx_shadowmem_iterator_new(mem);
+	uint32_t eip;
+	while((block = flx_shadowmem_iterate(iter, &eip))){
+		if(flx_constsearch_match(block))
+			printf("MATCH at 0x%x\n",eip);
+		flx_shadowmem_block_dealloc(block);
+	}
+	flx_shadowmem_iterator_delete(iter);
+}
+
+void flx_constsearch_pattern(uint8_t* pattern, uint32_t len){
+	return;
+}
