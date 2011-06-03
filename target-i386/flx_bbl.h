@@ -16,6 +16,7 @@ typedef struct {
 	uint32_t addr;
 	uint32_t icount;
 	uint32_t arithcount;
+	uint32_t size;
 } flx_bbl;
 
 typedef struct {

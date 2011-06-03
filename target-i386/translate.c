@@ -8021,6 +8021,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
             break;
 	}
     }
+    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_bbl_size(pc_ptr - pc_start));
     FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_bbl_end());
     if (tb->cflags & CF_LAST_IO)
         gen_io_end();

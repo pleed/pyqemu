@@ -37,6 +37,10 @@ void flx_bbltranslate_insn(void){
 	++flx_current_bbl.icount;
 }
 
+void flx_bbltranslate_bbl_size(uint32_t size){
+	flx_current_bbl.size = size;
+}
+
 void flx_bbltranslate_bbl_end(void){
 	uint8_t i;
 	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){

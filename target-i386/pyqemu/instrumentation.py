@@ -84,3 +84,11 @@ class QemuInstrumentation:
 	def breakpoint_delete(self, addr):
 		PyFlxInstrument.breakpoint_delete(addr)
 
+	def bblwindow_enable(self, window_size):
+		PyFlxInstrument.bblwindow_enable(window_size)
+
+	def bblwindow_disable(self):
+		PyFlxInstrument.bblwindow_disable()
+
+	def bblwindow_get(self, index):
+		return PyFlxInstrument.bblwindow_get(index)

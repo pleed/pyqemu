@@ -31,7 +31,6 @@ class BreakpointManager(dict):
 			self[addr] = set([])
 			PyFlxInstrument.breakpoint_insert(addr)
 		self[addr].add(handler)
-		PyFlxInstrument.retranslate()
 
 	def delBreakpoint(self, handler):
 		for addr,hash in self.items:
@@ -39,10 +38,10 @@ class BreakpointManager(dict):
 				self[addr] = self[addr]-set([handler])
 			if len(self[addr]) == 0:
 				PyFlxInstrument.breakpoint_delete(addr)
-		PyFlxInstrument.retranslate()
 
 	def trigger(self, addr):
 		for handler in self[addr]:
+			print "Triggering breakpoint for address: 0x%x"%addr
 			handler(addr)
 
 class Thread:

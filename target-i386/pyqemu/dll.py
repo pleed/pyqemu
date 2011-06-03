@@ -36,9 +36,12 @@ class PEHandler:
 	def getProcAddress(self, dll, function):
 		try:
 			lib = self.known_libs[dll.lower()]
-		except IndexError:
+		except KeyError:
 			return None
 		return lib.getProcAddress(function)
+
+	def getLibs(self):
+		return filter(lambda x: x is not None, self.known_libs.values())
 		
 
 	def getLib(self, address):
@@ -80,7 +83,7 @@ class PEFile(dict,pefile.PE):
 	def getProcAddress(self, function):
 		try:
 			return self[function]
-		except IndexError:
+		except KeyError:
 			return None
 
 	def includes(self, address):

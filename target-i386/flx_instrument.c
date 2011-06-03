@@ -49,6 +49,7 @@
 #include "flx_context.h"
 #include "flx_functionentropy.h"
 #include "flx_constsearch.h"
+#include "flx_bblwindow.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -345,6 +346,63 @@ static PyObject* PyFlxC_caballero_disable(PyObject *self, PyObject *args) {
 #endif
   flx_caballero_disable();
 
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_bblwindow_get(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_bblwindow_get");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t index;
+   PyObject *retval;
+
+   if(!PyArg_ParseTuple(args, "I", &index)) {
+      // raise exception, too?
+      return NULL;
+   }
+   uint32_t eip;
+   if(flx_bblwindow_get(index, &eip) == 0){
+      retval = Py_BuildValue("I", eip);
+      return retval;
+   }
+   else{
+
+     Py_INCREF(Py_None);
+     return Py_None;
+   }
+}
+
+static PyObject* PyFlxC_bblwindow_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_bblwindow_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  uint32_t window_size;
+  if(!PyArg_ParseTuple(args, "I", &window_size)){
+    return NULL;
+  }
+  flx_bblwindow_enable(window_size);
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_bblwindow_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_bblwindow_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_bblwindow_disable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -733,6 +791,15 @@ static PyMethodDef PyFlxC_methods[] = {
     {"caballero_enable", (PyCFunction)PyFlxC_caballero_enable, METH_VARARGS,
      "Start caballero opcode execution"
     },
+    {"bblwindow_get", (PyCFunction)PyFlxC_bblwindow_get, METH_VARARGS,
+     "Get BBL by record index"
+    },
+    {"bblwindow_disable", (PyCFunction)PyFlxC_bblwindow_disable, METH_VARARGS,
+     "Disable BBL recording"
+    },
+    {"bblwindow_enable", (PyCFunction)PyFlxC_bblwindow_enable, METH_VARARGS,
+     "Enable BBL recording"
+    },
     {"bbltrace_enable", (PyCFunction)PyFlxC_bbltrace_enable, METH_VARARGS,
      "Start bbltrace execution events"
     },
@@ -935,12 +1002,16 @@ void flxinstrument_init(void) {
    flx_bbltranslate_init();
    flx_memtrace_init();
    flx_calltrace_init();
+   flx_bblwindow_init();
 
-   flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
+   // low level callbacks
+   //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
    //flx_memtrace_register_handler((memtrace_handler)flxinstrument_memtrace_event);
+   //flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
+
+   // high level callbacks
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
-   //flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
    flx_constsearch_init((constsearch_handler)flxinstrument_constsearch_event);
    printf("initializing flxinstrument subsystems done\n");
