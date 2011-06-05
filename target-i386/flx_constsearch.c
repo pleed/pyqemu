@@ -92,3 +92,4 @@ void flx_constsearch_search(void){
 void flx_constsearch_pattern(uint8_t* pattern, uint32_t len){
 	return;
 }
+

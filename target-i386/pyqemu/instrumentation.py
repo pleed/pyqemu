@@ -78,6 +78,9 @@ class QemuInstrumentation:
 	def constsearch_disable(self):
 		PyFlxInstrument.constsearch_disable()
 
+	def constsearch_search(self):
+		PyFlxInstrument.constsearch_search()
+
 	def breakpoint_insert(self, addr):
 		PyFlxInstrument.breakpoint_insert(addr)
 

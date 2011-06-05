@@ -272,32 +272,16 @@ crypt_api_calls = [
 	"CryptVerifySignatureW",
 ]
 
-class ApiHook:
-	def __init__(self, hook, process, lib, function):
-		self.process = process
-		self.lib = lib
-		self.function = function
-		self.hook = hook
-
-	def __call__(self, addr):
-		return self.hook(self.process, self.lib, self.function, addr)
-
 class ApiHeuristic(PyQemuHeuristic):
 	PREFIX = "ApiCall"
 
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.registerApiHooks(self.process))
+		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.bblwindow_enable(100))
 
 	def registerApiHooks(self, process):
-		process.hardware.instrumentation.bblwindow_enable(100)
-		libs = process.dllhandler.getLibs()
-		for i,function in enumerate(crypt_api_calls):
-			for lib in libs:
-				address = lib.getProcAddress(function)
-				if address is not None:
-					print "Hooking Function: %s in dll %s at address 0x%x"%(function,lib.filename, address)
-					hook = ApiHook(self.onApiCallEvent, process, lib, function)
-					process.addBreakpoint(address, hook)
+		for function in crypt_api_calls:
+			process.installHookByName(self.onApiCallEvent, function)
 
 	def onApiCallEvent(self, process, dll, function, addr):
 		last_bbls = []

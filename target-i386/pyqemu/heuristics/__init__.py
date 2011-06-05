@@ -7,4 +7,5 @@ __all__ = [
 	"functiontrace",
 	"functionentropy",
 	"api",
+	"constsearch",
 	  ]

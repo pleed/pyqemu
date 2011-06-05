@@ -205,6 +205,20 @@ static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+static PyObject* PyFlxC_constsearch_search(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_constsearch_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_constsearch_search();
+  return Py_None;
+
+}
+
 static PyObject* PyFlxC_functiontrace_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functiontrace_enable");  
@@ -799,11 +813,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"constsearch_pattern", (PyCFunction)PyFlxC_constsearch_pattern, METH_VARARGS,
      "Add constsearch pattern"
     },
-
     {"constsearch_disable", (PyCFunction)PyFlxC_constsearch_disable, METH_VARARGS,
      "Stop constsearch"
     },
-
+    {"constsearch_search", (PyCFunction)PyFlxC_constsearch_search, METH_VARARGS,
+     "Search for patterns in memory"
+    },
     {"functiontrace_enable", (PyCFunction)PyFlxC_functiontrace_enable, METH_VARARGS,
      "Enable function tracing"
     },

@@ -43,6 +43,16 @@ class BreakpointManager(dict):
 		for handler in self[addr]:
 			handler(addr)
 
+class ApiHook:
+	def __init__(self, hook, process, lib, function):
+		self.process = process
+		self.lib = lib
+		self.function = function
+		self.hook = hook
+
+	def __call__(self, addr):
+		return self.hook(self.process, self.lib, self.function, addr)
+
 class Thread:
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
 		if callstack is None:
@@ -154,6 +164,23 @@ class TracedProcess(processinfo.Process):
 
 	def delBreakpoint(self, addr):
 		self.breakpoints.delBreakpoint(addr, callback)
+
+	def installHookByName(self, callback, function, dll = None):
+		if dll is not None:
+			lib = dllhandler.getLibByName(dll)
+			address = lib.getProcAddress(function)
+			if address is not None:
+				hook = ApiHook(callback, self, lib, function)
+				self.installHookByAddr(address, hook)
+		else:
+			for lib in self.dllhandler.getLibs():
+				address = lib.getProcAddress(function)
+				if address is not None:
+					hook = ApiHook(callback, self, lib, function)
+					self.installHookByAddr(address, hook)
+
+	def installHookByAddr(self, addr, callback):
+		self.addBreakpoint(addr, callback)
 
 	def isRegisteredThread(self):
 		try:
