@@ -1,7 +1,6 @@
 - besseres thread handling
 - frueherer "entry point"
 - blacklist statt white list (pagefilter fuer instrumentation)
-- self modifying code checken! (bbl translate updates ueberall!!!)
 
 Ideen:
 
