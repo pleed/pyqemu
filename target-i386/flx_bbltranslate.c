@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <avl.h>
 
+#include "flx_bbl.h"
 #include "flx_instrument.h"
 #include "flx_bbltranslate.h"
 
@@ -42,11 +43,15 @@ void flx_bbltranslate_bbl_size(uint32_t size){
 }
 
 void flx_bbltranslate_bbl_end(void){
+	flx_bbl* new_bbl = malloc(sizeof(*new_bbl));
+	memcpy(new_bbl, &flx_current_bbl, sizeof(flx_current_bbl));
+	flx_bbl_add(new_bbl);
+
 	uint8_t i;
 	for(i=0; i<MAX_BBLTRANSLATE_HANDLERS; ++i){
 		if(!flx_bbltranslate_handlers[i])
 			break;
-		flx_bbltranslate_handlers[i](&flx_current_bbl);
+		flx_bbltranslate_handlers[i](new_bbl);
 	}
 }
 

@@ -6,6 +6,7 @@
 #ifdef NEED_CPU_H
 /* Disassemble this for me please... (debugging). */
 void disas(FILE *out, void *code, unsigned long size);
+void disas_relative(FILE *out, void *code, unsigned long size, unsigned long startaddr);
 void target_disas(FILE *out, target_ulong code, target_ulong size, int flags);
 
 /* The usual mess... FIXME: Remove this condition once dyngen-exec.h is gone */

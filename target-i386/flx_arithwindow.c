@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <avl.h>
+#include <unistd.h>
 
+#include "flx_disas.h"
 #include "flx_instrument.h"
 #include "flx_arithwindow.h"
 #include "flx_bbltranslate.h"
@@ -115,15 +117,20 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 			}
 		}
 	}
+ 
+	/*flx_disassembly* disas = flx_disas_bbl(eip);
+	printf("Basic Block: (0x%x)\n", eip);
+	uint32_t written;
+	while( (written = write(1, disas->s, disas->size)) > 0 ){
+		disas->s += written;
+		disas->size -= written;
+	}
+	printf("\n\n");*/
+
 	return 0;
 }
 
 int flx_arithwindow_bbltranslate(flx_bbl* bbl){
-	flx_bbl* new_bbl = malloc(sizeof(*bbl));
-	memcpy(new_bbl, bbl, sizeof(*new_bbl));
-	flx_bbl_add(new_bbl);
-
-	/* could be self modifying code */
 	if(flx_arithwindow_cache_search(bbl->addr))
 		flx_arithwindow_cache_del(bbl->addr);
 	return 0;

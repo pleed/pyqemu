@@ -92,3 +92,6 @@ class QemuInstrumentation:
 
 	def bblwindow_get(self, index):
 		return PyFlxInstrument.bblwindow_get(index)
+
+	def disas_bbl(self, addr):
+		return PyFlxInstrument.disas_bbl(addr)

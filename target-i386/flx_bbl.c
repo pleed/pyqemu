@@ -68,13 +68,14 @@ flx_bbl_addrtotree(uint32_t addr){
 void flx_bbl_add(flx_bbl* bbl){
 	flx_bbl_cache_update(bbl);
 	avl_tree_t* tree = flx_bbl_addrtotree(bbl->addr);
-	flx_bbl* new_bbl = malloc(sizeof(*bbl));
-	memcpy(new_bbl, bbl, sizeof(*bbl));
-	avl_node_t* node = malloc(sizeof(*node));
-	node->item = new_bbl;
-	avl_delete(tree, node);
-	avl_insert(tree, new_bbl);
-	free(node);
+	avl_node_t node;
+	memset(&node, 0, sizeof(node));
+	node.item = bbl;
+
+	if(avl_insert(tree, bbl) == NULL){
+		avl_delete(tree, &node);
+		avl_insert(tree, bbl);
+	}
 }
 
 void flx_bbl_flush(void){
@@ -106,7 +107,7 @@ flx_bbl_search(uint32_t address){
 	if(bbl){
 		return bbl;
 	}
-	
+
 	avl_tree_t* tree = flx_bbl_addrtotree(address);
 	if(!tree){
 		return NULL;

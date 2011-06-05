@@ -53,8 +53,8 @@ void flx_bbltrace_unregister_handler(bbltrace_handler handler){
 			if(flx_bbltrace_handlers[i] == handler){
 				handler_index = i;
 			}
+		}
 	}
-}
 	flx_bbltrace_handlers[handler_index] = flx_bbltrace_handlers[last_handler_index];
 	flx_bbltrace_handlers[last_handler_index] = NULL;
 }

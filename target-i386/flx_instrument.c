@@ -37,6 +37,7 @@
 #include "exec-all.h"
 
 #include "flx_instrument.h"
+#include "flx_disas.h"
 #include "flx_breakpoint.h"
 #include "flx_memtrace.h"
 #include "flx_filter.h"
@@ -545,6 +546,33 @@ static PyObject* PyFlxC_retranslate(PyObject *self, PyObject *args) {
   return retval;
 }
 
+static PyObject* PyFlxC_disas_bbl(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "disas_bbl");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t addr;
+   PyObject *retval;
+
+   if(!PyArg_ParseTuple(args, "I", &addr)) {
+      // raise exception, too?
+      return NULL;
+   }
+   flx_disassembly* disas = flx_disas_bbl(addr);
+   retval = Py_BuildValue("s#", disas->s, disas->size);
+   free(disas->s);
+   free(disas);
+   //Py_XINCREF(retval);
+   if(retval == NULL){
+      retval = Py_None;
+   }
+   return retval;
+
+}
+
 static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "eip");  
@@ -745,6 +773,9 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"retranslate", (PyCFunction)PyFlxC_retranslate, METH_VARARGS,
      "Retranslate all translation blocks"
+    },
+    {"disas_bbl", (PyCFunction)PyFlxC_disas_bbl, METH_VARARGS,
+     "Disassemble a basic block beginning from addr"
     },
     {"genreg", (PyCFunction)PyFlxC_genreg, METH_VARARGS,
      "Returns a general purpose register"

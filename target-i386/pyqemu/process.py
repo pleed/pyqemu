@@ -41,7 +41,6 @@ class BreakpointManager(dict):
 
 	def trigger(self, addr):
 		for handler in self[addr]:
-			print "Triggering breakpoint for address: 0x%x"%addr
 			handler(addr)
 
 class Thread:
