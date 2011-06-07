@@ -15,11 +15,11 @@ class QemuFunctionEntropyEvent(QemuEvent):
 
 class QemuConstSearchEvent(QemuEvent):
 	def getEIP(self):
-		return self.args[0]
-	def getPatternIndex(self):
 		return self.args[1]
+	def getPattern(self):
+		return self.args[0]
 	eip = property(getEIP)
-	index = property(getPatternIndex)
+	pattern = property(getPattern)
 
 class QemuFunctiontraceEvent(QemuEvent):
 	def getEIP(self):
@@ -128,6 +128,7 @@ QemuEventTypes = {
 	"arithwindow":QemuArithwindowEvent,
 	"functiontrace":QemuFunctiontraceEvent,
 	"functionentropy":QemuFunctionEntropyEvent,
+	"constsearch":QemuConstSearchEvent,
 }
 
 

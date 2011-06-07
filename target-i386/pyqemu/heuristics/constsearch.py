@@ -12,13 +12,15 @@ constsearch_trigger_api_calls = [
 ]
 
 class PatternManager:
-	patternlist = []
+	patternlist = [
+		"A"*64,
+	]
 	def __init__(self, heuristic):
 		self.heuristic = heuristic
 	def __call__(self):
-		for pattern,index in map(lambda x,y: (x,y), self.patternlist, range(len(self.patternlist))):
-			self.heuristic.process.hardware.instrumentation.constsearch_pattern(index, pattern)
 		self.heuristic.process.hardware.instrumentation.constsearch_enable()
+		for pattern,index in map(lambda x,y: (x,y), self.patternlist, range(len(self.patternlist))):
+			self.heuristic.process.hardware.instrumentation.constsearch_pattern(pattern)
 
 class ConstSearchHeuristic(PyQemuHeuristic):
 	PREFIX = "Memory constant search"
@@ -29,8 +31,7 @@ class ConstSearchHeuristic(PyQemuHeuristic):
 		self.attach("constsearch", self.onPatternFound)
 
 	def onPatternFound(self, process, event):
-		pattern = self.patterns.patternlist[event.index]
-		self.log("Pattern(0x%x, '%s'"%(event.eip, pattern))
+		self.log("Pattern(0x%x, '%s'"%(event.eip, event.pattern))
 
 	def registerApiHooks(self, process):
 		for function in constsearch_trigger_api_calls:

@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <avl.h>
 #include <math.h>
+#include <shmatch.h>
 
 #include "flx_instrument.h"
 #include "flx_shadowmem.h"
@@ -14,6 +15,7 @@
 
 float constsearch_threshold = 0;
 constsearch_handler flx_constsearch_handler = NULL;
+struct shmatcher* mem_block_matcher = NULL;
 
 void flx_constsearch_init(constsearch_handler handler){
 	flx_constsearch_handler = handler;
@@ -23,11 +25,15 @@ void flx_constsearch_enable(void){
 	flx_memtrace_register_handler(flx_constsearch_memaccess);
 	flx_memtrace_enable();
 
+	mem_block_matcher = shmatch_new(shmatch_stub_encode);
 	flx_state.constsearch_active = 1;
 }
 
 void flx_constsearch_disable(void){
 	flx_memtrace_unregister_handler(flx_constsearch_memaccess);
+
+	shmatch_destroy(mem_block_matcher);
+	mem_block_matcher = NULL;
 	flx_state.constsearch_active = 0;
 }
 
@@ -63,33 +69,37 @@ int flx_constsearch_memaccess(uint32_t address, uint32_t value, uint8_t size, ui
 	return 0;
 }
 
-static int
-flx_constsearch_match(mem_block* block){
-	uint8_t i = 0;
-	for(i=0; i<64 && i<block->len; ++i){
-		if(block->mem[i] != 0x41)
-			break;
-	}
-	if(i==64){
-		return 1;
-	}
-	return 0;
-}
-
 void flx_constsearch_search(void){
+	static struct string tmp_string = {0,NULL};
+
 	mem_block* block = NULL;
 	shadowmem* mem = flx_constsearch_current_memory();
 	shadowmem_iterator* iter = flx_shadowmem_iterator_new(mem);
-	uint32_t eip;
-	while((block = flx_shadowmem_iterate(iter, &eip))){
-		if(flx_constsearch_match(block))
-			printf("MATCH at 0x%x\n",eip);
+	uint32_t* eips;
+	while((block = flx_shadowmem_iterate(iter, &eips))){
+		tmp_string.data = (char*)&block->mem[0];
+		tmp_string.len  = block->len;
+		struct match* p = shmatch_search(mem_block_matcher, &tmp_string);
+		while(p){
+			struct pattern* needle = p->needle;
+			flxinstrument_constsearch_event(eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
+			p = shmatch_search(mem_block_matcher, NULL);
+		}
+
 		flx_shadowmem_block_dealloc(block);
+		free(eips);
 	}
 	flx_shadowmem_iterator_delete(iter);
 }
 
 void flx_constsearch_pattern(uint8_t* pattern, uint32_t len){
-	return;
+	struct string* new_pattern = shmatch_string_new(len);
+	memcpy(new_pattern->data, pattern, len);
+	if(!mem_block_matcher)
+		flx_constsearch_enable();
+	if(shmatch_add_pattern(mem_block_matcher, new_pattern) == -1){
+		printf("Unable to add pattern into automaton!\n");
+		exit(-1);
+	}
 }
 

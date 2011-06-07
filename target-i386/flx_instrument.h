@@ -58,7 +58,7 @@ int flxinstrument_caballero_event(uint32_t eip, uint32_t icount, uint32_t arithc
 int flxinstrument_arithwindow_event(uint32_t eip);
 int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type);
 int flxinstrument_functionentropy_event(float entropychange, uint32_t eip);
-int flxinstrument_constsearch_event(uint32_t eip, uint32_t pattern_index);
+int flxinstrument_constsearch_event(uint32_t eip, uint8_t* pattern, uint32_t len);
 
 int flxinstrument_shutdown_event(void);
 

@@ -36,7 +36,7 @@ uint8_t    flx_shadowmem_load(shadowmem* mem, uint32_t address, uint8_t *value);
 
 shadowmem_iterator* flx_shadowmem_iterator_new(shadowmem* mem);
 void                flx_shadowmem_iterator_delete(shadowmem_iterator* iter);
-mem_block*          flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t *eip);
+mem_block*          flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t **eip);
 void                flx_shadowmem_block_dealloc(mem_block* block);
 
 #endif

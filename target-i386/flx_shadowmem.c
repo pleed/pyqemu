@@ -148,23 +148,30 @@ flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte, uint32
 }
 
 mem_block*
-flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t* eip){
+flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t** arg_eips){
 	if(!flx_shadowmem_get_next_blockstart(iter))
 		return NULL;
 
 	uint32_t byte_counter = 0;
 	uint8_t* buf = malloc(128);
+	uint32_t* eips = malloc(128*sizeof(uint32_t));
 	uint8_t value;
-	while(flx_shadowmem_get_next_blockbyte(iter, &value, eip)){
+	uint32_t cur_eip;
+	while(flx_shadowmem_get_next_blockbyte(iter, &value, &cur_eip)){
 		buf[byte_counter] = value;
 		byte_counter++;
-		if(!(byte_counter % 128))
+		eips[byte_counter] = cur_eip;
+		if(!(byte_counter % 128)){
 			buf = realloc(buf, byte_counter+128);
+			eips = realloc(eips, byte_counter+128*sizeof(uint32_t));
+		}
 	}
 	if(!byte_counter){
 		free(buf);
+		free(eips);
 		return NULL;
 	}
+	*arg_eips = eips;
 	mem_block* new_block = malloc(sizeof(*new_block));
 	new_block->mem = buf;
 	new_block->len = byte_counter;

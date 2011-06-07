@@ -323,10 +323,11 @@ static PyObject* PyFlxC_constsearch_pattern(PyObject *self, PyObject *args) {
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-   uint8_t* pattern = NULL;
-   uint32_t pattern_len = 0;
-   if(!PyArg_ParseTuple(args, "s#", pattern, pattern_len))
-     return NULL;
+   uint8_t* pattern;
+   uint32_t pattern_len;
+   if(!PyArg_ParseTuple(args, "s#", &pattern, &pattern_len)){
+   	return Py_None;
+   }
 
   flx_constsearch_pattern(pattern, pattern_len);
   Py_INCREF(Py_None);
@@ -1200,7 +1201,7 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
   return retval;
 }
 
-int flxinstrument_constsearch_event(uint32_t eip, uint32_t pattern_index) {
+int flxinstrument_constsearch_event(uint32_t eip, uint8_t* pattern, uint32_t len) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_event");  
   if(PyErr_Occurred())
@@ -1217,9 +1218,10 @@ int flxinstrument_constsearch_event(uint32_t eip, uint32_t pattern_index) {
   }
 
   result = PyObject_CallFunction(PyFlx_ev_constsearch,
-				 (char*) "(II)",
-				 eip,
-				 pattern_index);
+				 (char*) "(s#I)",
+				 pattern,
+				 len,
+				 eip);
 
   if (result != Py_None) {
     retval = PyInt_AsLong(result);

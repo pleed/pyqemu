@@ -69,8 +69,8 @@ class QemuInstrumentation:
 	def functionentropy_disable(self):
 		PyFlxInstrument.functionentropy_disable()
 
-	def constsearch_pattern(self, index, pattern):
-		PyFlxInstrument.constsearch_pattern(index, pattern)
+	def constsearch_pattern(self, pattern):
+		PyFlxInstrument.constsearch_pattern(pattern)
 
 	def constsearch_enable(self):
 		PyFlxInstrument.constsearch_enable()
