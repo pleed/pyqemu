@@ -74,22 +74,25 @@ void flx_constsearch_search(void){
 
 	mem_block* block = NULL;
 	shadowmem* mem = flx_constsearch_current_memory();
+
 	shadowmem_iterator* iter = flx_shadowmem_iterator_new(mem);
-	uint32_t* eips;
+	uint32_t* eips = NULL;
 	while((block = flx_shadowmem_iterate(iter, &eips))){
 		tmp_string.data = (char*)&block->mem[0];
 		tmp_string.len  = block->len;
+		assert(tmp_string.data != NULL && tmp_string.len > 0);
 		struct match* p = shmatch_search(mem_block_matcher, &tmp_string);
 		while(p){
 			struct pattern* needle = p->needle;
 			flxinstrument_constsearch_event(eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
 			p = shmatch_search(mem_block_matcher, NULL);
 		}
-
 		flx_shadowmem_block_dealloc(block);
 		free(eips);
 	}
 	flx_shadowmem_iterator_delete(iter);
+
+	block=(mem_block*)mem++;
 }
 
 void flx_constsearch_pattern(uint8_t* pattern, uint32_t len){

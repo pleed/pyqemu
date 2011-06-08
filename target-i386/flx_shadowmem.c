@@ -159,11 +159,12 @@ flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t** arg_eips){
 	uint32_t cur_eip;
 	while(flx_shadowmem_get_next_blockbyte(iter, &value, &cur_eip)){
 		buf[byte_counter] = value;
-		byte_counter++;
 		eips[byte_counter] = cur_eip;
-		if(!(byte_counter % 128)){
+
+		byte_counter++;
+		if((byte_counter % 128) == 0){
 			buf = realloc(buf, byte_counter+128);
-			eips = realloc(eips, byte_counter+128*sizeof(uint32_t));
+			eips = realloc(eips, (byte_counter+128)*sizeof(uint32_t));
 		}
 	}
 	if(!byte_counter){
