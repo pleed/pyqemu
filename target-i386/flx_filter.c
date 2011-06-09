@@ -28,6 +28,9 @@ flx_filter_addrtopage(uint32_t addr){
 	return (addr & 0xfffff000);
 }
 
+/*
+FIXME: >>12 better
+*/
 static inline uint8_t
 flx_filter_cache_index(uint32_t address){
 	return (address>>16) & 0x3f;

@@ -24,10 +24,18 @@ typedef struct {
 	uint8_t valid[BBL_CACHE_SIZE];
 } bbl_cache;
 
+typedef struct{
+	uint32_t treenum;
+	uint32_t item;
+} bbl_iterator;
+
 void flx_bbl_init(void);
 void flx_bbl_destroy(void);
 void flx_bbl_add(flx_bbl* bbl);
 void flx_bbl_flush(void);
+flx_bbl* flx_bbl_iterate(bbl_iterator*);
+bbl_iterator* flx_bbl_iterator_new(void);
+void flx_bbl_iterator_destroy(bbl_iterator*);
 flx_bbl* flx_bbl_search(uint32_t addr);
 
 #endif

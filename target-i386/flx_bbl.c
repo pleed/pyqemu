@@ -101,6 +101,34 @@ void flx_bbl_destroy(void){
 	}
 }
 
+bbl_iterator*
+flx_bbl_iterator_new(void){
+	bbl_iterator* iter = malloc(sizeof(*iter));
+	memset(iter, 0, sizeof(*iter));
+	return iter;
+}
+
+void flx_bbl_iterator_destroy(bbl_iterator* iter){
+	free(iter);
+}
+
+flx_bbl*
+flx_bbl_iterate(bbl_iterator* iter){
+	while(iter->treenum < NUM_BBL_TREES){
+		avl_tree_t* tree = bbl_trees[iter->treenum];
+		avl_node_t* node = avl_at(tree, iter->item);
+		if(node){
+			iter->item++;
+			return node->item;
+		}
+		else{
+			iter->treenum++;
+			iter->item = 0;
+		}
+	}
+	return NULL;
+}
+
 flx_bbl*
 flx_bbl_search(uint32_t address){
 	flx_bbl* bbl = flx_bbl_cache_hit(address);

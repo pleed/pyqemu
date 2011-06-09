@@ -24,6 +24,10 @@ void flx_bbltranslate_disable(void){
 	flx_state.bbltranslate_active = 0;
 }
 
+inline uint32_t flx_bbltranslate_bbl_addr(void){
+	return flx_current_bbl.addr;
+}
+
 void flx_bbltranslate_bbl_new(uint32_t addr){
 	flx_current_bbl.addr = addr;
 	flx_current_bbl.icount = 0;
