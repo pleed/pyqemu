@@ -1025,12 +1025,20 @@ void flxinstrument_init(void) {
      exit(1);
    }
 
+   printf("foobar1\n");
    flxinstrument_state_init();
 
    Py_XINCREF(Py_Python_Module);
    
    enable_python = PyObject_CallMethod(Py_Python_Module, (char*)"init", (char*)"I",0);
+   printf("foobar2\n");
+   if(PyErr_Occurred()){
+		printf("PyQEMU exception occured while initializing!\n");
+		printf("TERMINATING\n");
+		exit(-1);
+   }
    if (PyInt_Check(enable_python) && (PyInt_AS_LONG(enable_python) != 1)){
+   	  printf("foobar4\n");
       flxinstrument_register_callbacks();
    }
    else{
@@ -1039,6 +1047,7 @@ void flxinstrument_init(void) {
       return;
    }
 
+   printf("foobar3\n");
    // initialize subsystems
    printf("initializing flxinstrument subsystems\n");
    flx_context_init();
