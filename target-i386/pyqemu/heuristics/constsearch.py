@@ -6,12 +6,6 @@ import struct
 constsearch_trigger_api_calls = [
 	"ExitProcess",
 	"ExitThread",
-	"LoadLibrary",
-	"CreateProcess",
-	"CreateThread",
-	"CreateRemoteThread",
-	"connect",
-	"WSAConnect",
 ]
 
 class MutablePattern(str):

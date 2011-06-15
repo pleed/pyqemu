@@ -58,6 +58,12 @@ flx_constsearch_current_memory(void){
 
 int flx_constsearch_memaccess(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
 	if(!iswrite){
+		/*uint32_t esp = current_environment->regs[R_ESP];
+		uint32_t diff = (address>esp)?address-esp:esp-address;
+		if(diff > 2*4096)
+			return 0;
+		*/
+
 		shadowmem* mem = flx_constsearch_current_memory();
 		size = size/8;
 		address += size-1;
@@ -79,20 +85,17 @@ void flx_constsearch_search_memory(void){
 	shadowmem* mem = flx_constsearch_current_memory();
 
 	shadowmem_iterator* iter = flx_shadowmem_iterator_new(mem);
-	uint32_t* eips = NULL;
-	while((block = flx_shadowmem_iterate(iter, &eips))){
+	while((block = flx_shadowmem_iterate(iter))){
 		tmp_string.data = (char*)&block->mem[0];
 		tmp_string.len  = block->len;
 		assert(tmp_string.data != NULL && tmp_string.len > 0);
-		//printf("found memory block with size %u\n", block->len);
 		struct match* p = shmatch_search(mem_block_matcher, &tmp_string);
 		for(; p; p = shmatch_search(mem_block_matcher, NULL)){
 			struct pattern* needle = p->needle;
-			flxinstrument_constsearch_event(eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
+			flxinstrument_constsearch_event(block->eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
 			shmatch_match_destroy(p);
 		}
 		flx_shadowmem_block_dealloc(block);
-		free(eips);
 	}
 	flx_shadowmem_iterator_delete(iter);
 
