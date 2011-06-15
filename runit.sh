@@ -9,4 +9,7 @@ sudo make install
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm context
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm winrar
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm threadtest
-/usr/local/bin/qemu -hda /home/felix/windows.img -m 2048 -net user -net nic,model=pcnet -loadvm consttest
+#/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm consttest
+#/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm consttest2
+#/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm consttest3
+/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm openssl-test

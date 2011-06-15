@@ -84,11 +84,12 @@ void flx_constsearch_search_memory(void){
 		tmp_string.data = (char*)&block->mem[0];
 		tmp_string.len  = block->len;
 		assert(tmp_string.data != NULL && tmp_string.len > 0);
+		//printf("found memory block with size %u\n", block->len);
 		struct match* p = shmatch_search(mem_block_matcher, &tmp_string);
-		while(p){
+		for(; p; p = shmatch_search(mem_block_matcher, NULL)){
 			struct pattern* needle = p->needle;
 			flxinstrument_constsearch_event(eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
-			p = shmatch_search(mem_block_matcher, NULL);
+			shmatch_match_destroy(p);
 		}
 		flx_shadowmem_block_dealloc(block);
 		free(eips);
@@ -109,9 +110,10 @@ void flx_constsearch_search_code(void){
 		uint32_t addr = bbl->addr;
 		uint32_t size = bbl->size;
 		if(size > s.len){
-			s.data = realloc(s.data, size);
-			s.len = size;
+			free(s.data);
+			s.data = malloc(size);
 		}
+		s.len = size;
 		if(cpu_memory_rw_debug(current_environment,
 					addr,
 					(uint8_t*)s.data,
@@ -128,14 +130,13 @@ void flx_constsearch_search_code(void){
 			}
 		}
 	}
-	printf("SEARCHED IN %u blocks\n", i);
 	flx_bbl_iterator_destroy(iter);
 	free(s.data);
 }
 
 void flx_constsearch_search(void){
-	flx_constsearch_search_memory();
 	flx_constsearch_search_code();
+	flx_constsearch_search_memory();
 }
 
 void flx_constsearch_pattern(uint8_t* pattern, uint32_t len){

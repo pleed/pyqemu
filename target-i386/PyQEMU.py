@@ -59,7 +59,7 @@ class QemuFlxLogger:
 		index = hash((process.imagefilename(), process.cur_tid))
 		if not self.logfiles.has_key(index):
 			logfile = self.buildLogfile(process)
-			self.logfiles[index] = io.open(logfile,"w")
+			self.logfiles[index] = io.open(logfile,"a")
 		return self.logfiles[index]
 
 	def shutdown(self, process = None):

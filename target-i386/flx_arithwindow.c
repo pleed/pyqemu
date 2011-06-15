@@ -100,13 +100,18 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	flx_bbl_window.end_index += 1;
 	flx_bbl_window.end_index %= flx_bbl_window.window_size;
 
-	if(flx_bbl_window.instructions >= flx_bbl_window.window_size){
+	uint8_t recalculate = 0;
+	while(flx_bbl_window.instructions >= flx_bbl_window.window_size && (flx_bbl_window.start_index+1)%flx_bbl_window.window_size != flx_bbl_window.end_index){
 		flx_bbl_window.instructions       -= flx_bbl_window.bbls[flx_bbl_window.start_index]->icount;
 		flx_bbl_window.arith_instructions -= flx_bbl_window.bbls[flx_bbl_window.start_index]->arithcount;
 
 		flx_bbl_window.start_index += 1;
 		flx_bbl_window.start_index %= flx_bbl_window.window_size;
+		recalculate = 1;
 
+	}
+
+	if(recalculate){
 		if((float)flx_bbl_window.arith_instructions / (float)flx_bbl_window.instructions >= flx_bbl_window.arith_percentage){
 			uint32_t i;
 			for(i=flx_bbl_window.start_index; i!= flx_bbl_window.end_index; i=(i+1)%flx_bbl_window.window_size){
@@ -116,16 +121,8 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 				}
 			}
 		}
+
 	}
- 
-	/*flx_disassembly* disas = flx_disas_bbl(eip);
-	printf("Basic Block: (0x%x)\n", eip);
-	uint32_t written;
-	while( (written = write(1, disas->s, disas->size)) > 0 ){
-		disas->s += written;
-		disas->size -= written;
-	}
-	printf("\n\n");*/
 
 	return 0;
 }
