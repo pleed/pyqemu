@@ -98,3 +98,13 @@ class QemuInstrumentation:
 
 	def disas_bbl(self, addr):
 		return PyFlxInstrument.disas_bbl(addr)
+
+	def functiontaint_enable(self, threshold):
+		return PyFlxInstrument.functiontaint_enable(threshold)
+
+	def functiontaint_disable(self, threshold):
+		return PyFlxInstrument.functiontaint_disable(threshold)
+
+	def function_lookup(self):
+		return PyFlxInstrument.function_lookup()
+

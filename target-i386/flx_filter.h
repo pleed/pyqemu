@@ -7,14 +7,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 
-#define NUM_FILTER_TREES 256
-
-extern avl_tree_t* page_trees[NUM_FILTER_TREES];
-
-typedef struct {
-	uint32_t pages[64];
-	uint8_t valid[64];
-} flx_filter_cache;
+#define MAX_NUM_PAGES 1<<20
 
 void flx_filter_init(void);
 void flx_filter_destroy(void);

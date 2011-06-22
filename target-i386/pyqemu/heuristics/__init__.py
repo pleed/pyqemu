@@ -8,4 +8,5 @@ __all__ = [
 	"functionentropy",
 	"api",
 	"constsearch",
+	"functiontaint",
 	  ]

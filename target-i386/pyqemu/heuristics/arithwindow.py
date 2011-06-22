@@ -9,6 +9,6 @@ class ArithwindowHeuristic(PyQemuHeuristic):
 		self.attach("arithwindow",    self.onCaballeroBBLTranslate)
 
 	def onCaballeroBBLTranslate(self, process, event):
-		self.log("%s(0x%x)"%(self.PREFIX, event.eip))
+		self.log("%s(0x%x, 0x%x)"%(self.PREFIX, self.current_function, event.eip))
 
 heuristic = ArithwindowHeuristic

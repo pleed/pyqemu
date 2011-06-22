@@ -49,6 +49,7 @@
 #include "flx_functiontrace.h"
 #include "flx_context.h"
 #include "flx_functionentropy.h"
+#include "flx_functiontaint.h"
 #include "flx_constsearch.h"
 #include "flx_bblwindow.h"
 
@@ -82,6 +83,7 @@ PyObject *PyFlx_ev_bblstart = NULL;
 PyObject *PyFlx_ev_shutdown = NULL;
 PyObject *PyFlx_ev_functiontrace = NULL;
 PyObject *PyFlx_ev_functionentropy = NULL;
+PyObject *PyFlx_ev_functiontaint = NULL;
 PyObject *PyFlx_ev_constsearch = NULL;
 
 static PyObject *PyFlx_REG_EAX;
@@ -279,6 +281,42 @@ static PyObject* PyFlxC_arithwindow_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+static PyObject* PyFlxC_functiontaint_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontaint_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   float threshold;
+   if(!PyArg_ParseTuple(args, "f", &threshold))
+     return NULL;
+
+  flx_functiontaint_enable(threshold);
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_functiontaint_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontaint_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   float threshold;
+   if(!PyArg_ParseTuple(args, "f", &threshold))
+     return NULL;
+
+  flx_functionentropy_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyObject* PyFlxC_functionentropy_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functionentropy_enable");  
@@ -364,6 +402,20 @@ static PyObject* PyFlxC_caballero_disable(PyObject *self, PyObject *args) {
 
   Py_INCREF(Py_None);
   return Py_None;
+}
+
+static PyObject* PyFlxC_function_lookup(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_function_lookup");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *retval;
+  uint32_t f_start = flx_lookup_current_function();
+  retval = Py_BuildValue("I", f_start);
+  return retval;
 }
 
 static PyObject* PyFlxC_bblwindow_get(PyObject *self, PyObject *args) {
@@ -826,6 +878,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"functiontrace_disable", (PyCFunction)PyFlxC_functiontrace_disable, METH_VARARGS,
      "Disable function tracing"
     },
+    {"functiontaint_disable", (PyCFunction)PyFlxC_functiontaint_disable, METH_VARARGS,
+     "Stop functiontaint measurement"
+    },
+    {"functiontaint_enable", (PyCFunction)PyFlxC_functiontaint_enable, METH_VARARGS,
+     "Start functiontaint measurement"
+    },
     {"functionentropy_disable", (PyCFunction)PyFlxC_functionentropy_disable, METH_VARARGS,
      "Stop functionentropy measurement"
     },
@@ -841,6 +899,10 @@ static PyMethodDef PyFlxC_methods[] = {
     {"bblwindow_get", (PyCFunction)PyFlxC_bblwindow_get, METH_VARARGS,
      "Get BBL by record index"
     },
+    {"function_lookup", (PyCFunction)PyFlxC_function_lookup, METH_VARARGS,
+     "Lookup current running function"
+    },
+
     {"bblwindow_disable", (PyCFunction)PyFlxC_bblwindow_disable, METH_VARARGS,
      "Disable BBL recording"
     },
@@ -969,6 +1031,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_functiontrace);
    PyFlx_ev_functionentropy = PyObject_GetAttrString(Py_Python_Module, "ev_functionentropy");
    Py_XINCREF(PyFlx_ev_functionentropy);
+   PyFlx_ev_functiontaint = PyObject_GetAttrString(Py_Python_Module, "ev_functiontaint");
+   Py_XINCREF(PyFlx_ev_functiontaint);
    PyFlx_ev_constsearch = PyObject_GetAttrString(Py_Python_Module, "ev_constsearch");
    Py_XINCREF(PyFlx_ev_constsearch);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
@@ -1065,6 +1129,7 @@ void flxinstrument_init(void) {
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
+   flx_functiontaint_init((functiontaint_handler)flxinstrument_functiontaint_event);
    flx_constsearch_init((constsearch_handler)flxinstrument_constsearch_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
@@ -1235,6 +1300,38 @@ int flxinstrument_constsearch_event(uint32_t eip, uint8_t* pattern, uint32_t len
   else {
     PyErr_Print();
   }
+  return retval;
+}
+
+int flxinstrument_functiontaint_event(float quotient, uint32_t start) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_functiontaint_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_functiontaint)) {
+    fprintf(stderr, "No registered functiontaint event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_functiontaint,
+				 (char*) "(If)",
+				 start,
+				 quotient);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
+  
   return retval;
 }
 

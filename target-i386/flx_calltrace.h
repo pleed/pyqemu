@@ -40,5 +40,6 @@ void flx_calltrace_enable(void);
 void flx_calltrace_disable(void);
 void flx_calltrace_event(uint32_t, uint32_t, uint32_t, uint32_t);
 int flx_calltrace_bblexec(uint32_t, uint32_t);
+uint32_t flx_lookup_current_function(void);
 
 #endif

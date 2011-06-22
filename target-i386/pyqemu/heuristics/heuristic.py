@@ -17,3 +17,7 @@ class PyQemuHeuristic:
 
 	def log(self, msg):
 		self.process.log(msg)
+
+	def getCurrentFunction(self):
+		return self.process.hardware.instrumentation.function_lookup()
+	current_function = property(getCurrentFunction)

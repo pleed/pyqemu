@@ -13,6 +13,15 @@ class QemuFunctionEntropyEvent(QemuEvent):
 	start = property(getStart)
 	entropychange = property(getEntropyChange)
 
+class QemuFunctionTaintEvent(QemuEvent):
+	def getStart(self):
+		return self.args[0]
+	def getQuotient(self):
+		return self.args[1]
+	start = property(getStart)
+	quotient = property(getQuotient)
+
+
 class QemuConstSearchEvent(QemuEvent):
 	def getEIP(self):
 		return self.args[1]
@@ -128,6 +137,7 @@ QemuEventTypes = {
 	"arithwindow":QemuArithwindowEvent,
 	"functiontrace":QemuFunctiontraceEvent,
 	"functionentropy":QemuFunctionEntropyEvent,
+	"functiontaint":QemuFunctionTaintEvent,
 	"constsearch":QemuConstSearchEvent,
 }
 

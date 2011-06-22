@@ -9,6 +9,6 @@ class FunctionEntropyHeuristic(PyQemuHeuristic):
 		self.attach("functionentropy",    self.onFunctionEntropyEvent)
 
 	def onFunctionEntropyEvent(self, process, event):
-		self.log("Function(0x%x, %f)"%(event.start, event.entropychange))
+		self.log("Function(0x%x, 0x%x, %f)"%(self.current_function, event.start, event.entropychange))
 
 heuristic = FunctionEntropyHeuristic

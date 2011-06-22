@@ -153,6 +153,7 @@ class TracedProcess(processinfo.Process):
 			"arithwindow":EventHandler(self),
 			"functiontrace":EventHandler(self),
 			"functionentropy":EventHandler(self),
+			"functiontaint":EventHandler(self),
 			"constsearch":EventHandler(self),
 		}
 

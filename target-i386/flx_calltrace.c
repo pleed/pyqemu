@@ -106,6 +106,13 @@ flx_calltrace_current_stackframes(void){
 	return context->calltrace;
 }
 
+uint32_t
+flx_lookup_current_function(void){
+	flx_stackframes* stackframes = flx_calltrace_current_stackframes();
+	assert(stackframes);
+	return stackframes->frames[stackframes->cur_element-1].eip;
+}
+
 int flx_calltrace_bblexec(uint32_t eip, uint32_t esp){
 	uint32_t cur_esp = 0;
 	uint32_t cur_eip = 0;

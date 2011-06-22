@@ -13,9 +13,11 @@ typedef struct {
 	void *calltrace;
 	void *memtrace;
 	void *constsearch;
+	void *taintstack;
 	context_destructor calltrace_destructor;
 	context_destructor memtrace_destructor;
 	context_destructor constsearch_destructor;
+	context_destructor taintgraph_destructor;
 } flx_context;
 
 void         flx_context_init(void);

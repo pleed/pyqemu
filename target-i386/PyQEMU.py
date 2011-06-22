@@ -163,3 +163,4 @@ ev_caballero = ensure_error_handling_helper(lambda *args: getVirtualMachine().ha
 ev_functiontrace = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functiontrace",*args))
 ev_functionentropy = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functionentropy",*args))
 ev_constsearch = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("constsearch",*args))
+ev_functiontaint = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functiontaint",*args))
