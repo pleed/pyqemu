@@ -109,7 +109,10 @@ flx_calltrace_current_stackframes(void){
 uint32_t
 flx_lookup_current_function(void){
 	flx_stackframes* stackframes = flx_calltrace_current_stackframes();
-	assert(stackframes);
+	if(!stackframes || stackframes->cur_element == 0){
+		printf("WARNING: lookup_current_function returning 0!\n");
+		return 0;
+	}
 	return stackframes->frames[stackframes->cur_element-1].eip;
 }
 
