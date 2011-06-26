@@ -24,6 +24,7 @@
 
 #include "tcg-op.h"
 #include "disas.h"
+#include "flx_syscall.h"
 #include "flx_calltrace.h"
 #include "flx_breakpoint.h"
 #include "flx_bbltrace.h"
@@ -2586,7 +2587,7 @@ void helper_flx_call(target_ulong src_eip, target_ulong new_eip, target_ulong ne
 void helper_flx_syscall(void){
 	if(flx_state.global_active){
 		flx_helper_debug("Syscall at 0x%x, eax: %d\n",env->eip, env->regs[R_EAX]);
-		flxinstrument_syscall_event(env->regs[R_EAX]);
+		flx_syscall_event(env->regs[R_EAX]);
 	}
 }
 

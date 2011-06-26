@@ -52,6 +52,7 @@
 #include "flx_functiontaint.h"
 #include "flx_constsearch.h"
 #include "flx_bblwindow.h"
+#include "flx_syscall.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -249,6 +250,32 @@ static PyObject* PyFlxC_functiontrace_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+static PyObject* PyFlxC_syscall_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_syscall_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_syscall_disable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_syscall_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_syscall_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_syscall_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyObject* PyFlxC_arithwindow_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_arithwindow_enable");  
@@ -348,6 +375,24 @@ static PyObject* PyFlxC_functionentropy_disable(PyObject *self, PyObject *args) 
      return NULL;
 
   flx_functionentropy_disable();
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_syscall_hook(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_syscall_hook");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t syscall;
+   if(!PyArg_ParseTuple(args, "I", &syscall))
+     return NULL;
+
+  flx_syscall_hook(syscall);
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -878,6 +923,12 @@ static PyMethodDef PyFlxC_methods[] = {
     {"functiontrace_disable", (PyCFunction)PyFlxC_functiontrace_disable, METH_VARARGS,
      "Disable function tracing"
     },
+    {"syscall_disable", (PyCFunction)PyFlxC_syscall_disable, METH_VARARGS,
+     "Disable syscall tracing"
+    },
+    {"syscall_enable", (PyCFunction)PyFlxC_syscall_enable, METH_VARARGS,
+     "Enable syscall tracing"
+    },
     {"functiontaint_disable", (PyCFunction)PyFlxC_functiontaint_disable, METH_VARARGS,
      "Stop functiontaint measurement"
     },
@@ -886,6 +937,9 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"functionentropy_disable", (PyCFunction)PyFlxC_functionentropy_disable, METH_VARARGS,
      "Stop functionentropy measurement"
+    },
+    {"syscall_hook", (PyCFunction)PyFlxC_syscall_hook, METH_VARARGS,
+     "Add syscall to hook"
     },
     {"functionentropy_enable", (PyCFunction)PyFlxC_functionentropy_enable, METH_VARARGS,
      "Start functionentropy measurement"

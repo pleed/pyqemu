@@ -61,6 +61,7 @@ class OperatingSystem:
 					self.logger.info("New Traced Process: %s"%filename)
 					
 					self.active_process = TracedProcess(self.config["os"]["processes"][filename], self, self.logger, filename, self.hardware)
+					self.setupControls(self.active_process)
 					self.setupHeuristics(self.active_process)
 					self.hardware.instrumentation.retranslate()
 					self.hardware.instrumentation.activate(-1,-1)
@@ -81,6 +82,19 @@ class OperatingSystem:
 			heuristic_class = getattr(module,"heuristic")
 			self.logger.info("Activating heuristic: %s"%heuristic)
 			heuristic_class(process, self.config["os"]["heuristics"][heuristic])
+
+	def setupControls(self, process):
+		module = __impot__("pyqemu")
+		module = getattr(modules, "controls")
+		modules = getattr(module.__all__)
+		for mod in modules:
+			control = getattr(mod, module)
+			control_class = getattr(mod, "control")
+			if control_class is not None:
+				self.logger.info("Activating control: %s"%control_class.name)
+				control_class(process, self.config["os"])
+			else:
+				self.logger.info("CONTROL CLASS IS NONE!\n")
 
 	def exitPendingProcesses(self):
 		for process,cr3 in self.terminating_processes:

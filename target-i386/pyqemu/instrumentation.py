@@ -108,3 +108,11 @@ class QemuInstrumentation:
 	def function_lookup(self):
 		return PyFlxInstrument.function_lookup()
 
+	def syscall_enable(self):
+		PyFlxInstrument.syscall_enable()
+
+	def syscall_disable(self):
+		PyFlxInstrument.syscall_disable()
+
+	def syscall_hook(self, number):
+		PyFlxInstrument.syscall_hook(number)
