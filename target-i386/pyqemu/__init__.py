@@ -14,4 +14,5 @@ __all__ = [
 	"process",
 	"memory",
 	"operatingsystem",
+	"controls",
 	  ]

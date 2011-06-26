@@ -22,3 +22,4 @@ class ProcessControl:
 		return self.process.hardware.instrumentation.function_lookup()
 	current_function = property(getCurrentFunction)
 
+control = None

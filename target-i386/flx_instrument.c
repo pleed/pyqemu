@@ -1180,6 +1180,7 @@ void flxinstrument_init(void) {
    //flx_functiontrace_init((functiontrace_handler)flxinstrument_functiontrace_event);
 
    // high level callbacks
+   flx_syscall_init((syscall_handler)flxinstrument_syscall_event);
    flx_caballero_init((caballero_handler)flxinstrument_caballero_event);
    flx_arithwindow_init((arithwindow_handler)flxinstrument_arithwindow_event);
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);

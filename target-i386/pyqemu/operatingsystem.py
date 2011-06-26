@@ -4,6 +4,8 @@ from msg import *
 from process import *
 import heuristics
 from heuristics import *
+import controls
+from controls import *
 
 class OperatingSystem:
 	def __init__(self, config, hardware, logger):
@@ -18,6 +20,11 @@ class OperatingSystem:
 	def handleEvent(self, event):
 		if event.event_type == "schedule":
 			self.schedule(event)
+			try:
+				if not self.active_process.isRegisteredThread():
+					self.active_process.createNewThread()
+			except:
+				pass
 		else:
 			if not self.active_process.isRegisteredThread():
 				self.active_process.createNewThread()
@@ -84,17 +91,15 @@ class OperatingSystem:
 			heuristic_class(process, self.config["os"]["heuristics"][heuristic])
 
 	def setupControls(self, process):
-		module = __impot__("pyqemu")
-		module = getattr(modules, "controls")
-		modules = getattr(module.__all__)
+		module  = __import__("pyqemu")
+		module  = getattr(module, "controls")
+		modules = getattr(module, "__all__")
 		for mod in modules:
-			control = getattr(mod, module)
-			control_class = getattr(mod, "control")
+			control = getattr(module, mod)
+			control_class = getattr(control, "control")
 			if control_class is not None:
-				self.logger.info("Activating control: %s"%control_class.name)
+				self.logger.info("Activating control: %s"%mod)
 				control_class(process, self.config["os"])
-			else:
-				self.logger.info("CONTROL CLASS IS NONE!\n")
 
 	def exitPendingProcesses(self):
 		for process,cr3 in self.terminating_processes:

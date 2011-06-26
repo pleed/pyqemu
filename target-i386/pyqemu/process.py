@@ -448,3 +448,5 @@ class UntracedProcess(processinfo.Process):
 		print "UNTRACED PROCESS BBLSTART! %s"%str(args)
 	def handleEvent(self, *args):
 		print "UNTRACED PROCESS HANDLE EVENT! %s"%str(args)
+	def isRegisteredThread(self):
+		return True

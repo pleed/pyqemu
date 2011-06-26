@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from controls import ProcessControl
+from control import ProcessControl
 
 #syscall table from metasploit
 syscall_table = {
@@ -291,6 +291,7 @@ syscall_table = {
 }
 
 class SyscallControl(ProcessControl):
+	PREFIX = "syscall"
 	hook_syscalls = [
 			"NtTerminateProcess",
 			"NtCreateThread",
@@ -299,28 +300,29 @@ class SyscallControl(ProcessControl):
 			"NtCreateProcessEx",
 			]
 
-	def __init__(self, process. options):
+	def __init__(self, process, options):
 		self.number_to_syscall_name = syscall_table
 		self.name_to_syscall_number = {}
 		for key, value in syscall_table.items():
 			self.name_to_syscall_number[value] = key
 		ProcessControl.__init__(self, process, options)
 
-	def getSyscallByNumer(number):
+	def getSyscallByNumber(self, number):
 		return self.number_to_syscall_name[number]
 
-	def getSyscallByName(name):
+	def getSyscallByName(self, name):
 		return self.name_to_syscall_number[name]
 
 	def setupCallbacks(self):
-		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.syscall_enable)
 		self.process.onInstrumentationInit(lambda: self.registerSyscallHooks(self.process))
+		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.syscall_enable())
+		self.attach("syscall", self.onSyscallEvent)
 
 	def registerSyscallHooks(self, process):
 		for syscall in self.hook_syscalls:
 			self.process.hardware.instrumentation.syscall_hook(self.getSyscallByName(syscall))
 
 	def onSyscallEvent(self, process, event):
-		print "Syscall - %s"%self.getSyscallByName(event.number)
+		print "Syscall - %s"%self.getSyscallByNumber(event.number)
 
 control = SyscallControl
