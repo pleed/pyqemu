@@ -39,22 +39,23 @@ void flx_context_init(void){
 }
 
 static flx_context*
-flx_context_alloc(uint16_t pid, uint16_t tid){
+flx_context_alloc(uint16_t pid, uint16_t tid, const char* procname){
 	flx_context* context = malloc(sizeof(*context));
 	memset(context, 0, sizeof(*context));
 	context->pid = pid;
 	context->tid = tid;
+	context->procname = strdup(procname);
 	return context;
 }
 
-void flx_context_set(int32_t p, int32_t t){
+void flx_context_set(int32_t p, int32_t t, const char* procname){
 	if(p == -1 && t == -1){
 		current_context = NULL;
 		return;
 	}
 	uint16_t pid = p;
 	uint16_t tid = t;
-	flx_context* context = flx_context_alloc(pid,tid);
+	flx_context* context = flx_context_alloc(pid, tid, procname);
 	avl_node_t* node = avl_search(context_tree, (void*)context);
 	if(node){
 		current_context = node->item;

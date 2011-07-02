@@ -5,9 +5,9 @@ import PyFlxInstrument
 class QemuInstrumentation:
 	def __init__(self):
 		pass
-	def activate(self, pid, tid):
+	def activate(self, pid, tid, procname):
 		PyFlxInstrument.set_instrumentation_active(1)
-		PyFlxInstrument.set_context(pid,tid)
+		PyFlxInstrument.set_context(pid,tid, str(procname))
 
 	def deactivate(self):
 		PyFlxInstrument.set_instrumentation_active(0)
@@ -116,3 +116,9 @@ class QemuInstrumentation:
 
 	def syscall_hook(self, number):
 		PyFlxInstrument.syscall_hook(number)
+
+	def dump_enable(self):
+		PyFlxInstrument.dump_enable()
+
+	def dump_disable(self):
+		PyFlxInstrument.dump_disable()

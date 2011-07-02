@@ -91,6 +91,7 @@ flx_functionentropy_current_stackframe(void){
 
 static float
 flx_functionentropy_calculate_entropy(memtracker* tracker, uint32_t *bytes){
+	return 0.0;
 	memtrack_iterator iter = flx_memtrack_iterator();
 	memory_byte* current;
 

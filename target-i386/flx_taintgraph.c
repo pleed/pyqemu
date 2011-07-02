@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <avl.h>
+#include <sys/time.h>
 
 #include "flx_graph.h"
 
@@ -137,6 +138,7 @@ flx_taint_next_block(flx_graph* g, vertex_iterator* iter){
 
 static float
 flx_taint_calc_quotient(vertex_block* block){
+	return 0.0;
 	if(block->num < 8){
 		return 0;
 	}

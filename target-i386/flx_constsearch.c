@@ -57,6 +57,15 @@ flx_constsearch_current_memory(void){
 }
 
 int flx_constsearch_memaccess(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
+	static FILE* f = NULL;
+	if(!f){
+		f = fopen("/tmp/bla","w");
+	}
+	fwrite(&address, 4, 1, f);
+	fwrite(&value, 4, 1, f);
+	fwrite(&size, 1, 1, f);
+	fwrite(&iswrite, 1, 1, f);
+
 	if(!iswrite){
 		/*uint32_t esp = current_environment->regs[R_ESP];
 		uint32_t diff = (address>esp)?address-esp:esp-address;

@@ -284,9 +284,7 @@ class ApiHeuristic(PyQemuHeuristic):
 			process.installHookByName(self.onApiCallEvent, function)
 
 	def onApiCallEvent(self, process, dll, function, addr):
-		last_bbls = []
-		for i in range(3):
-			last_bbls.append(process.hardware.instrumentation.bblwindow_get(i))
-		self.log("%s(%s,%s, 0x%x->0x%x->0x%x)"%(self.PREFIX, dll, function, last_bbls[2], last_bbls[1], last_bbls[0]))
+		last_bbl = process.hardware.instrumentation.bblwindow_get(0)
+		self.log("%s %s %s,0x%x"%(self.PREFIX, dll, function, last_bbl))
 
 heuristic = ApiHeuristic

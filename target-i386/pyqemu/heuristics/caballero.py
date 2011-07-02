@@ -9,6 +9,6 @@ class CaballeroHeuristic(PyQemuHeuristic):
 		self.attach("caballero",    self.onCaballeroBBLTranslate)
 
 	def onCaballeroBBLTranslate(self, process, event):
-		self.log("%s(0x%x, 0x%x, %f, %d)"%(self.PREFIX, self.current_function, event.eip, float(event.arith)/float(event.icount), event.icount))
+		self.log("%s %f,0x%x"%(self.PREFIX, float(event.arith)/float(event.icount), event.eip))
 
 heuristic = CaballeroHeuristic

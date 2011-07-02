@@ -29,6 +29,7 @@ typedef struct {
 	uint8_t filter_active;
 	uint8_t calltrace_active;
 	uint8_t functiontrace_active;
+	uint8_t dump_active;
 
 	// specific opcode flags
 	uint8_t syscall_active;

@@ -53,6 +53,7 @@
 #include "flx_constsearch.h"
 #include "flx_bblwindow.h"
 #include "flx_syscall.h"
+#include "flx_dump.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -124,7 +125,7 @@ static PyObject* PyFlxC_filter_add(PyObject *self, PyObject *args) {
 
 static PyObject* PyFlxC_filter_del(PyObject *self, PyObject *args) {
 #ifdef DEBUG
-  fprintf(stderr, "flxinstrument_filter_enable");  
+  fprintf(stderr, "flxinstrument_filter_del");  
   if(PyErr_Occurred())
 	fprintf(stderr," - EXCEPTION THROWN\n");
   else
@@ -138,6 +139,32 @@ static PyObject* PyFlxC_filter_del(PyObject *self, PyObject *args) {
   Py_INCREF(Py_None);
   return Py_None;
 
+}
+
+static PyObject* PyFlxC_dump_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_dump_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_dump_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_dump_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_dump_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  flx_dump_disable();
+  Py_INCREF(Py_None);
+  return Py_None;
 }
 
 static PyObject* PyFlxC_filter_enable(PyObject *self, PyObject *args) {
@@ -835,12 +862,13 @@ static PyObject* PyFlxC_set_context(PyObject *self, PyObject *args) {
 #endif
   int pid;
   int tid;
+  const char* procname;
   
-  if(!PyArg_ParseTuple(args, "II", &pid, &tid)) {
+  if(!PyArg_ParseTuple(args, "IIs", &pid, &tid, &procname)) {
     return NULL;
   }
 
-  flx_context_set(pid,tid);
+  flx_context_set(pid, tid, procname);
   
   Py_INCREF(Py_None);
   return Py_None;
@@ -974,6 +1002,12 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"filter_add", (PyCFunction)PyFlxC_filter_add, METH_VARARGS,
      "Activate translation filtering"
+    },
+    {"dump_enable", (PyCFunction)PyFlxC_dump_enable, METH_VARARGS,
+     "Enable event dumping"
+    },
+    {"dump_disable", (PyCFunction)PyFlxC_dump_disable, METH_VARARGS,
+     "Disable event dumping"
     },
     {"filter_del", (PyCFunction)PyFlxC_filter_del, METH_VARARGS,
      "Activate translation filtering"
@@ -1173,6 +1207,7 @@ void flxinstrument_init(void) {
    flx_memtrace_init();
    flx_calltrace_init();
    flx_bblwindow_init();
+   flx_dump_init("/home/matenaar/logs/");
 
    // low level callbacks
    //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);

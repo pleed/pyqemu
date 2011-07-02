@@ -50,7 +50,7 @@ class QemuFlxLogger:
 		if not self.starttimes.has_key(process.pid):
 			self.starttimes[process.pid] = time.asctime()
 		timestamp = self.starttimes[process.pid]
-		logfile = "%s-%s-%s.log"%(process.imagefilename(),process.cur_tid,timestamp)
+		logfile = "%s %s %s %s.log"%(process.imagefilename(),process.pid, process.cur_tid,timestamp)
 		logfile = self.config["logger"]["logdir"]+"/"+logfile
 		return logfile
 		
