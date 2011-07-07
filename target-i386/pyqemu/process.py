@@ -92,6 +92,7 @@ class TracedProcess(processinfo.Process):
 	def __init__(self, options, os, logger, imagefilename, hardware):
 		self.os = os
 		self.hardware = hardware
+		self.cr3 = hardware.cpu.cr3
 		self.detected_dlls       = 0
 		self.threadcount         = 0
 		self.threads             = {}
@@ -103,6 +104,7 @@ class TracedProcess(processinfo.Process):
 		self.options             = options
 		self.initialized         = False
 		self.instrumentation_initializers = []
+		self.instrumentation_deinitializers = []
 
 		processinfo.Process.__init__(self)
 		self.loadCallbacks([])
@@ -110,8 +112,15 @@ class TracedProcess(processinfo.Process):
 		self.pe_image = PEFile("%s/%s"%(options["exedir"], imagefilename), 0)
 		self.addBreakpoint(self.pe_image.calculateEntryPoint(), self.entryPointReached)
 
+	def shutdown(self):
+		for deconstructor in self.instrumentation_deinitializers:
+			deconstructor()
+
 	def onInstrumentationInit(self, function):
 		self.instrumentation_initializers.append(function)
+
+	def onInstrumentationStop(self, function):
+		self.instrumentation_deinitializers.append(function)
 
 	def entryPointReached(self, addr):
 		""" Instrumentation starts here after entry point has been reached """

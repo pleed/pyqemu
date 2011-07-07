@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import PyFlxInstrument
+import Helpers
 
 class QemuInstrumentation:
 	def __init__(self):
@@ -122,3 +123,15 @@ class QemuInstrumentation:
 
 	def dump_disable(self):
 		PyFlxInstrument.dump_disable()
+
+	def vmem_read(self, n):
+		return PyFlxInstrument.vmem_read(n, 4096)
+
+	def read_process(self, process, address, len):
+		try:
+			return PyFlxInstrument.vmem_read_process(process.cr3, address, len)
+		except RuntimeError:
+			return None
+
+	def read_process_page(self, process, address):
+		return self.read_process(process, address&0xfffff000, 4096)

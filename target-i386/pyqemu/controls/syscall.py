@@ -316,6 +316,7 @@ class SyscallControl(ProcessControl):
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.registerSyscallHooks(self.process))
 		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.syscall_enable())
+		self.process.onInstrumentationStop(lambda: self.dump_process(self.process))
 		self.attach("syscall", self.onSyscallEvent)
 
 	def registerSyscallHooks(self, process):
@@ -324,5 +325,19 @@ class SyscallControl(ProcessControl):
 
 	def onSyscallEvent(self, process, event):
 		print "Syscall - %s"%self.getSyscallByNumber(event.number)
+
+	def dump_process(self, process):
+		print "Dumping process: %s"%process.imagefilename()
+		x = 0
+		while x < 0x80000000:
+			page = process.hardware.instrumentation.read_process_page(process, x)
+			if page == None:
+				x+=4096
+				continue
+			print "Dumping page: 0x%x"%x
+			f = open(self.options["dump"]+"/0x%x"%x, "w")
+			f.write(page)
+			f.close()
+			x += 4096
 
 control = SyscallControl

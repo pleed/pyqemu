@@ -106,6 +106,7 @@ class VirtualMachine:
 	def handleQemuEvent(self, ev, *args):
 		if ev == "shutdown":
 			self.logger.shutdown()
+			self.os.shutdown()
 		else:
 			event = createEventObject(ev, *args)
 			self.os.handleEvent(event)

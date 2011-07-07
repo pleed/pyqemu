@@ -54,6 +54,7 @@
 #include "flx_bblwindow.h"
 #include "flx_syscall.h"
 #include "flx_dump.h"
+#include "flx_environment.h"
 
 //#ifndef DEBUG
 //#define DEBUG
@@ -805,6 +806,53 @@ static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
    return retval;
 }
 
+static PyObject* PyFlxC_vmem_read_process(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_vmem_read_process");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint32_t addr, len, cr3;
+   PyObject *retval = Py_None;
+   char *buf;
+
+   if(!PyArg_ParseTuple(args, "III", &cr3, &addr, &len)) {
+      return NULL;
+   }
+   current_environment = flx_environment_get_state(cr3);
+
+   if (!current_environment) {
+     printf("NO CURRENT ENV!!!\n");
+     Py_INCREF(Py_None);
+     return Py_None;
+   }
+
+   buf = (char*)malloc(len);
+   if (!buf)
+     return PyErr_NoMemory();
+
+   if (cpu_memory_rw_debug(current_environment,
+			   addr,
+			   (uint8_t*)buf,
+			   len,
+			   0) != 0){
+     //fixme: set error message
+     free(buf);
+     //Py_INCREF(PyExc_RuntimeError);
+     return PyErr_Format(PyExc_RuntimeError, 
+			 "Error reading from 0x%08x (len: %d)\n",
+			 addr,
+			 len);
+   }
+   
+   retval = Py_BuildValue("s#", buf, len);
+   //Py_XINCREF(retval);
+   free(buf);
+
+   return retval;
+}
 
 static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
 #ifdef DEBUG
@@ -899,6 +947,10 @@ static PyMethodDef PyFlxC_methods[] = {
     {"vmem_read", (PyCFunction)PyFlxC_vmem_read, METH_VARARGS,
      "Reads from virtual memory and returns a string"
     },
+    {"vmem_read_process", (PyCFunction)PyFlxC_vmem_read_process, METH_VARARGS,
+     "Reads from virtual memory of the specified process and returns a string"
+    },
+
     {"registers", (PyCFunction)PyFlxC_registers, METH_VARARGS,
      "Returns a dictionary containing all registers"
     },
@@ -1208,6 +1260,7 @@ void flxinstrument_init(void) {
    flx_calltrace_init();
    flx_bblwindow_init();
    flx_dump_init("/home/matenaar/logs/");
+   flx_environment_init();
 
    // low level callbacks
    //flx_bbltrace_register_handler((bbltrace_handler)flxinstrument_bbltrace_event);
@@ -1241,12 +1294,14 @@ int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
   //static uint8_t last_monitored = 0;
   PyObject *result;
   int retval = 0;
-  
-  
+
   if (!PyCallable_Check(PyFlx_ev_update_cr3)) {
     fprintf(stderr, "Not callable\n");
     return retval;
   }
+  if(!flx_environment_get_state(new_cr3))
+    flx_environment_save_state(current_environment);
+
 
   result = PyObject_CallFunction(PyFlx_ev_update_cr3, 
 				 (char*)"(II)", 

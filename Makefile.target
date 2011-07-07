@@ -48,7 +48,7 @@ all: $(PROGS)
 
 #########################################################
 # cpu emulator library
-libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o flx_breakpoint.o flx_memtrace.o flx_bbltrace.o flx_bbl.o flx_bbltranslate.o flx_filter.o flx_tbrestoring.o flx_caballero.o flx_arithwindow.o flx_calltrace.o flx_functiontrace.o flx_context.o flx_functionentropy.o flx_memtrack.o flx_shadowmem.o flx_constsearch.o flx_bblwindow.o flx_disas.o flx_taintgraph.o flx_functiontaint.o hashmap.o flx_syscall.o flx_dump.o
+libobj-y = exec.o translate-all.o cpu-exec.o translate.o flx_instrument.o flx_breakpoint.o flx_memtrace.o flx_bbltrace.o flx_bbl.o flx_bbltranslate.o flx_filter.o flx_tbrestoring.o flx_caballero.o flx_arithwindow.o flx_calltrace.o flx_functiontrace.o flx_context.o flx_functionentropy.o flx_memtrack.o flx_shadowmem.o flx_constsearch.o flx_bblwindow.o flx_disas.o flx_taintgraph.o flx_functiontaint.o hashmap.o flx_syscall.o flx_dump.o flx_environment.o flx_hashmap.o
 libobj-y += tcg/tcg.o
 libobj-$(CONFIG_SOFTFLOAT) += fpu/softfloat.o
 libobj-$(CONFIG_NOSOFTFLOAT) += fpu/softfloat-native.o

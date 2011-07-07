@@ -17,6 +17,12 @@ class OperatingSystem:
 		self.processes = {}
 		self.logger = logger
 
+	def shutdown(self):
+		for process in self.processes.values():
+			if isinstance(process, UntracedProcess):
+				continue
+			process.shutdown()
+
 	def handleEvent(self, event):
 		if event.event_type == "schedule":
 			self.schedule(event)

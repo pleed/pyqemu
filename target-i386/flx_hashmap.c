@@ -38,6 +38,7 @@ hmap* flx_hashmap_delete(hmap* h){
 	hashmapForEach(h->map, flx_hashmap_destructor_callback, h);
 	hashmapFree(h->map);
 	flx_hashmap_dealloc(h);
+	return NULL;
 }
 void*
 flx_hashmap_put(hmap* h, void* key, void* value){
