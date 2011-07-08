@@ -1,0 +1,140 @@
+{
+	"logger": {
+		"logdir":"/home/matenaar/logs"
+	},
+	"os": {
+		"dump":"/home/matenaar/pages/",
+		"processes":{
+			"notepad.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"notepad.exe"
+						     ]
+				      },
+			"blowfish.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"blowfish.exe"
+						     ]
+				      },
+
+			"aescrypt.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"aescrypt.exe"
+						     ]
+					},
+			"ssh.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"ssh.exe",
+							"cygcrypto-0.9.7.dll"
+						     ]
+					},
+
+			"WinRAR.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"WinRAR.exe"
+						     ]
+					},
+
+			"threadtest.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"threadtest.exe"
+						     ]
+					},
+
+			"consttest.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"consttest.exe"
+						     ]
+					},
+
+
+			"sha1sum.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"sha1sum.exe"
+						     ]
+					},
+
+			"md5sum.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"md5sum.exe"
+						     ]
+					},
+
+
+
+
+			"curl.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"curl.exe",
+							"libssl32.dll",
+							"libeay32.dll"
+						     ]
+				   },
+
+			"malware.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"malware.exe"
+						     ]
+				   },
+
+			"9876.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"9876.exe"
+						     ]
+				   },
+
+
+
+
+			"openssl.exe":{
+					"dlldir":"/home/matenaar/dlls/",
+					"exedir":"/home/matenaar/exes/",
+					"instrument":[
+							"openssl.exe",
+							"libssl32.dll",
+							"libeay32.dll"
+						     ]
+				   }
+
+
+		},
+		"heuristics":{
+			"arithwindow":{
+					"window_size":40,
+					"threshold":0.6
+			},
+			"api":{
+			},
+			"caballero":{
+					"threshold":0.5,
+					"min_icount":20
+			},
+			"constsearch":{
+			}
+		}
+	},
+	"debug":1
+}
