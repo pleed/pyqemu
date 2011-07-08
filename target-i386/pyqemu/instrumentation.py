@@ -118,8 +118,8 @@ class QemuInstrumentation:
 	def syscall_hook(self, number):
 		PyFlxInstrument.syscall_hook(number)
 
-	def dump_enable(self):
-		PyFlxInstrument.dump_enable()
+	def dump_enable(self, path):
+		PyFlxInstrument.dump_enable(path)
 
 	def dump_disable(self):
 		PyFlxInstrument.dump_disable()

@@ -16,8 +16,8 @@
 char* flx_dump_path = NULL;
 
 void
-flx_dump_init(const char* path){
-	flx_dump_path = strdup(path);
+flx_dump_init(void){
+	return;
 }
 
 void
@@ -99,12 +99,13 @@ flx_dump_function(uint32_t old_eip, uint32_t new_eip, uint32_t next_eip, uint32_
 }
 
 void
-flx_dump_enable(void){
+flx_dump_enable(const char* path){
 	flx_memtrace_register_handler(flx_dump_mem);
 	flx_memtrace_enable();
 	flx_calltrace_register_handler(flx_dump_function);
 	flx_calltrace_enable();
 	flx_state.dump_active = 1;
+	flx_dump_path = strdup(path);
 }
 
 void

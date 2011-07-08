@@ -25,9 +25,9 @@ typedef struct __attribute__((__packed__)){
 } flx_dump_context;
 
 
-void flx_dump_init(const char* dumpfile);
+void flx_dump_init(void);
 void flx_dump_destroy(void);
-void flx_dump_enable(void);
+void flx_dump_enable(const char* dumpfile);
 void flx_dump_disable(void);
 
 #endif

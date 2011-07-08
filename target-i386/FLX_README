@@ -8,6 +8,9 @@
 		sudo cp libshmatch.so /usr/lib/
 		sudo cp shmatch.h /usr/include/
 
+	PyQEMU additionally depends on:
+		pefile (code.google.com/p/pefile/)
+
 2. Build and Install Qemu and Python code
 	Configure qemu:
 		./configure --target-list=i386-softmmu
@@ -24,14 +27,14 @@
 		mkdir /etc/qemuflx
 		cp $repo/target-i386/configuration/flx.json /etc/qemuflx/
 
-	Configuration example:
+	Configuration explanation:
 ################################################
 {
 	"logger": {
-		"logdir":"/home/matenaar/logs"  // Log memory access and heuristics into this directory
+		"logdir":"/home/matenaar/logs"  // Log heuristics into this directory
 	},
 	"os": {
-		"dump":"/home/matenaar/pages/", // Store memory dump in this directory
+		"dump":"/home/matenaar/pages/", // Store memory dump and memory access dumps in this directory
 		"processes":{
 			"notepad.exe":{         // Process which shall be instrumented
 					"dlldir":"/home/matenaar/dlls/",   // directory for windows dlls
@@ -63,7 +66,7 @@
 2. Preparation
 	For startup you need the following requirements:
 		1. Windows XP SP2 Qemu image
-		2. dll directory containing libraries the instrumented process depends on
+		2. dll directory containing libraries on which the instrumented process depends on
 			Explanation:
 				PyQemu directly accesses libraries through pefile.py for symbol resolution
 		3. exes directory containing the samples
@@ -79,7 +82,7 @@
 	3. download and execute your sample as specified in the flx.json configuration
 
 	4. Stop Instrumentation with SIGINT (Strg+C),
-		Memory dump will be stored in "dump" directory as specified in flx.json
+		Memory dump will be stored in "dump" directory as specified in flx.json if process is still running on termination
 		Logfiles will be stored in "logdir" directory as specified in flx.json
 		Memory Access log will be stored in "logdir" also
 
@@ -89,7 +92,10 @@
 			patch.py
 			ida_mark_functions.py
 
-		dump-analysis.py
+		! You will need to change hardcoded paths in patch.py to the stored memory page dump directory !
+		! You will need to change hardcoded paths in ida_mark_functions.py to the analysis produced by dump-analysis.py !
+
+		dump-analysis.py (takes about 4 minutes per 100mb memory access dump!)
 			Usage: dump-analysis.py <directory of logfiles>
 			Output: analysis on stdout
 			Example: dump-analysis.py /home/matenaar/logs > /tmp/analysis

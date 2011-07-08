@@ -150,7 +150,10 @@ static PyObject* PyFlxC_dump_enable(PyObject *self, PyObject *args) {
   else
 	fprintf(stderr," - NO EXC\n");
 #endif
-  flx_dump_enable();
+  const char* path;
+  if(!PyArg_ParseTuple(args, "s", &path))
+    return NULL;
+  flx_dump_enable(path);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -1259,7 +1262,7 @@ void flxinstrument_init(void) {
    flx_memtrace_init();
    flx_calltrace_init();
    flx_bblwindow_init();
-   flx_dump_init("/home/matenaar/logs/");
+   flx_dump_init();
    flx_environment_init();
 
    // low level callbacks
