@@ -1,4 +1,110 @@
-1. you can globally disable the python extension by setting
-	export FLX_DISABLE=$arbitrary
+--== PyQEMU Installation ==--
 
-   The _existance_ of FLX_DISABLE is checked when initializing
+1. Install Dependencies
+	PyQEMU depends on libshmatch
+	You can find it in $repo/target-i386/libshmatch/
+	Build:
+		make
+		sudo cp libshmatch.so /usr/lib/
+		sudo cp shmatch.h /usr/include/
+
+2. Build and Install Qemu and Python code
+	Configure qemu:
+		./configure --target-list=i386-softmmu
+
+	Build qemu:
+		make
+
+	Install qemu and python files:
+		make install
+
+--== PyQEMU Configuration ==--
+1. Configuration and Starting
+	Create configuration directory and copy example configuration:
+		mkdir /etc/qemuflx
+		cp $repo/target-i386/configuration/flx.json /etc/qemuflx/
+
+	Configuration example:
+################################################
+{
+	"logger": {
+		"logdir":"/home/matenaar/logs"  // Log memory access and heuristics into this directory
+	},
+	"os": {
+		"dump":"/home/matenaar/pages/", // Store memory dump in this directory
+		"processes":{
+			"notepad.exe":{         // Process which shall be instrumented
+					"dlldir":"/home/matenaar/dlls/",   // directory for windows dlls
+					"exedir":"/home/matenaar/exes/",   // directory for executables (instrumented samples)
+					"instrument":[
+							"notepad.exe"      // list of images which shall be instrumented in the
+						     ]                     // process
+				      },
+		},
+		"heuristics":{      // heuristics with thresholds - gained empirically
+			"arithwindow":{
+					"window_size":40,
+					"threshold":0.6
+			},
+			"api":{
+			},
+			"caballero":{
+					"threshold":0.5,
+					"min_icount":20
+			},
+			"constsearch":{
+			}
+		}
+	},
+	"debug":1
+}
+######################################################################
+
+2. Preparation
+	For startup you need the following requirements:
+		1. Windows XP SP2 Qemu image
+		2. dll directory containing libraries the instrumented process depends on
+			Explanation:
+				PyQemu directly accesses libraries through pefile.py for symbol resolution
+		3. exes directory containing the samples
+			Explanation:
+				PyQemu calculates process image entry point as start point for instrumentation
+
+--== Qemu Usage ==--
+1. Workflow
+	1. Use $repo/runit.sh script to start PyQEMU (you might have to first edit the path to the image file)
+
+	2. connect with $vnc-client to qemu
+
+	3. download and execute your sample as specified in the flx.json configuration
+
+	4. Stop Instrumentation with SIGINT (Strg+C),
+		Memory dump will be stored in "dump" directory as specified in flx.json
+		Logfiles will be stored in "logdir" directory as specified in flx.json
+		Memory Access log will be stored in "logdir" also
+
+	5. Postprocessing:
+		You find 3 files in $repo/target-i386/scripts:
+			dump-analysis.py
+			patch.py
+			ida_mark_functions.py
+
+		dump-analysis.py
+			Usage: dump-analysis.py <directory of logfiles>
+			Output: analysis on stdout
+			Example: dump-analysis.py /home/matenaar/logs > /tmp/analysis
+			Explanation: A-posteriori execution of Taintgraph and Entropy Heuristic
+
+		patch.py (needed for packed/crypted executables)
+			Usage: IDA->file->load python file
+			Input: directory containing memory dump
+			Output: Patched IDA project
+			Explanation: loads memory dump and patches bytes in packed segments
+
+			Just works for packers/crypters which do inline-unpacking/uncrypting in the image itself
+		
+		ida_mark_functions.py
+			Usage: IDA->file->load python file
+			Input: dump-analysis.py output
+			Explanation: Loads found crypto basic blocks and sets function color to grey 
+
