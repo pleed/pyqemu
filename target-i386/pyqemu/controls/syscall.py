@@ -327,7 +327,11 @@ class SyscallControl(ProcessControl):
 		print "Syscall - %s"%self.getSyscallByNumber(event.number)
 
 	def dump_process(self, process):
-		print "Dumping process: %s"%process.imagefilename()
+		try:
+			print "Dumping process: %s"%process.imagefilename()
+		except:
+			print "Process terminated - not dumping"
+			return
 		x = 0
 		while x < 0x80000000:
 			page = process.hardware.instrumentation.read_process_page(process, x)
