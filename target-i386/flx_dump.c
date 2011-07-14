@@ -71,7 +71,7 @@ flx_dump_current_fp(void){
 	}
 	if(!context->dump){
 		context->dump_destructor = (context_destructor)fclose;
-		context->dump = fopen(flx_dump_generate_filename(context), "w");
+		context->dump = fopen(flx_dump_generate_filename(context), "wb");
 		assert(context->dump);
 	}
 	return context->dump;

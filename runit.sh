@@ -16,4 +16,7 @@ sudo make install
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm openssl-test
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm evaluation
 #/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm evaluation2
-/usr/local/bin/qemu -hda /home/matenaar/pyqemu_vm.img -m 2048 -net user -net nic,model=pcnet -loadvm evaluation3
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -boot c
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm programme_installiert
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm before_tests
+/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm vcpp

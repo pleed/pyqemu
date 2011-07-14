@@ -285,6 +285,8 @@ class ApiHeuristic(PyQemuHeuristic):
 
 	def onApiCallEvent(self, process, dll, function, addr):
 		last_bbl = process.hardware.instrumentation.bblwindow_get(0)
+		if last_bbl is None:
+			last_bbl = 0x0
 		self.log("%s %s %s,0x%x"%(self.PREFIX, dll, function, last_bbl))
 
 heuristic = ApiHeuristic

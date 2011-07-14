@@ -109,8 +109,14 @@ class TracedProcess(processinfo.Process):
 		processinfo.Process.__init__(self)
 		self.loadCallbacks([])
 		self.setupEventHandlers()
+
+		# Check if execution is already in main image
+		
 		self.pe_image = PEFile("%s/%s"%(options["exedir"], imagefilename), 0)
-		self.addBreakpoint(self.pe_image.calculateEntryPoint(), self.entryPointReached)
+		entry_point = self.pe_image.calculateEntryPoint()
+		self.logger.info("Found entry Point at 0x%x"%entry_point)
+		self.addBreakpoint(entry_point, self.entryPointReached)
+		self.addBreakpoint(0x401015, self.entryPointReached)
 
 	def shutdown(self):
 		for deconstructor in self.instrumentation_deinitializers:

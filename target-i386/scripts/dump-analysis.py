@@ -3,6 +3,8 @@
 import glob
 import struct
 import math
+import os
+import pygraphviz as pgv
 
 class MemoryEvent:
 	def __init__(self, address, value, size, iswrite):
@@ -44,26 +46,51 @@ class TaintGraphHeuristic(Heuristic):
 		Heuristic.__init__(self,*args)
 		self.graphstack = []
 		self.callstack = []
+		self.access_stack = []
 		self.cycle = self.READ
 		self.read_addresses = []
 		self.write_addresses = []
 		self.do_call(0x0)
-		self.threshold = 16 #minimal quotient
+
+		self.threshold = 4 #minimal quotient
+		self.neighborhood = 10
+		self.needed_edges = 5
+		self.min_block_size = 8
 
 	def do_call(self, eip):
+		self.create_edges()
 		self.graphstack.append({})
 		self.callstack.append(eip)
+		self.access_stack.append({})
 
 	def do_ret(self):
+		self.create_edges()
 		eip = self.callstack.pop()
+		access = self.access_stack.pop()
 		l = len(self.graphstack[-1])
-		if l >= 100:
-			quotient = self.analyze_graph()
-			if quotient >= self.threshold:
-				self.result("Taint - Graph size: %d Quotient: %f,0x%x"%(l,quotient,eip))
+		if l >= 0:
+			quotient,block  = self.analyze_graph()
+			access_num = 0
+			for b in block:
+				access_num += access[b]
+			if quotient >= self.threshold and quotient >= len(block)/2:
+				self.result("Taint - Graph size: %d Quotient: %f, Accesses in Block: %d,0x%x"%(len(block),quotient,access_num,eip))
 		del(self.graphstack[-1])
 
 	def get_blocks(self):
+		blocks = []
+		cur_block = []
+		for key in self.graph.keys():
+			if len(cur_block) != 0 and (cur_block[-1]+1 != key or len(filter(lambda x: abs(key-x)<self.neighborhood, self.graph[key])) <= self.needed_edges):
+				blocks.append(cur_block)
+				cur_block = []
+			cur_block.append(key)
+
+		if len(cur_block) > 0:
+			blocks.append(cur_block)
+		return filter(lambda x: len(x) >= self.min_block_size, blocks)
+
+	def get_blocks_old(self):
 		blocks = []
 		cur_block = []
 		for key in self.graph.keys():
@@ -71,6 +98,8 @@ class TaintGraphHeuristic(Heuristic):
 				blocks.append(cur_block)
 				cur_block = []
 			cur_block.append(key)
+		if len(cur_block) > 0:
+			blocks.append(cur_block)
 		return blocks
 
 	def block_quotient(self, block):
@@ -83,14 +112,17 @@ class TaintGraphHeuristic(Heuristic):
 
 	def analyze_graph(self):
 		max_quotient = 0.0
+		max_block = []
 		for key,value in self.graph.items():
 			self.graph[key] = set(value)
 		blocks = self.get_blocks()
 		for block in blocks:
+			block.sort()
 			tmp = self.block_quotient(block)
 			if tmp > max_quotient:
 				max_quotient = tmp
-		return max_quotient
+				max_block = block
+		return max_quotient,max_block
 
 	def get_graph(self):
 		return self.graphstack[-1]
@@ -103,20 +135,25 @@ class TaintGraphHeuristic(Heuristic):
 			for w_addr in self.write_addresses:
 				if not self.graph.has_key(r_addr):
 					self.graph[r_addr] = []
+				if not self.graph.has_key(w_addr):
+					self.graph[w_addr] = []
 				self.graph[r_addr].append(w_addr)
+		self.read_addresses = []
+		self.write_addresses = []
 		
 	def handle_mem_event(self, event):
 		if event.iswrite == self.READ and self.cycle == self.WRITE:
 			self.create_edges()
-			self.read_addresses = []
-			self.write_addresses = []
-
 		self.cycle = event.iswrite
 		size = event.size/8
 		address = event.address
 		address += size-1
 		while size > 0:
 			size -=1
+			if not self.access_stack[-1].has_key(address):
+				self.access_stack[-1][address] = 1
+			else:
+				self.access_stack[-1][address] += 1
 			if event.iswrite == self.READ:
 				self.read_addresses.append(address)
 			elif event.iswrite == self.WRITE:
