@@ -24,6 +24,7 @@ void flx_bbltranslate_bbl_new(uint32_t);
 void flx_bbltranslate_bbl_end(void);
 void flx_bbltranslate_arith(void);
 void flx_bbltranslate_insn(void);
+void flx_bbltranslate_mov(void);
 void flx_bbltranslate_bbl_size(uint32_t);
 inline uint32_t flx_bbltranslate_bbl_addr(void);
 

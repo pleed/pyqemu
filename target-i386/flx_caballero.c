@@ -33,9 +33,10 @@ void flx_caballero_disable(void){
 }
 
 int flx_caballero_event(flx_bbl* bbl){
+	assert(bbl->icount >= bbl->movcount);
 	if(bbl->icount >= flx_caballero_config->min_bbl_icount &&
-	   ((float)bbl->arithcount/(float)bbl->icount) >= flx_caballero_config->min_arith_percentage){
-		flx_caballero_handler(bbl->addr, bbl->icount, bbl->arithcount);
+	   ((float)bbl->arithcount/(float)(bbl->icount - bbl->movcount)) >= flx_caballero_config->min_arith_percentage){
+		flx_caballero_handler(bbl->addr, bbl->icount - bbl->movcount, bbl->arithcount);
 	}
 	return 0;
 }

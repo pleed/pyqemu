@@ -32,6 +32,7 @@ void flx_bbltranslate_bbl_new(uint32_t addr){
 	flx_current_bbl.addr = addr;
 	flx_current_bbl.icount = 0;
 	flx_current_bbl.arithcount = 0;
+	flx_current_bbl.movcount = 0;
 }
 
 void flx_bbltranslate_arith(void){
@@ -40,6 +41,10 @@ void flx_bbltranslate_arith(void){
 
 void flx_bbltranslate_insn(void){
 	++flx_current_bbl.icount;
+}
+
+void flx_bbltranslate_mov(void){
+	++flx_current_bbl.movcount;
 }
 
 void flx_bbltranslate_bbl_size(uint32_t size){

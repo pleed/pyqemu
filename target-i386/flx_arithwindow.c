@@ -94,7 +94,8 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	flx_bbl* bbl = flx_bbl_search(eip);
 	memcpy(flx_bbl_window.bbls[flx_bbl_window.end_index], bbl, sizeof(*bbl));
 
-	flx_bbl_window.instructions       += bbl->icount;
+	assert(bbl->icount >= bbl->movcount);
+	flx_bbl_window.instructions       += (bbl->icount-bbl->movcount);
 	flx_bbl_window.arith_instructions += bbl->arithcount;
 
 	flx_bbl_window.end_index += 1;

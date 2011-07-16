@@ -52,10 +52,10 @@ class TaintGraphHeuristic(Heuristic):
 		self.write_addresses = []
 		self.do_call(0x0)
 
-		self.threshold = 4 #minimal quotient
-		self.neighborhood = 10
-		self.needed_edges = 5
-		self.min_block_size = 8
+		self.threshold = 3 #minimal quotient
+		self.neighborhood = 5
+		self.needed_edges = 3
+		self.min_block_size = 4
 
 	def do_call(self, eip):
 		self.create_edges()
@@ -73,7 +73,7 @@ class TaintGraphHeuristic(Heuristic):
 			access_num = 0
 			for b in block:
 				access_num += access[b]
-			if quotient >= self.threshold and quotient >= len(block)/2:
+			if quotient >= self.threshold and quotient >= float(len(block))*2/3 and len(block) >= 8:
 				self.result("Taint - Graph size: %d Quotient: %f, Accesses in Block: %d,0x%x"%(len(block),quotient,access_num,eip))
 		del(self.graphstack[-1])
 

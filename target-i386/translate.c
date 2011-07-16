@@ -5177,6 +5177,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         /* mov */
     case 0x88:
     case 0x89: /* mov Gv, Ev */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5189,6 +5190,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xc6:
     case 0xc7: /* mov Ev, Iv */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5208,6 +5210,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0x8a:
     case 0x8b: /* mov Ev, Gv */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5219,6 +5222,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_op_mov_reg_T0(ot, reg);
         break;
     case 0x8e: /* mov seg, Gv */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         modrm = ldub_code(s->pc++);
         reg = (modrm >> 3) & 7;
         if (reg >= 6 || reg == R_CS)
@@ -5239,6 +5243,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         }
         break;
     case 0x8c: /* mov Gv, seg */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         modrm = ldub_code(s->pc++);
         reg = (modrm >> 3) & 7;
         mod = (modrm >> 6) & 3;
@@ -5257,6 +5262,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0x1be: /* movsbS Gv, Eb */
     case 0x1bf: /* movswS Gv, Eb */
         {
+	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
             int d_ot;
             /* d_ot is the size of destination */
             d_ot = dflag + OT_WORD;
@@ -5318,6 +5324,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0xa2: /* mov Ov, EAX */
     case 0xa3:
         {
+	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
             target_ulong offset_addr;
 
             if ((b & 1) == 0)
@@ -5373,11 +5380,13 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_op_mov_reg_T0(OT_BYTE, R_EAX);
         break;
     case 0xb0 ... 0xb7: /* mov R, Ib */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
         val = insn_get(s, OT_BYTE);
         gen_op_movl_T0_im(val);
         gen_op_mov_reg_T0(OT_BYTE, (b & 7) | REX_B(s));
         break;
     case 0xb8 ... 0xbf: /* mov R, Iv */
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
 #ifdef TARGET_X86_64
         if (dflag == 2) {
             uint64_t tmp;
