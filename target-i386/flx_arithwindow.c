@@ -22,6 +22,7 @@ typedef struct {
 	uint32_t end_index;
 	uint32_t instructions;
 	uint32_t arith_instructions;
+	uint32_t mov_instructions;
 	float    arith_percentage;
 } bbl_window;
 
@@ -95,16 +96,18 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	memcpy(flx_bbl_window.bbls[flx_bbl_window.end_index], bbl, sizeof(*bbl));
 
 	assert(bbl->icount >= bbl->movcount);
-	flx_bbl_window.instructions       += (bbl->icount-bbl->movcount);
+	flx_bbl_window.instructions       += bbl->icount;
 	flx_bbl_window.arith_instructions += bbl->arithcount;
+	flx_bbl_window.mov_instructions   += bbl->movcount;
 
 	flx_bbl_window.end_index += 1;
 	flx_bbl_window.end_index %= flx_bbl_window.window_size;
 
 	uint8_t recalculate = 0;
-	while(flx_bbl_window.instructions >= flx_bbl_window.window_size && (flx_bbl_window.start_index+1)%flx_bbl_window.window_size != flx_bbl_window.end_index){
+	while(flx_bbl_window.instructions >= flx_bbl_window.window_size){ //&& (flx_bbl_window.start_index+1)%flx_bbl_window.window_size != flx_bbl_window.end_index){
 		flx_bbl_window.instructions       -= flx_bbl_window.bbls[flx_bbl_window.start_index]->icount;
 		flx_bbl_window.arith_instructions -= flx_bbl_window.bbls[flx_bbl_window.start_index]->arithcount;
+		flx_bbl_window.mov_instructions   -= flx_bbl_window.bbls[flx_bbl_window.start_index]->movcount;
 
 		flx_bbl_window.start_index += 1;
 		flx_bbl_window.start_index %= flx_bbl_window.window_size;
@@ -113,7 +116,7 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	}
 
 	if(recalculate){
-		if((float)flx_bbl_window.arith_instructions / (float)flx_bbl_window.instructions >= flx_bbl_window.arith_percentage){
+		if((float)flx_bbl_window.arith_instructions / (float)(flx_bbl_window.instructions - flx_bbl_window.mov_instructions) >= flx_bbl_window.arith_percentage){
 			uint32_t i;
 			for(i=flx_bbl_window.start_index; i!= flx_bbl_window.end_index; i=(i+1)%flx_bbl_window.window_size){
 		    		if(!flx_arithwindow_cache_search(flx_bbl_window.bbls[i]->addr)){

@@ -53,8 +53,8 @@ class TaintGraphHeuristic(Heuristic):
 		self.do_call(0x0)
 
 		self.threshold = 3 #minimal quotient
-		self.neighborhood = 5
-		self.needed_edges = 3
+		self.neighborhood = 8
+		self.needed_edges = 8
 		self.min_block_size = 4
 
 	def do_call(self, eip):
@@ -69,19 +69,21 @@ class TaintGraphHeuristic(Heuristic):
 		access = self.access_stack.pop()
 		l = len(self.graphstack[-1])
 		if l >= 0:
-			quotient,block  = self.analyze_graph()
+			quotient,block  = self.analyze_graph(eip)
 			access_num = 0
 			for b in block:
 				access_num += access[b]
 			if quotient >= self.threshold and quotient >= float(len(block))*2/3 and len(block) >= 8:
 				self.result("Taint - Graph size: %d Quotient: %f, Accesses in Block: %d,0x%x"%(len(block),quotient,access_num,eip))
-		del(self.graphstack[-1])
+		self.graphstack.pop()
 
-	def get_blocks(self):
+	def get_blocks(self,eip):
 		blocks = []
 		cur_block = []
-		for key in self.graph.keys():
-			if len(cur_block) != 0 and (cur_block[-1]+1 != key or len(filter(lambda x: abs(key-x)<self.neighborhood, self.graph[key])) <= self.needed_edges):
+		keys = self.graph.keys()
+		keys.sort()
+		for key in keys:
+			if len(cur_block) != 0 and (cur_block[-1]+1 != key or (len(filter(lambda x: abs(key-x)<self.neighborhood, self.graph[key])) < self.needed_edges)):
 				blocks.append(cur_block)
 				cur_block = []
 			cur_block.append(key)
@@ -110,12 +112,12 @@ class TaintGraphHeuristic(Heuristic):
 					num_edges += 1
 		return num_edges/len(block)
 
-	def analyze_graph(self):
+	def analyze_graph(self,eip):
 		max_quotient = 0.0
 		max_block = []
 		for key,value in self.graph.items():
 			self.graph[key] = set(value)
-		blocks = self.get_blocks()
+		blocks = self.get_blocks(eip)
 		for block in blocks:
 			block.sort()
 			tmp = self.block_quotient(block)
