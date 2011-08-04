@@ -4,7 +4,7 @@ import glob
 import struct
 import math
 import os
-import pygraphviz as pgv
+#import pygraphviz as pgv
 
 class MemoryEvent:
 	def __init__(self, address, value, size, iswrite):
@@ -24,6 +24,16 @@ class FunctionEvent:
 	def __str__(self):
 		return "EIP: 0x%x, Type: %d"%(self.eip, self.call_type)
 
+class ExecEvent:
+	def __init__(self, addr):
+		self.addr = addr
+
+class TranslateEvent:
+	def __init__(self, addr, icount, instructions):
+		self.addr = addr
+		self.icount = icount
+		self.instructions = instructions
+
 class Heuristic:
 	def __init__(self, result_callback):
 		self.result_callback = result_callback
@@ -37,7 +47,63 @@ class Heuristic:
 class LogEventReader(Heuristic):
 	def feed(self, event):
 		self.result_callback(event)
+
+class ArithHeuristic(Heuristic):
+	instructions = {
+		0: "mov",
+		1: "xor",
+		2: "shx",
+		3: "and",
+		4: "or",
+		5: "rox",
+		6: "mul",
+		7: "div",
+		8: "bit",
+		9: "other",
+		10: "counter",
+	}
+	def __init__(self, *args):
+		Heuristic.__init__(self, *args)
+		self.callstack = [0]
+		self.bblcache = {}
+
+	def handle_exec_event(self, event):
+		bbl = self.bblcache[event.addr]
+		ins = ""
+		for opcode in bbl.instructions:
+			ins += "\t"+self.instructions[opcode]+"\n"
+		if ins != "":
+			self.result("Function: 0x%x BBL: 0x%x Arith: %d\n---%s\n---"%(self.callstack[-1],event.addr, bbl.icount, ins))
+		else:
+			self.result("Function: 0x%x BBL: 0x%x Arith: %d"%(self.callstack[-1],event.addr, bbl.icount))
 		
+
+	def handle_translate_event(self, event):
+		self.bblcache[event.addr] = event
+
+	def do_call(self, eip):
+		print "Calling 0x%x"%eip
+		self.callstack.append(eip)
+
+	def do_ret(self):
+		self.callstack.pop()
+
+	def handle_function_event(self, event):
+		if event.call_type == 0:
+			self.do_call(event.eip)
+		else:
+			self.do_ret()
+
+
+	def feed(self, event):
+		if isinstance(event, ExecEvent):
+			self.handle_exec_event(event)
+		elif isinstance(event, TranslateEvent):
+			self.handle_translate_event(event)
+		elif isinstance(event, FunctionEvent):
+			self.handle_function_event(event)
+
+
 
 class TaintGraphHeuristic(Heuristic):
 	READ = 0
@@ -280,6 +346,8 @@ class Logfile:
 class Dumpfile:
 	MEM_ACCESS = 0
 	FUNCTION   = 1
+	BBLEXEC    = 2
+	BBLTRANSLATE = 3
 
 	def __init__(self, filename):
 		self.name, self.pid, self.tid = filename.split(" ")[:3]
@@ -302,8 +370,22 @@ class Dumpfile:
 			return self.memory_event()
 		elif event_type == self.FUNCTION:
 			return self.function_event()
+		elif event_type == self.BBLEXEC:
+			return self.exec_event()
+		elif event_type == self.BBLTRANSLATE:
+			return self.translate_event()
 		else:
 			raise Exception("READ ERROR - unknown event: %d"%event_type)
+
+	def exec_event(self):
+		addr = struct.unpack("<I",self.get_bytes(4))[0]
+		return ExecEvent(addr)
+
+	def translate_event(self):
+		icount, addr = struct.unpack("<II",self.get_bytes(8));
+		instructions = struct.unpack("<"+"I"*icount, self.get_bytes(4*icount));
+		print "TranslateEvent: 0x%x, %d, %s"%(addr,icount,instructions)
+		return TranslateEvent(addr, icount, instructions)
 
 	def function_event(self):
 		eip,call_type = struct.unpack("<Ib",self.get_bytes(5))
@@ -349,10 +431,12 @@ if __name__ == "__main__":
 			print "Analyzing %s"%dumpfile.filename
 			h1 = TaintGraphHeuristic(p)
 			h2 = EntropyHeuristic(p)
+			h3 = ArithHeuristic(p)
 			event = dumpfile.next()
 			while event is not None:
 				h1.feed(event)
 				h2.feed(event)
+				h3.feed(event)
 				del(event)
 				event = dumpfile.next()
 		

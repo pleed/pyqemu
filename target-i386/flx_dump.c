@@ -9,7 +9,10 @@
 #include "flx_instrument.h"
 #include "flx_context.h"
 #include "flx_memtrace.h"
+#include "flx_bbltrace.h"
+#include "flx_bbltranslate.h"
 #include "flx_calltrace.h"
+#include "flx_bbl.h"
 
 #include "flx_dump.h"
 
@@ -85,6 +88,32 @@ flx_dump_event(uint8_t* buf, uint32_t size){
 }
 
 static int
+flx_dump_bbl(flx_bbl* bbl){
+	insn_list* insns = bbl->insn_list;
+	uint32_t buf_size = sizeof(flx_dump_translate)+bbl->listcount*sizeof(uint32_t);
+	flx_dump_translate* buf = malloc(buf_size);
+	buf->icount = bbl->listcount;
+	buf->addr = bbl->addr;
+	buf->event_type = BBLTRANSLATE;
+	uint32_t offset = buf->icount-1;
+	while(insns){
+		buf->insn[offset] = insns->insn_type;
+		insns = insns->next;
+		assert(offset > 0 || !insns);
+		offset--;
+	}
+	flx_dump_event((uint8_t*)buf, buf_size);
+	return 0;
+}
+
+static int
+flx_dump_bblexec(uint32_t eip, uint32_t esp){
+	flx_dump_exec event = {BBLEXEC, eip};
+	flx_dump_event((uint8_t*)&event, sizeof(event));
+	return 0;
+}
+
+static int
 flx_dump_mem(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
 	flx_dump_memaccess event = {MEM_ACCESS, address, value, size<<1|iswrite};
 	flx_dump_event((uint8_t*)&event, sizeof(event));
@@ -104,6 +133,10 @@ flx_dump_enable(const char* path){
 	flx_memtrace_enable();
 	flx_calltrace_register_handler(flx_dump_function);
 	flx_calltrace_enable();
+	flx_bbltrace_register_handler(flx_dump_bblexec);
+	flx_bbltrace_enable();
+	flx_bbltranslate_register_handler(flx_dump_bbl);
+	flx_bbltranslate_enable();
 	flx_state.dump_active = 1;
 	flx_dump_path = strdup(path);
 }
@@ -112,6 +145,8 @@ void
 flx_dump_disable(void){
 	flx_memtrace_unregister_handler(flx_dump_mem);
 	flx_calltrace_unregister_handler(flx_dump_function);
+	flx_bbltrace_unregister_handler(flx_dump_bblexec);
+	flx_bbltranslate_unregister_handler(flx_dump_bbl);
 	flx_state.dump_active = 0;
 }
 

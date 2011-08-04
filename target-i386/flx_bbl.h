@@ -12,12 +12,36 @@
 
 extern avl_tree_t* bbl_trees[NUM_BBL_TREES];
 
+enum insn_type{
+	INSN_MOV = 0,
+	INSN_XOR = 1,
+	INSN_SHX = 2,
+	INSN_AND = 3,
+	INSN_OR  = 4,
+	INSN_ROX = 5,
+	INSN_MUL = 6,
+	INSN_DIV = 7,
+	INSN_BIT = 8,
+
+	INSN_OTHER = 9,
+	INSN_COUNTER = 10,
+};
+
+
+struct insn_list{
+	uint32_t insn_type;
+	struct insn_list* next;
+};
+typedef struct insn_list insn_list;
+
 typedef struct {
 	uint32_t addr;
 	uint32_t icount;
 	uint32_t arithcount;
 	uint32_t movcount;
 	uint32_t size;
+	uint32_t listcount;
+	insn_list* insn_list;
 } flx_bbl;
 
 typedef struct {

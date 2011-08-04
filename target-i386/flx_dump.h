@@ -4,6 +4,8 @@
 enum flx_events {
 	MEM_ACCESS,
 	FUNCTION,
+	BBLEXEC,
+	BBLTRANSLATE,
 };
 
 typedef struct __attribute__((__packed__)){
@@ -20,9 +22,17 @@ typedef struct __attribute__((__packed__)){
 } flx_dump_memaccess;
 
 typedef struct __attribute__((__packed__)){
-	uint16_t pid;
-	uint16_t tid;
-} flx_dump_context;
+	uint8_t event_type;
+	uint32_t addr;
+} flx_dump_exec;
+
+typedef struct __attribute__((__packed__)){
+	uint8_t event_type;
+	uint32_t icount;
+	uint32_t addr;
+	uint32_t insn[];
+} flx_dump_translate;
+
 
 
 void flx_dump_init(void);

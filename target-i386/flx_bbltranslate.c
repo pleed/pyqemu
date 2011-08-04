@@ -33,18 +33,41 @@ void flx_bbltranslate_bbl_new(uint32_t addr){
 	flx_current_bbl.icount = 0;
 	flx_current_bbl.arithcount = 0;
 	flx_current_bbl.movcount = 0;
+	flx_current_bbl.listcount = 0;
+	if(flx_current_bbl.insn_list){
+		flx_current_bbl.insn_list = NULL;
+	}
 }
 
-void flx_bbltranslate_arith(void){
-	++flx_current_bbl.arithcount;
+static void
+flx_bbltranslate_append(enum insn_type insn){
+	if(!flx_current_bbl.insn_list){
+		flx_current_bbl.insn_list = malloc(sizeof(insn_list));
+		flx_current_bbl.insn_list->insn_type = insn;
+		flx_current_bbl.insn_list->next = NULL;
+	}
+	else{
+		insn_list* new_element = malloc(sizeof(insn_list));
+		new_element->insn_type = insn;
+		new_element->next = flx_current_bbl.insn_list;
+		flx_current_bbl.insn_list = new_element;
+	}
 }
 
-void flx_bbltranslate_insn(void){
-	++flx_current_bbl.icount;
-}
-
-void flx_bbltranslate_mov(void){
-	++flx_current_bbl.movcount;
+void flx_bbltranslate_insn(enum insn_type insn){
+	switch(insn){
+		case INSN_COUNTER:
+			++flx_current_bbl.icount;
+			break;
+		case INSN_MOV:
+			++flx_current_bbl.movcount;
+			break;
+		case INSN_XOR ... INSN_BIT:
+			flx_bbltranslate_append(insn);
+			++flx_current_bbl.listcount;
+		default:
+			++flx_current_bbl.arithcount;
+	}
 }
 
 void flx_bbltranslate_bbl_size(uint32_t size){

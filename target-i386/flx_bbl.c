@@ -57,7 +57,14 @@ int avl_bbl_cmp(const flx_bbl* a, const flx_bbl* b){
 }
 
 void avl_bbl_free(void* item){
-	free(item);
+	flx_bbl* bbl = (flx_bbl*)item;
+	insn_list* list = bbl->insn_list;
+	while(list){
+		insn_list* tmp = list;
+		list = list->next;
+		free(tmp);
+	}
+	free(bbl);
 }
 
 static inline avl_tree_t*

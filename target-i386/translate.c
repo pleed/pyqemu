@@ -34,6 +34,7 @@
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
 #include "flx_optrace.h"
+#include "flx_bbl.h"
 #include "flx_filter.h"
 #include "flx_bbltranslate.h"
 
@@ -1296,31 +1297,57 @@ GEN_REPZ2(cmps)
 
 static void gen_helper_fp_arith_ST0_FT0(int op)
 {
-    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
     switch (op) {
-    case 0: gen_helper_fadd_ST0_FT0(); break;
-    case 1: gen_helper_fmul_ST0_FT0(); break;
-    case 2: gen_helper_fcom_ST0_FT0(); break;
-    case 3: gen_helper_fcom_ST0_FT0(); break;
-    case 4: gen_helper_fsub_ST0_FT0(); break;
-    case 5: gen_helper_fsubr_ST0_FT0(); break;
-    case 6: gen_helper_fdiv_ST0_FT0(); break;
-    case 7: gen_helper_fdivr_ST0_FT0(); break;
+    case 0: gen_helper_fadd_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+	    break;
+    case 1: gen_helper_fmul_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
+	    break;
+    case 2: gen_helper_fcom_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+	    break;
+    case 3: gen_helper_fcom_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+	    break;
+    case 4: gen_helper_fsub_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+	    break;
+    case 5: gen_helper_fsubr_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+	    break;
+    case 6: gen_helper_fdiv_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
+	    break;
+    case 7: gen_helper_fdivr_ST0_FT0();
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
+	   break;
     }
 }
 
 /* NOTE the exception in "r" op ordering */
 static void gen_helper_fp_arith_STN_ST0(int op, int opreg)
 {
-    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
     TCGv_i32 tmp = tcg_const_i32(opreg);
     switch (op) {
-    case 0: gen_helper_fadd_STN_ST0(tmp); break;
-    case 1: gen_helper_fmul_STN_ST0(tmp); break;
-    case 4: gen_helper_fsubr_STN_ST0(tmp); break;
-    case 5: gen_helper_fsub_STN_ST0(tmp); break;
-    case 6: gen_helper_fdivr_STN_ST0(tmp); break;
-    case 7: gen_helper_fdiv_STN_ST0(tmp); break;
+    case 0: gen_helper_fadd_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+		break;
+    case 1: gen_helper_fmul_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
+		break;
+    case 4: gen_helper_fsubr_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+		break;
+    case 5: gen_helper_fsub_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+		break;
+    case 6: gen_helper_fdivr_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
+		break;
+    case 7: gen_helper_fdiv_STN_ST0(tmp);
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
+		break;
     }
 }
 
@@ -1352,7 +1379,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
     }
     switch(op) {
     case OP_ADCL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if (s1->cc_op != CC_OP_DYNAMIC)
             gen_op_set_cc_op(s1->cc_op);
         gen_compute_eflags_c(cpu_tmp4);
@@ -1370,7 +1397,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_DYNAMIC;
         break;
     case OP_SBBL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if (s1->cc_op != CC_OP_DYNAMIC)
             gen_op_set_cc_op(s1->cc_op);
         gen_compute_eflags_c(cpu_tmp4);
@@ -1388,7 +1415,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_DYNAMIC;
         break;
     case OP_ADDL:
-    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         gen_op_addl_T0_T1();
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1398,7 +1425,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_ADDB + ot;
         break;
     case OP_SUBL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         tcg_gen_sub_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1409,7 +1436,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         break;
     default:
     case OP_ANDL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_AND));
         tcg_gen_and_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1419,7 +1446,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_ORL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OR));
         tcg_gen_or_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1429,7 +1456,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_LOGICB + ot;
         break;
     case OP_XORL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_XOR));
         tcg_gen_xor_tl(cpu_T[0], cpu_T[0], cpu_T[1]);
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);
@@ -1787,7 +1814,7 @@ static void gen_rotc_rm_T1(DisasContext *s, int ot, int op1,
     else
         gen_op_mov_TN_reg(ot, 0, op1);
     
-    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ROX));
     if (is_right) {
         switch (ot) {
         case 0: gen_helper_rcrb(cpu_T[0], cpu_T[0], cpu_T[1]); break;
@@ -1960,27 +1987,27 @@ static void gen_shift(DisasContext *s1, int op, int ot, int d, int s, target_ulo
         gen_op_mov_TN_reg(ot, 1, s);
     switch(op) {
     case OP_ROL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ROX));
         gen_rot_rm_T1(s1, ot, d, 0);
         break;
     case OP_ROR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ROX));
         gen_rot_rm_T1(s1, ot, d, 1);
         break;
     case OP_SHL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_T1(s1, ot, d, 0, 0);
         break;
     case OP_SHL1:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_T1(s1, ot, d, 0, 0);
         break;
     case OP_SHR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_T1(s1, ot, d, 1, 0);
         break;
     case OP_SAR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_T1(s1, ot, d, 1, 1);
         break;
     case OP_RCL:
@@ -1996,27 +2023,27 @@ static void gen_shifti(DisasContext *s1, int op, int ot, int d, int c, target_ul
 {
     switch(op) {
     case OP_ROL:
-    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ROX));
         gen_rot_rm_im(s1, ot, d, c, 0);
         break;
     case OP_ROR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ROX));
         gen_rot_rm_im(s1, ot, d, c, 1);
         break;
     case OP_SHL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_im(s1, ot, d, c, 0, 0);
         break;
     case OP_SHL1:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_im(s1, ot, d, c, 0, 0);
         break;
     case OP_SHR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_im(s1, ot, d, c, 1, 0);
         break;
     case OP_SAR:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         gen_shift_rm_im(s1, ot, d, c, 1, 1);
         break;
     default:
@@ -4416,12 +4443,12 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         /**************************/
         /* inc, dec, and other misc arith */
     case 0x40 ... 0x47: /* inc Gv */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         ot = dflag ? OT_LONG : OT_WORD;
         gen_inc(s, ot, OR_EAX + (b & 7), 1);
         break;
     case 0x48 ... 0x4f: /* dec Gv */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         ot = dflag ? OT_LONG : OT_WORD;
         gen_inc(s, ot, OR_EAX + (b & 7), -1);
         break;
@@ -4447,14 +4474,14 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
         switch(op) {
         case 0: /* test */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
             val = insn_get(s, ot);
             gen_op_movl_T1_im(val);
             gen_op_testl_T0_T1_cc();
             s->cc_op = CC_OP_LOGICB + ot;
             break;
         case 2: /* not */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
             tcg_gen_not_tl(cpu_T[0], cpu_T[0]);
             if (mod != 3) {
                 gen_op_st_T0_A0(ot + s->mem_index);
@@ -4473,7 +4500,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             s->cc_op = CC_OP_SUBB + ot;
             break;
         case 4: /* mul */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
             switch(ot) {
             case OT_BYTE:
                 gen_op_mov_TN_reg(OT_BYTE, 1, R_EAX);
@@ -4540,7 +4567,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             }
             break;
         case 5: /* imul */
-    	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
             switch(ot) {
             case OT_BYTE:
                 gen_op_mov_TN_reg(OT_BYTE, 1, R_EAX);
@@ -4611,7 +4638,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             }
             break;
         case 6: /* div */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
             switch(ot) {
             case OT_BYTE:
                 gen_jmp_im(pc_start - s->cs_base);
@@ -4635,7 +4662,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             }
             break;
         case 7: /* idiv */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_DIV));
             switch(ot) {
             case OT_BYTE:
                 gen_jmp_im(pc_start - s->cs_base);
@@ -4698,7 +4725,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
         switch(op) {
         case 0: /* inc Ev */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
             if (mod != 3)
                 opreg = OR_TMP0;
             else
@@ -4706,7 +4733,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             gen_inc(s, ot, opreg, 1);
             break;
         case 1: /* dec Ev */
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
             if (mod != 3)
                 opreg = OR_TMP0;
             else
@@ -4791,7 +4818,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
     case 0x84: /* test Ev, Gv */
     case 0x85:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -4808,7 +4835,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
     case 0xa8: /* test eAX, Iv */
     case 0xa9:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -4923,7 +4950,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0x1c0:
     case 0x1c1: /* xadd Ev, Gv */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -4952,7 +4979,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0x1b0:
     case 0x1b1: /* cmpxchg Ev, Gv */
         {
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
             int label1, label2;
             TCGv t0, t1, t2, a0;
 
@@ -5005,7 +5032,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         }
         break;
     case 0x1c7: /* cmpxchg8b */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         modrm = ldub_code(s->pc++);
         mod = (modrm >> 6) & 3;
         if ((mod == 3) || ((modrm & 0x38) != 0x8))
@@ -5177,7 +5204,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         /* mov */
     case 0x88:
     case 0x89: /* mov Gv, Ev */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5190,7 +5217,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xc6:
     case 0xc7: /* mov Ev, Iv */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5210,7 +5237,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0x8a:
     case 0x8b: /* mov Ev, Gv */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -5222,7 +5249,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_op_mov_reg_T0(ot, reg);
         break;
     case 0x8e: /* mov seg, Gv */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         modrm = ldub_code(s->pc++);
         reg = (modrm >> 3) & 7;
         if (reg >= 6 || reg == R_CS)
@@ -5243,7 +5270,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         }
         break;
     case 0x8c: /* mov Gv, seg */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         modrm = ldub_code(s->pc++);
         reg = (modrm >> 3) & 7;
         mod = (modrm >> 6) & 3;
@@ -5262,7 +5289,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0x1be: /* movsbS Gv, Eb */
     case 0x1bf: /* movswS Gv, Eb */
         {
-	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
             int d_ot;
             /* d_ot is the size of destination */
             d_ot = dflag + OT_WORD;
@@ -5324,7 +5351,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0xa2: /* mov Ov, EAX */
     case 0xa3:
         {
-	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
             target_ulong offset_addr;
 
             if ((b & 1) == 0)
@@ -5380,13 +5407,13 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         gen_op_mov_reg_T0(OT_BYTE, R_EAX);
         break;
     case 0xb0 ... 0xb7: /* mov R, Ib */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
         val = insn_get(s, OT_BYTE);
         gen_op_movl_T0_im(val);
         gen_op_mov_reg_T0(OT_BYTE, (b & 7) | REX_B(s));
         break;
     case 0xb8 ... 0xbf: /* mov R, Iv */
-	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_mov());
+	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MOV));
 #ifdef TARGET_X86_64
         if (dflag == 2) {
             uint64_t tmp;
@@ -5531,22 +5558,22 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         goto grp2;
 
     case 0x1a4: /* shld imm */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         op = 0;
         shift = 1;
         goto do_shiftd;
     case 0x1a5: /* shld cl */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         op = 0;
         shift = 0;
         goto do_shiftd;
     case 0x1ac: /* shrd imm */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         op = 1;
         shift = 1;
         goto do_shiftd;
     case 0x1ad: /* shrd cl */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_SHX));
         op = 1;
         shift = 0;
     do_shiftd:
@@ -5821,11 +5848,11 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
             case 0x0c: /* grp d9/4 */
                 switch(rm) {
                 case 0: /* fchs */
-    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fchs_ST0();
                     break;
                 case 1: /* fabs */
-                    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+                    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fabs_ST0();
                     break;
                 case 4: /* ftst */
@@ -5890,11 +5917,11 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_helper_fpatan();
                     break;
                 case 4: /* fxtract */
-                    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+                    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fxtract();
                     break;
                 case 5: /* fprem1 */
-        	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fprem1();
                     break;
                 case 6: /* fdecstp */
@@ -5915,18 +5942,18 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
                     gen_helper_fyl2xp1();
                     break;
                 case 2: /* fsqrt */
-    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fsqrt();
                     break;
                 case 3: /* fsincos */
                     gen_helper_fsincos();
                     break;
                 case 5: /* fscale */
-    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+    		    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_fscale();
                     break;
                 case 4: /* frndint */
-        	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        	    FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
                     gen_helper_frndint();
                     break;
                 case 6: /* fsin */
@@ -6142,7 +6169,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         break;
     case 0xae: /* scasS */
     case 0xaf:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -6159,7 +6186,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
 
     case 0xa6: /* cmpsS */
     case 0xa7:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
         if ((b & 1) == 0)
             ot = OT_BYTE;
         else
@@ -6622,7 +6649,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
         /************************/
         /* bit operations */
     case 0x1ba: /* bt/bts/btr/btc Gv, im */
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_BIT));
         ot = dflag + OT_WORD;
         modrm = ldub_code(s->pc++);
         op = (modrm >> 3) & 7;
@@ -6712,7 +6739,7 @@ static target_ulong disas_insn(DisasContext *s, target_ulong pc_start)
     case 0x1bc: /* bsf */
     case 0x1bd: /* bsr */
         {
-            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_arith());
+            FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_BIT));
             int label1;
             TCGv t0;
 
@@ -7995,7 +8022,7 @@ static inline void gen_intermediate_code_internal(CPUState *env,
 
         pc_ptr = disas_insn(dc, pc_ptr);
         num_insns++;
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn());
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_COUNTER));
 	dc->tb->icount = num_insns;
         /* stop translation if indicated */
         if (dc->is_jmp)

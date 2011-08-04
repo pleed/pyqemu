@@ -6,6 +6,7 @@
 
 #include "flx_instrument.h"
 #include "flx_bbltrace.h"
+#include "flx_bbl.h"
 
 bbltrace_handler flx_bbltrace_handlers[MAX_BBLTRACE_HANDLERS];
 

@@ -71,7 +71,7 @@ void flx_arithwindow_enable(uint32_t window_size, float arith_percentage){
 	flx_bbl_window.arith_percentage = arith_percentage;
 
 	flx_bbltrace_register_handler(flx_arithwindow_bblexec);
-	flx_bbltranslate_register_handler(flx_arithwindow_bbltranslate);
+	//flx_bbltranslate_register_handler(flx_arithwindow_bbltranslate);
 	flx_state.arithwindow_active = 1;
 
 	uint32_t i;
@@ -82,7 +82,7 @@ void flx_arithwindow_enable(uint32_t window_size, float arith_percentage){
 
 void flx_arithwindow_disable(void){
 	flx_bbltrace_unregister_handler(flx_arithwindow_bblexec);
-	flx_bbltranslate_unregister_handler(flx_arithwindow_bbltranslate);
+	//flx_bbltranslate_unregister_handler(flx_arithwindow_bbltranslate);
 	flx_state.arithwindow_active = 0;
 	uint32_t i;
 	for(i=0; i<flx_bbl_window.window_size; ++i){
@@ -131,8 +131,8 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	return 0;
 }
 
-int flx_arithwindow_bbltranslate(flx_bbl* bbl){
+/*int flx_arithwindow_bbltranslate(flx_bbl* bbl){
 	if(flx_arithwindow_cache_search(bbl->addr))
 		flx_arithwindow_cache_del(bbl->addr);
 	return 0;
-}
+}*/
