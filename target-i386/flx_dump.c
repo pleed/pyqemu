@@ -93,6 +93,8 @@ flx_dump_bbl(flx_bbl* bbl){
 	uint32_t buf_size = sizeof(flx_dump_translate)+bbl->listcount*sizeof(uint32_t);
 	flx_dump_translate* buf = malloc(buf_size);
 	buf->icount = bbl->listcount;
+	buf->total_count = bbl->icount;
+	buf->movcount = bbl->movcount;
 	buf->addr = bbl->addr;
 	buf->event_type = BBLTRANSLATE;
 	uint32_t offset = buf->icount-1;
@@ -106,12 +108,13 @@ flx_dump_bbl(flx_bbl* bbl){
 	return 0;
 }
 
+/*
 static int
 flx_dump_bblexec(uint32_t eip, uint32_t esp){
 	flx_dump_exec event = {BBLEXEC, eip};
 	flx_dump_event((uint8_t*)&event, sizeof(event));
 	return 0;
-}
+}*/
 
 static int
 flx_dump_mem(uint32_t address, uint32_t value, uint8_t size, uint8_t iswrite){
@@ -133,8 +136,8 @@ flx_dump_enable(const char* path){
 	flx_memtrace_enable();
 	flx_calltrace_register_handler(flx_dump_function);
 	flx_calltrace_enable();
-	flx_bbltrace_register_handler(flx_dump_bblexec);
-	flx_bbltrace_enable();
+	/*flx_bbltrace_register_handler(flx_dump_bblexec);
+	flx_bbltrace_enable();*/
 	flx_bbltranslate_register_handler(flx_dump_bbl);
 	flx_bbltranslate_enable();
 	flx_state.dump_active = 1;
@@ -145,7 +148,7 @@ void
 flx_dump_disable(void){
 	flx_memtrace_unregister_handler(flx_dump_mem);
 	flx_calltrace_unregister_handler(flx_dump_function);
-	flx_bbltrace_unregister_handler(flx_dump_bblexec);
+	/*flx_bbltrace_unregister_handler(flx_dump_bblexec);*/
 	flx_bbltranslate_unregister_handler(flx_dump_bbl);
 	flx_state.dump_active = 0;
 }

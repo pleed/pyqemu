@@ -29,10 +29,12 @@ class ExecEvent:
 		self.addr = addr
 
 class TranslateEvent:
-	def __init__(self, addr, icount, instructions):
+	def __init__(self, addr, icount, instructions, total_count, movcount):
 		self.addr = addr
 		self.icount = icount
 		self.instructions = instructions
+		self.total_count = total_count
+		self.movcount = movcount
 
 class Heuristic:
 	def __init__(self, result_callback):
@@ -50,39 +52,64 @@ class LogEventReader(Heuristic):
 
 class ArithHeuristic(Heuristic):
 	instructions = {
-		0: "mov",
-		1: "xor",
-		2: "shx",
-		3: "and",
-		4: "or",
-		5: "rox",
-		6: "mul",
-		7: "div",
-		8: "bit",
-		9: "other",
-		10: "counter",
+		"mov":0,
+		"xor":1,
+		"shx":2,
+		"and":3,
+		"or":4,
+		"rox":5,
+		"mul":6,
+		"div":7,
+		"bit":8,
+		"add":9,
+		"other":10,
+		"counter":11,
 	}
 	def __init__(self, *args):
 		Heuristic.__init__(self, *args)
 		self.callstack = [0]
 		self.bblcache = {}
+		self.detected = {}
 
-	def handle_exec_event(self, event):
-		bbl = self.bblcache[event.addr]
-		ins = ""
-		for opcode in bbl.instructions:
-			ins += "\t"+self.instructions[opcode]+"\n"
-		if ins != "":
-			self.result("Function: 0x%x BBL: 0x%x Arith: %d\n---%s\n---"%(self.callstack[-1],event.addr, bbl.icount, ins))
-		else:
-			self.result("Function: 0x%x BBL: 0x%x Arith: %d"%(self.callstack[-1],event.addr, bbl.icount))
-		
+	def get_insns(self, l):
+		return map(lambda x: self.instructions[x], l)
+
+	def _check_symmetric(self, bbl):
+		match = 0
+		symmetric_instructions = self.get_insns(["xor","shx","and","or","rox"])
+		for insn in bbl.instructions:
+			if insn in symmetric_instructions:
+				match += 1
+		quotient = float(match)/(bbl.total_count-bbl.movcount)
+		if quotient >= 0.40:
+			return quotient
+		return None
+
+	def _check_asymmetric(self, bbl):
+		match = 0
+		asymmetric_instructions = self.get_insns(["mul","div","add"])
+		for insn in bbl.instructions:
+			if insn in asymmetric_instructions:
+				match += 1
+		quotient = float(match)/(bbl.total_count-bbl.movcount)
+		if quotient >= 0.1:
+			return quotient
+		return None
 
 	def handle_translate_event(self, event):
-		self.bblcache[event.addr] = event
+		bbl = event
+		if bbl.total_count >= 20:
+			quotient = self._check_symmetric(bbl)
+			if quotient is not None:
+				self.result("Detected Symmetric cipher: 0x%x , percentage: %f"%(event.addr, quotient))
+				
+		if bbl.total_count >= 10:
+			quotient = self._check_asymmetric(bbl)
+			if quotient is not None:
+				self.result("Detected Asymmetric cipher: 0x%x , percentage: %f"%(event.addr, quotient))
+		
 
 	def do_call(self, eip):
-		print "Calling 0x%x"%eip
 		self.callstack.append(eip)
 
 	def do_ret(self):
@@ -96,9 +123,7 @@ class ArithHeuristic(Heuristic):
 
 
 	def feed(self, event):
-		if isinstance(event, ExecEvent):
-			self.handle_exec_event(event)
-		elif isinstance(event, TranslateEvent):
+		if isinstance(event, TranslateEvent):
 			self.handle_translate_event(event)
 		elif isinstance(event, FunctionEvent):
 			self.handle_function_event(event)
@@ -296,10 +321,16 @@ class EntropyHeuristic(Heuristic):
 			before_entropy = self.calc_entropy(self.before)
 			after_entropy = self.calc_entropy(self.after)
 			diff = abs(before_entropy-after_entropy)
-			if diff > self.threshold:
+			#print "Before:\n%s"%self.before
+			#print "After:\n%s"%self.after
+			if before_entropy > 0.5 and after_entropy > 0.5 and diff > self.threshold:
 				self.result("Entropy - diff: %f,0x%x"%(diff, self.callstack[-1]))
 				#print "Before: %s"%("".join(map(chr,self.before.values())))
 				#print "After: %s"%("".join(map(chr,self.after.values())))
+			if before_entropy > 0:
+				self.result("Entropy - before: %f,0x%x"%(before_entropy, self.callstack[-1]))
+			if after_entropy > 0:
+				self.result("Entropy - after: %f,0x%x"%(after_entropy, self.callstack[-1]))
 		self.callstack.pop()
 		self.before_stack.pop()
 		self.after_stack.pop()
@@ -313,7 +344,7 @@ class EntropyHeuristic(Heuristic):
 			size -=1
 			byte = (event.value >> (size*8)) &0xff
 			if event.iswrite == self.READ:
-				self.after[address] = byte
+				#self.after[address] = byte
 				self.before[address] = byte
 			elif event.iswrite == self.WRITE:
 				self.after[address] = byte
@@ -382,10 +413,9 @@ class Dumpfile:
 		return ExecEvent(addr)
 
 	def translate_event(self):
-		icount, addr = struct.unpack("<II",self.get_bytes(8));
+		icount,total_count,movcount,addr = struct.unpack("<IIII",self.get_bytes(16));
 		instructions = struct.unpack("<"+"I"*icount, self.get_bytes(4*icount));
-		print "TranslateEvent: 0x%x, %d, %s"%(addr,icount,instructions)
-		return TranslateEvent(addr, icount, instructions)
+		return TranslateEvent(addr, icount, instructions, total_count, movcount)
 
 	def function_event(self):
 		eip,call_type = struct.unpack("<Ib",self.get_bytes(5))
@@ -434,12 +464,13 @@ if __name__ == "__main__":
 			h3 = ArithHeuristic(p)
 			event = dumpfile.next()
 			while event is not None:
+				if isinstance(event, FunctionEvent) and event.call_type == 0:
+					print "Calling 0x%x"%event.eip
 				h1.feed(event)
 				h2.feed(event)
 				h3.feed(event)
 				del(event)
 				event = dumpfile.next()
-		
 		for logfile in h:
 			l1 = LogEventReader(p)
 			event = logfile.next()

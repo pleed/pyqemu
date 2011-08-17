@@ -19,4 +19,5 @@ sudo make install
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -boot c
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm programme_installiert
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm before_tests
-/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm vcpp
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm vcpp
+/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm neueheuristiken

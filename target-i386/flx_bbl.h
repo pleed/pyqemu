@@ -22,9 +22,10 @@ enum insn_type{
 	INSN_MUL = 6,
 	INSN_DIV = 7,
 	INSN_BIT = 8,
+	INSN_ADD = 9,
 
-	INSN_OTHER = 9,
-	INSN_COUNTER = 10,
+	INSN_OTHER = 10,
+	INSN_COUNTER = 11,
 };
 
 

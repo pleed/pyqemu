@@ -29,6 +29,8 @@ typedef struct __attribute__((__packed__)){
 typedef struct __attribute__((__packed__)){
 	uint8_t event_type;
 	uint32_t icount;
+	uint32_t total_count;
+	uint32_t movcount;
 	uint32_t addr;
 	uint32_t insn[];
 } flx_dump_translate;

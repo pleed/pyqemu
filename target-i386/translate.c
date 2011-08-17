@@ -1299,7 +1299,7 @@ static void gen_helper_fp_arith_ST0_FT0(int op)
 {
     switch (op) {
     case 0: gen_helper_fadd_ST0_FT0();
-    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+    		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ADD));
 	    break;
     case 1: gen_helper_fmul_ST0_FT0();
     		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
@@ -1331,7 +1331,7 @@ static void gen_helper_fp_arith_STN_ST0(int op, int opreg)
     TCGv_i32 tmp = tcg_const_i32(opreg);
     switch (op) {
     case 0: gen_helper_fadd_STN_ST0(tmp);
-		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ADD));
 		break;
     case 1: gen_helper_fmul_STN_ST0(tmp);
 		FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_MUL));
@@ -1379,7 +1379,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
     }
     switch(op) {
     case OP_ADCL:
-        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+        FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ADD));
         if (s1->cc_op != CC_OP_DYNAMIC)
             gen_op_set_cc_op(s1->cc_op);
         gen_compute_eflags_c(cpu_tmp4);
@@ -1415,7 +1415,7 @@ static void gen_op(DisasContext *s1, int op, int ot, int d, target_ulong pc_star
         s1->cc_op = CC_OP_DYNAMIC;
         break;
     case OP_ADDL:
-    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_OTHER));
+    	FLX_BBLTRANSLATE_HOOK(flx_bbltranslate_insn(INSN_ADD));
         gen_op_addl_T0_T1();
         if (d != OR_TMP0)
             gen_op_mov_reg_T0(ot, d);

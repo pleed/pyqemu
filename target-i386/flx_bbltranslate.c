@@ -62,7 +62,7 @@ void flx_bbltranslate_insn(enum insn_type insn){
 		case INSN_MOV:
 			++flx_current_bbl.movcount;
 			break;
-		case INSN_XOR ... INSN_BIT:
+		case INSN_XOR ... INSN_ADD:
 			flx_bbltranslate_append(insn);
 			++flx_current_bbl.listcount;
 		default:

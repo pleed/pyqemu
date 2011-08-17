@@ -137,7 +137,7 @@ class TracedProcess(processinfo.Process):
 		for image in self.images.values():
 			if image.BaseDllName.lower() in map(lambda x: x.lower(), self.options["instrument"]):
 				self.hardware.instrumentation.filter_add(image.DllBase, image.DllBase+image.SizeOfImage)
-				self.logger.info("Instrumenting %s"%image.FullDllName)
+				self.logger.info("Instrumenting %s at 0x%x-0x%x"%(image.FullDllName,image.DllBase,image.DllBase+image.SizeOfImage))
 			else:
 				self.logger.info("Not Instrumenting %s"%image.FullDllName)
 			self.dllhandler.loadPE(image.BaseDllName.lower(), image.DllBase)
