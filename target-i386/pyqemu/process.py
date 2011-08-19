@@ -170,6 +170,7 @@ class TracedProcess(processinfo.Process):
 			"functionentropy":EventHandler(self),
 			"functiontaint":EventHandler(self),
 			"constsearch":EventHandler(self),
+			"codesearch":EventHandler(self),
 		}
 
 	def handleEvent(self, event):

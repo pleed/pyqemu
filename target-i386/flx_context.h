@@ -17,11 +17,13 @@ typedef struct {
 	void *constsearch;
 	void *taintstack;
 	void *dump;
+	void *insnchain;
 	context_destructor calltrace_destructor;
 	context_destructor memtrace_destructor;
 	context_destructor constsearch_destructor;
 	context_destructor taintgraph_destructor;
 	context_destructor dump_destructor;
+	context_destructor codesearch_destructor;
 } flx_context;
 
 void         flx_context_init(void);

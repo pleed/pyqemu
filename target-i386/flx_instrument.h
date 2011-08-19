@@ -43,6 +43,7 @@ typedef struct {
 	uint8_t functionentropy_active;
 	uint8_t constsearch_active;
 	uint8_t functiontaint_active;
+	uint8_t codesearch_active;
 } FLX_STATE;
 
 extern FLX_STATE flx_state;
@@ -62,6 +63,7 @@ int flxinstrument_functiontrace_event(uint32_t eip, uint8_t type);
 int flxinstrument_functionentropy_event(float entropychange, uint32_t eip);
 int flxinstrument_functiontaint_event(float quotient, uint32_t eip);
 int flxinstrument_constsearch_event(uint32_t eip, uint8_t* pattern, uint32_t len);
+int flxinstrument_codesearch_event(uint32_t eip, uint8_t* pattern, uint32_t len);
 
 int flxinstrument_shutdown_event(void);
 

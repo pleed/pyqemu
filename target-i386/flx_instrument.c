@@ -51,6 +51,7 @@
 #include "flx_functionentropy.h"
 #include "flx_functiontaint.h"
 #include "flx_constsearch.h"
+#include "flx_codesearch.h"
 #include "flx_bblwindow.h"
 #include "flx_syscall.h"
 #include "flx_dump.h"
@@ -88,6 +89,7 @@ PyObject *PyFlx_ev_functiontrace = NULL;
 PyObject *PyFlx_ev_functionentropy = NULL;
 PyObject *PyFlx_ev_functiontaint = NULL;
 PyObject *PyFlx_ev_constsearch = NULL;
+PyObject *PyFlx_ev_codesearch = NULL;
 
 static PyObject *PyFlx_REG_EAX;
 static PyObject *PyFlx_REG_ECX;
@@ -1178,6 +1180,8 @@ flxinstrument_register_callbacks(void){
    Py_XINCREF(PyFlx_ev_functiontaint);
    PyFlx_ev_constsearch = PyObject_GetAttrString(Py_Python_Module, "ev_constsearch");
    Py_XINCREF(PyFlx_ev_constsearch);
+   PyFlx_ev_codesearch = PyObject_GetAttrString(Py_Python_Module, "ev_codesearch");
+   Py_XINCREF(PyFlx_ev_codesearch);
    PyFlx_ev_jmp = PyObject_GetAttrString(Py_Python_Module, "ev_jmp");
    Py_XINCREF(PyFlx_ev_jmp);
    PyFlx_ev_ret = PyObject_GetAttrString(Py_Python_Module, "ev_ret");
@@ -1277,6 +1281,7 @@ void flxinstrument_init(void) {
    flx_functionentropy_init((functionentropy_handler)flxinstrument_functionentropy_event);
    flx_functiontaint_init((functiontaint_handler)flxinstrument_functiontaint_event);
    flx_constsearch_init((constsearch_handler)flxinstrument_constsearch_event);
+   flx_codesearch_init((codesearch_handler)flxinstrument_codesearch_event);
    printf("initializing flxinstrument subsystems done\n");
    printf("initializing flxinstrument done\n");
 }
@@ -1416,6 +1421,38 @@ int flxinstrument_bbltrace_event(uint32_t eip, uint32_t esp) {
     PyErr_Print();
   }
   
+  return retval;
+}
+
+int flxinstrument_codesearch_event(uint32_t eip, uint8_t* pattern, uint32_t len) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_codesearch_event");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+  PyObject *result;
+  int retval = 0;
+
+  if (!PyCallable_Check(PyFlx_ev_codesearch)) {
+    fprintf(stderr, "No registered codesearch event handler\n");
+    return retval;
+  }
+
+  result = PyObject_CallFunction(PyFlx_ev_codesearch,
+				 (char*) "(s#I)",
+				 pattern,
+				 len,
+				 eip);
+
+  if (result != Py_None) {
+    retval = PyInt_AsLong(result);
+    Py_XDECREF(result);
+  }
+  else {
+    PyErr_Print();
+  }
   return retval;
 }
 
