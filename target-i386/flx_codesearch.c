@@ -51,6 +51,7 @@ flx_insnchain_dealloc(insn_chain* chain){
 
 static int
 flx_insnchain_delete(flx_context* context){
+	return 0; //FIXME
 	insn_chain* chain = (insn_chain*)context->insnchain;
 	insn_chain* next;
 	while(chain){
@@ -58,7 +59,7 @@ flx_insnchain_delete(flx_context* context){
 		flx_insnchain_dealloc(chain);
 		chain = next;
 	}
-	
+
 	return 0;
 }
 
@@ -66,19 +67,19 @@ static void
 flx_insnchain_expand(insn_chain* chain, uint32_t len){
 	if(len == 0){
 		chain->data = realloc(chain->data, sizeof(uint32_t)*(chain->size+FLX_INSN_CHAIN_RESIZE));
-		chain->eips = realloc(chain->data, sizeof(uint32_t)*(chain->size+FLX_INSN_CHAIN_RESIZE));
+		chain->eips = realloc(chain->eips, sizeof(uint32_t)*(chain->size+FLX_INSN_CHAIN_RESIZE));
 		chain->size += FLX_INSN_CHAIN_RESIZE;
 	}
 	else{
 		chain->data = realloc(chain->data, sizeof(uint32_t)*(chain->size+len));
-		chain->eips = realloc(chain->data, sizeof(uint32_t)*(chain->size+len));
+		chain->eips = realloc(chain->eips, sizeof(uint32_t)*(chain->size+len));
 		chain->size += len;
 	}
 }
 
 static insn_chain*
 flx_insnchain_alloc(void){
-	insn_chain* chain = malloc(sizeof(insn_chain));
+	insn_chain* chain = malloc(sizeof(*chain));
 	memset(chain, 0, sizeof(*chain));
 	flx_insnchain_expand(chain, 0);
 	return chain;
@@ -110,18 +111,20 @@ int flx_codesearch_calltrace(uint32_t old_eip, uint32_t new_eip, uint32_t next_e
 	if(type == FLX_CALLTRACE_RET || type == FLX_CALLTRACE_MISSED_RET){
 		tmp_string.data = (char*)chain->data;
 		tmp_string.len  = sizeof(uint32_t)*chain->len;
-		assert(tmp_string.data != NULL && tmp_string.len > 0);
+		if(!tmp_string.data || !tmp_string.len){
+			return 0;
+		}
+
 		struct match* p = shmatch_search(insn_matcher, &tmp_string);
 		for(; p; p = shmatch_search(insn_matcher, NULL)){
 			struct pattern* needle = p->needle;
-			flx_codesearch_handler(chain->eips[p->startpos], (uint8_t*)needle->data->data, needle->data->len);
+			flx_codesearch_handler(chain->eips[p->startpos/sizeof(uint32_t)], (uint8_t*)needle->data->data, needle->data->len);
 			shmatch_match_destroy(p);
 		}
 		*pchain = chain->next;
-		flx_insnchain_dealloc(chain);		
+		flx_insnchain_dealloc(chain);
 	}
 	else {
-		insn_chain** pchain = flx_codesearch_current_insnchain();
 		insn_chain* chain = flx_insnchain_alloc();
 		chain->next = *pchain;
 		*pchain = chain;
@@ -135,17 +138,33 @@ int flx_codesearch_bbl(uint32_t eip, uint32_t esp){
 	assert(bbl != NULL);
 	insn_list* insns = bbl->insn_list;
 
-	if(bbl->listcount < (chain->size-chain->len)){
-		flx_insnchain_expand(chain, bbl->listcount>FLX_INSN_CHAIN_RESIZE?bbl->listcount:0);
+	if(bbl->listcount == 0)
+		return 0;
+
+	if(bbl->listcount >= (chain->size-chain->len)){
+		flx_insnchain_expand(chain, (bbl->listcount>FLX_INSN_CHAIN_RESIZE)?bbl->listcount:0);
 	}
 
 	uint32_t index = chain->len + bbl->listcount - 1;
+	uint32_t assert_counter = 0;
+	uint8_t debug = 0;
+	if(eip == 0x1004b8c0)
+		debug = 1;
+	if(debug)
+		printf("BBL: 0x%x\n",eip);
 	while(insns){
+		assert(index < chain->size);
+		assert_counter++;
 		chain->data[index] = insns->insn_type;
+		if(debug)
+			printf("INSN: %d\n",insns->insn_type);
+		chain->eips[index] = eip;
 		insns = insns->next;
 		assert(index > 0 || ! insns);
 		--index;
 	}
+	assert(assert_counter == bbl->listcount);
+	chain->len += bbl->listcount;
 	return 0;
 }
 

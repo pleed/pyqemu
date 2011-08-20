@@ -17,7 +17,7 @@ OTHER = 10
 
 class PatternManager:
 	patternlist = {
-		(XOR,SHX,SHX,XOR):"testpattern"
+		(AND,SHX,SHX,XOR,SHX,XOR,XOR,AND):"testpattern"
 	}
 
 	def __init__(self, heuristic):
@@ -31,17 +31,18 @@ class PatternManager:
 	def __call__(self):
 		self.heuristic.process.hardware.instrumentation.codesearch_enable()
 		for pattern in self.patternlist:
-			self.heuristic.process.hardware.instrumentation.codesearch_pattern(pattern)
+			s = "".join(map(lambda x: struct.pack("<I",x), pattern))
+			self.heuristic.process.hardware.instrumentation.codesearch_pattern(s)
 
 class CodeSearchHeuristic(PyQemuHeuristic):
 	PREFIX = "CodePattern"
 	def setupCallbacks(self):
 		self.patterns = PatternManager(self)
 		self.process.onInstrumentationInit(self.patterns)
-		self.process.onInstrumentationInit(lambda: self.registerApiHooks(self.process))
 		self.attach("codesearch", self.onPatternFound)
 
 	def onPatternFound(self, process, event):
-		self.log("%s %s,0x%x"%(self.PREFIX, self.patterns.patternlist[event.pattern], event.eip))
+		pattern = tuple(struct.unpack("<"+"I"*(len(event.pattern)/4), event.pattern))
+		self.log("%s %s,0x%x"%(self.PREFIX, self.patterns.patternlist[pattern], event.eip))
 
 heuristic = CodeSearchHeuristic
