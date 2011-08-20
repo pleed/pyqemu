@@ -227,6 +227,20 @@ static PyObject* PyFlxC_constsearch_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+static PyObject* PyFlxC_codesearch_enable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_codesearch_enable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_codesearch_enable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_disable");  
@@ -237,6 +251,20 @@ static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
 #endif
 
   flx_constsearch_disable();
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_codesearch_disable(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_codesearch_disable");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+
+  flx_codesearch_disable();
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -427,6 +455,25 @@ static PyObject* PyFlxC_syscall_hook(PyObject *self, PyObject *args) {
 
   flx_syscall_hook(syscall);
 
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static PyObject* PyFlxC_codesearch_pattern(PyObject *self, PyObject *args) {
+#ifdef DEBUG
+  fprintf(stderr, "flxinstrument_codesearch_pattern");  
+  if(PyErr_Occurred())
+	fprintf(stderr," - EXCEPTION THROWN\n");
+  else
+	fprintf(stderr," - NO EXC\n");
+#endif
+   uint8_t* pattern;
+   uint32_t pattern_len;
+   if(!PyArg_ParseTuple(args, "s#", &pattern, &pattern_len)){
+   	return Py_None;
+   }
+
+  flx_codesearch_pattern(pattern, pattern_len);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -989,6 +1036,15 @@ static PyMethodDef PyFlxC_methods[] = {
     },
     {"arithwindow_disable", (PyCFunction)PyFlxC_arithwindow_disable, METH_VARARGS,
      "Stop arithwindow opcode execution"
+    },
+    {"codesearch_enable", (PyCFunction)PyFlxC_codesearch_enable, METH_VARARGS,
+     "Start codesearch"
+    },
+    {"codesearch_pattern", (PyCFunction)PyFlxC_codesearch_pattern, METH_VARARGS,
+     "Add codesearch pattern"
+    },
+    {"codesearch_disable", (PyCFunction)PyFlxC_codesearch_disable, METH_VARARGS,
+     "Stop codesearch"
     },
     {"constsearch_enable", (PyCFunction)PyFlxC_constsearch_enable, METH_VARARGS,
      "Start constsearch"
