@@ -17,7 +17,8 @@ OTHER = 10
 
 class PatternManager:
 	patternlist = {
-		(AND,SHX,SHX,XOR,SHX,XOR,XOR,AND):"testpattern"
+		(SHX,SHX,XOR,SHX,XOR,XOR):"testpattern",
+		(SHX,AND,SHX,XOR,XOR,AND,SHX,XOR):"cygcrypto aes",
 	}
 
 	def __init__(self, heuristic):
