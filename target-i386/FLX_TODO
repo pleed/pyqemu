@@ -1,4 +1,3 @@
-- heap corruption fixen
 - besseres thread handling
 - frueherer "entry point"
 - blacklist statt white list (pagefilter fuer instrumentation)
