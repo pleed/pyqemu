@@ -6,6 +6,7 @@ import avl
 import glob
 
 class PEHandler:
+	""" Manages PE files on the HOST filesystem """
 	def __init__(self, dlldir):
 		self.dlldir = dlldir
 		self.tree = avl.new()
@@ -63,6 +64,7 @@ class PEHandler:
 		return None
 
 class PEFile(dict,pefile.PE):
+	""" Represents a loaded PE file from HOST file system """
 	def __init__(self, filename, imagebase):
 		self.imagebase = imagebase
 		self.filename = os.path.basename(filename)

@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+# This file defines Events that will be instantiated by
+# ev_* in PyQemu.py
+#
+# Event classes are used to handle them correctly in
+# VirtualMachine/OS/Heuristic ...
+#
+
 class QemuEvent:
 	def __init__(self, event_type, *args):
 		self.event_type = event_type

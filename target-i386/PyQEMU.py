@@ -30,7 +30,7 @@ from pyqemu.instrumentation import QemuInstrumentation
 from pyqemu.operatingsystem import OperatingSystem
 
 class QemuFlxLogger:
-	BUFFERSIZE = 1000
+	""" Logging class which distinguished between processes and threads """
 	def __init__(self, config):
 		self.config = config
 		self.logfiles = {}
@@ -86,12 +86,14 @@ class QemuFlxLogger:
 		self.closeAll()
 
 class Qemu:
+	""" Qemu interfacing main class that enables access to the emulated hardware. """
 	def __init__(self):
 		self.cpu = QemuCPU()
 		self.memory = QemuMemory()
 		self.instrumentation = QemuInstrumentation()
 
 class VirtualMachine:
+	""" Main class which holds subsystem instances """
 	def __init__(self, configfile):
 		self.loadConfiguration(configfile)
 
@@ -104,6 +106,7 @@ class VirtualMachine:
 		self.config = ConfigLoaderFactory.create("json", configfile, QemuFlxConfig)
 
 	def handleQemuEvent(self, ev, *args):
+		""" This method handles events first """
 		if ev == "shutdown":
 			self.logger.shutdown()
 			self.os.shutdown()
@@ -113,9 +116,12 @@ class VirtualMachine:
 
 vm = None
 def init(sval):	
+	""" Init function called on VM startup """
 	global vm
 	try:
 		print "Python instrument started"
+		# Set PYQEMU_DISABLE environment variable for complete deactivation
+		# of instrumentation features (useful for VM installation)
 		if pyos.getenv("PYQEMU_DISABLE") is None:
 			print "Initializing Python Virtual Machine"
 			vm = VirtualMachine("/etc/qemuflx/flx.json")
@@ -145,9 +151,17 @@ def ensure_error_handling_helper(func):
 
 def getVirtualMachine():
 	return vm
+#
+# These are the callbacks seen by flx_instrument.c (qemu context)
+# They specify the interface for event handling to notify the python layer
+#
+# Whether flx_instrument.c will call the handlers or not is specified in the flxinstrument initialization functions.
+# Several handlers (like memtrace) are deactivated because of performance issues
+#
 
-# Register FLX Callbacks 
+# Catches int 80/2e , sysenter and syscall instructions 
 ev_syscall    = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("syscall",*args))
+
 ev_call       = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("call",*args))
 ev_jmp        = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("jmp",*args))
 ev_ret        = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("ret",*args))
@@ -157,9 +171,12 @@ ev_optrace    = ensure_error_handling_helper(lambda *args: getVirtualMachine().h
 ev_bblstart   = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("bbl",*args))
 
 ev_update_cr3 = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("schedule",*args))
-ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("shutdown",*args))
-ev_arithwindow = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("arithwindow",*args))
 
+# This event is triggered on Strg+C (SIGINT) to do final cleanup (flush logfiles, dump process memory ...)
+ev_shutdown = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("shutdown",*args))
+
+# High level abstract events used for heuristics
+ev_arithwindow = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("arithwindow",*args))
 ev_caballero = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("caballero",*args))
 ev_functiontrace = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functiontrace",*args))
 ev_functionentropy = ensure_error_handling_helper(lambda *args: getVirtualMachine().handleQemuEvent("functionentropy",*args))

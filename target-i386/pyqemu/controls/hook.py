@@ -10,6 +10,7 @@ api_calls = [
 ]
 
 class ApiControl(ProcessControl):
+	""" Example for hooking API calls """
 	PREFIX = "Api"
 
 	def setupCallbacks(self):

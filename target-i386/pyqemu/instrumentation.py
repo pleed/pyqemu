@@ -4,6 +4,7 @@ import PyFlxInstrument
 import Helpers
 
 class QemuInstrumentation:
+	""" PyQemu instrumentation API """
 	def __init__(self):
 		pass
 	def activate(self, pid, tid, procname):

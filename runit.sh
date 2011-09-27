@@ -20,4 +20,9 @@ sudo make install
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm programme_installiert
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm before_tests
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm vcpp
-/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm neueheuristiken
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm neueheuristiken
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm positivetest
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm negativetest
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm hashprograms
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm dsasign
+/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm nmap

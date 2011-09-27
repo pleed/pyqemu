@@ -1,33 +1,11 @@
-- besseres thread handling
-- frueherer "entry point"
-- blacklist statt white list (pagefilter fuer instrumentation)
+- Make PyQemu more flexible towards generic instrumentation/analysis requirements
 
-Ideen:
+- Redesign process management to enable separate process instrumentation
 
-	- beliebige eingabe -> hohe entropie
-	- schleifen! DONE
-	- gleiche groesse im ausgabepuffer (meisstens)
-	- keine nutzung von api funktionen (syscalls)    DONE
+- Find/implement a solution for the shared library instrumentation problem
+	1. translation cache for each process (may be a bad idea because of hot-patching)
+	2. check events when they occur to see if the process did register them
 
-	Blockchiffren
-		- diffusion/konfusion -> eingabebits beeinflussen viele andere eingabebits zum erzeugen der ausgabebits
-		- umkehrung mit gleicher funktion
-		- datenaenderungsquotient
+- Redesign the operating system status reading interface to allow systems beyond windows XP
 
-	Stromchiffren
-		- input laenge egal
-		- daten werden aus pseudo rng generiert und fliessen in ausgabedaten mit ein
-
-	- operationen: substitution, xor, permutation    DONE
-	- normalerweise relative straighter programmfluss, ausgefuehrte instruktionen/opcodes hoeher als normal (schleifen) DONE
-	- wird mit einem puffer nicht mehrmals aufgerufen
-	- wenige branches (schleifen, keine if/switch anweisungen)
-
-
-	- identifikation von prng?
-
-
-- sniffing (network card hooking)
--
-
-www.cuckoobox.org
+- Define a generic instrumentation API to allow virtual CPUs beyon i386 compatible ones

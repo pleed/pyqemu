@@ -9,6 +9,13 @@
 #include "flx_bbltranslate.h"
 #include "flx_bbltrace.h"
 
+/*
+ * For analysis purposes, it is often necessary to get the last
+ * n executed basic blocks. This module stores the last n
+ * basic blocks using the bbltrace module.
+ * Parameter $window_size specifies the bbl history length
+ */
+
 struct {
 	uint32_t size;
 	uint32_t*buf;

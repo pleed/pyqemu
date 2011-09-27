@@ -8,6 +8,12 @@
 #include "flx_caballero.h"
 #include "flx_bbltranslate.h"
 
+/*
+ * This module is used to implement the caballero
+ * crypto detection heuristic applied to single basic
+ * blocks.
+ */
+
 caballero_handler flx_caballero_handler = NULL;
 caballero_config* flx_caballero_config = NULL;
 

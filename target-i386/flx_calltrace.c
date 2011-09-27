@@ -10,6 +10,13 @@
 #include "flx_calltrace.h"
 #include "flx_context.h"
 
+/*
+ * It is useful to keep a shadow stack of a traced process
+ * for function based heuristics. This modules exposes an API
+ * to associate heuristic information with their corresponding
+ * 'function' via register_handler
+ */
+
 calltrace_handler flx_calltrace_handlers[MAX_CALLTRACE_HANDLERS];
 
 static void flx_calltrace_stackframes_push(flx_stackframes* stackframes, uint32_t esp, uint32_t eip);

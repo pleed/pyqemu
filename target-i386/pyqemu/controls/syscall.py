@@ -2,7 +2,7 @@
 
 from control import ProcessControl
 
-#syscall table from metasploit
+#windows XP syscall table from metasploit
 syscall_table = {
 	0x0000:"NtAcceptConnectPort",
 	0x0001:"NtAccessCheck",

@@ -4,6 +4,8 @@ import string
 from copy import deepcopy
 import syscalls
 
+# NOT USED ANYMORE ! ! !
+
 def string_from_buf(buffer, len = None, omit = 0):
 	if len is None:
 		not_printable = buffer.read(None)

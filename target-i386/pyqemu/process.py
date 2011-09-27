@@ -54,6 +54,7 @@ class ApiHook:
 		return self.hook(self.process, self.lib, self.function, addr)
 
 class Thread:
+	""" Each instrumented thread refers to an instance of the class """
 	def __init__(self, process, heap = None, stack = None, data = None, unknown = None, callstack = None):
 		if callstack is None:
 			self.callstack = Stack()
@@ -72,6 +73,7 @@ class Thread:
 			self.process.log("Ret(0x%x)"%call_event[0])
 
 class EventHandler:
+	""" Manages events for of a specific type """
 	def __init__(self, process):
 		self.observers = {}
 		self.process   = process
@@ -87,7 +89,7 @@ class EventHandler:
 		del(self.observers[name])
 
 class TracedProcess(processinfo.Process):
-	""" A traced process with functionality to register callbacks for vm inspection """
+	""" Represents an instrumented process, used to do hooking/instrumentation/setup """
 
 	def __init__(self, options, os, logger, imagefilename, hardware):
 		self.os = os
@@ -447,6 +449,7 @@ class TracedProcess(processinfo.Process):
 			pass
 
 class UntracedProcess(processinfo.Process):
+	""" Dummy class to represent processes that are not interesting for the analysis """
 	def __init__(self, callhandler):
 		processinfo.Process.__init__(self)
 

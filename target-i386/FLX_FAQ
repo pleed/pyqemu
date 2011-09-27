@@ -1,0 +1,74 @@
+
+--== PyQemu FAQ ==--
+
+1. What is PyQemu ?
+
+PyQemu is an instrumentation framework written in C and Python around Qemu to do dynamic program analysis.
+
+2. What environment is used in PyQemu?
+
+Qemu runs in binary translation mode.
+Guest VM must be a windows XP ( just SP2 is tested, should work with other XP )
+
+3. What can I do with PyQemu?
+
+	Basic Instrumentation Features:
+
+		- API hooking
+		- Memory access tracing
+		- Call/Ret/Jump/BBL tracing
+		- Memory dumps
+
+	Advanced analysis features:
+
+		- Heuristics for crypto detection
+
+4. Is PyQemu stable?
+
+No. PyQemu is a dynamic analysis prototype for detection of cryptography in software. The design however
+is generic so PyQemu can be seen as a conceptual codebase for program analysis with qemu.
+
+
+5. Why C and Python?
+
+Because C is fast and Python is awesome for prototyping. Most low level analysis modules have been written
+in C (see target-i386/flx_*) and high level modules for hooking and process control are prototyped in Python.
+
+6. Why is there so much Python code that is not use anymore?
+
+During development, the design had to be changed several times and it was necessary to refocus on some aspects
+which where not seen before (mostly performance issues). Most of the 'dead code' can however still be used
+to tweak PyQemu for other program analysis purposes. Thats why the files are still kept in the git HEAD.
+
+7. I would like to understand the code but it is just too much and I dont know where to begin?
+
+okay - I'll give you a short briefing:
+
+nearly all code is located in the target-i386/ directory because PyQemu just supports this target architecture.
+On startup, cpu_x86_init in target-i386/helper.c calls flxinstrument_init which initializes the python interpreter and
+tries to import the PyQemu.py module. At that point the initialization function in PyQemu.py is called to instantiate
+the main VirtualMachine objects and several other classes that are needed for instrumentation. Then back in flxinstrument_init,
+the C subsystems are initialized.
+
+Then all scheduling actions by the CPU (cr3 modifications) trigger events which are handled by the python operatingsystem class
+which parses the configuration file in /etc/qemuflx/flx.json and decides if new processes which have been detected shall be
+instrumented or not. If they are no instrumented, an UntraceProcess object is instantiated. Otherwise a TracedProcess object
+is constructed which reads the main executable from the host file system (must be previously copied to the 'exes' directory)
+to hook the program entry point.
+
+At the program entry point, heuristics and controls will be initialized and configure the way in which the subsystems shall generate
+events.
+
+It is essential to read the C source in translate.c to understand the binary translation modifications.
+
+
+8 Are there important aspects to consider when using PyQemu?
+
+Yes - there are because PyQemu is just a prototype.
+	1. Never instrument more than one process
+	2. A lot of error conditions are not handled properly due to dev time restrictions
+	3. shared libraries should only be instrumented when no other process is using them (this excludes kernel32.dll for example)
+
+9 How does PyQemu get its information about the guest virtual machine?
+	Python code from Pandoras Bochs is used to read the internal data structures via the qemu memory_debug_rw functionality
+	see processinfo.py and datastructures.py

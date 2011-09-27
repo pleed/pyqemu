@@ -8,6 +8,14 @@
 #include "flx_instrument.h"
 #include "flx_bbltranslate.h"
 
+/*
+ * Often it is useful to get notified when new basic blocks
+ * are translated by Qemu. This module can manage callbacks
+ * via the register_handler API to dispatch block translation
+ * events to further analysis. It automatically adds new blocks
+ * to the basic block management (flx_bbl)
+ */
+
 bbltranslate_handler flx_bbltranslate_handlers[MAX_BBLTRANSLATE_HANDLERS];
 flx_bbl flx_current_bbl;
 

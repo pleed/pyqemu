@@ -19,19 +19,23 @@ R_FS = 4
 R_GS = 5
 
 class QemuCPU:
-
+	""" Encapsulates access to the emulated qemu cpu """
 	@classmethod
 	def getReg(cls, register):
+		
 		regs = registers()
 		return registers()[register]
 
 	@classmethod
 	def genReg(cls, register):
+		""" Get a general purpose register """
 		return genreg(register)
 
 	def cReg(cls, register):
+		""" Get a control register """
 		return creg(register)
 
+	# encapsulated register access
 	eax = property(lambda self: self.genReg(R_EAX))
 	ebx = property(lambda self: self.genReg(R_EBX))
 	ecx = property(lambda self: self.genReg(R_ECX))

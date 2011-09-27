@@ -8,6 +8,14 @@
 #include "flx_bbltrace.h"
 #include "flx_bbl.h"
 
+/*
+ * Module is used to trace the execution of basic blocks
+ * helper function in op_helper.c is triggered on any new
+ * BBL.
+ * Other modules can attach via register_handler API to
+ * make use of the BBL tracing
+ */
+
 bbltrace_handler flx_bbltrace_handlers[MAX_BBLTRACE_HANDLERS];
 
 void flx_bbltrace_init(void){

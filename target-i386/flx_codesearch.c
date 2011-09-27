@@ -15,6 +15,10 @@
 #include "flx_context.h"
 #include "flx_bbltrace.h"
 
+/*
+ * This module enables instruction class based pattern matching
+ * on executed code. It exposes the register_handler API
+ */
 
 codesearch_handler flx_codesearch_handler = NULL;
 struct shmatcher* insn_matcher = NULL;

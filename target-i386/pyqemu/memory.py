@@ -4,6 +4,11 @@ import avl
 from Structures import VMemBackend
 import PyFlxInstrument
 
+
+# NOT IN USE ANYMORE ! ! !
+# Used for an early draft of allocated buffer tracing
+# which is not needed for crypto detection anymore
+
 class QemuMemory(VMemBackend):
 	pass
 

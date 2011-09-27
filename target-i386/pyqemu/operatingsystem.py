@@ -8,6 +8,7 @@ import controls
 from controls import *
 
 class OperatingSystem:
+	""" Represents the guest operating system state and configuration """
 	def __init__(self, config, hardware, logger):
 		self.config = config
 		self.hardware = hardware

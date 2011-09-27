@@ -14,6 +14,16 @@
 #include "flx_memtrack.h"
 #include "flx_context.h"
 
+/*
+ * Many cryptographic algorithms excessively use predefined
+ * constants. This module uses the aho-corasick algorithm
+ * for parallel pattern matching in executed basic blocks
+ * and a shadow memory and generates a high level event
+ * when a pattern has been found.
+ *
+ * The search must be explicitly triggered due to high
+ * matching runtime.
+ */
 
 float constsearch_threshold = 0;
 constsearch_handler flx_constsearch_handler = NULL;

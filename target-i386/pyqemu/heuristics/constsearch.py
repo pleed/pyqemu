@@ -4337,14 +4337,13 @@ class PatternManager:
 
 		MutablePattern("".join(map(lambda x: chr(x), (56,48,40,32,24,16,8,0,57,49,41,33,25,17,9,1,58,50,42,34,26,18,10,2,59,51,43,35,62,54,46,38,30,22,14,6,61,53,45,37,29,21,13,5,60,52,44,36,28,20,12,4,27,19,11,3)))):"DES",
 		struct.pack("<I",0x04000800):"DES S-BOX Value",
-		struct.pack("<I",0x80108000L,):"DES S-BOX Value",
-		struct.pack("<I",0x00108000L,):"DES S-BOX Value",
-		struct.pack("<I",0x00404010L,):"DES S-BOX Value",
-		struct.pack("<I",0x20000000L,):"DES S-BOX Value",
-		struct.pack("<I",0x04200800L,):"DES S-BOX Value",
-		struct.pack("<I",0x10040000L,):"DES S-BOX Value",
-		struct.pack("<I",0x00000802L,):"DES S-BOX Value",
-		struct.pack("<I",0x04200800L,):"DES S-BOX Value",
+		struct.pack("<I",0x80108000):"DES S-BOX Value",
+		struct.pack("<I",0x00108000):"DES S-BOX Value",
+		struct.pack("<I",0x00404010):"DES S-BOX Value",
+		struct.pack("<I",0x04200800):"DES S-BOX Value",
+		struct.pack("<I",0x10040000):"DES S-BOX Value",
+		struct.pack("<I",0x00000802):"DES S-BOX Value",
+		struct.pack("<I",0x04200800):"DES S-BOX Value",
 
 
  		MutablePattern("\x0e\x04\x0d\x01\x02\x0f\x0b\x08\x03\x0a\x06\x0c\x05\x09\x00\x07"):"Serpent S-Box Row",

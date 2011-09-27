@@ -11,10 +11,19 @@
 #include "flx_bbltranslate.h"
 #include "flx_bbltrace.h"
 
+/*
+ * This module is used to calcualte arithmetic and bitwise fractions of executed instructions in
+ * a predefined execution window. The window size parameter can be set through flx_arithwindow_enable
+ */
+
 arithwindow_handler flx_arithwindow_handler = NULL;
 
 uint16_t arithwindow_cache[65536];
 
+/*
+ * Used to store the current basic block window to consider when doing
+ * arithmetic fraction calculations
+ */
 typedef struct {
 	flx_bbl** bbls;
 	uint32_t window_size;
@@ -64,6 +73,9 @@ void flx_arithwindow_destroy(void){
 	free(flx_bbl_window.bbls);
 }
 
+/*
+ * Activate heuristic and define parameters 
+ */
 void flx_arithwindow_enable(uint32_t window_size, float arith_percentage){
 	flx_arithwindow_cache_init();
 	flx_bbl_window.bbls = malloc(sizeof(flx_bbl*) * window_size);
@@ -80,6 +92,9 @@ void flx_arithwindow_enable(uint32_t window_size, float arith_percentage){
 	}
 }
 
+/*
+ * Deactivate heuristic
+ */
 void flx_arithwindow_disable(void){
 	flx_bbltrace_unregister_handler(flx_arithwindow_bblexec);
 	//flx_bbltranslate_unregister_handler(flx_arithwindow_bbltranslate);
@@ -91,6 +106,11 @@ void flx_arithwindow_disable(void){
 	free(flx_bbl_window.bbls);
 }
 
+/*
+ * Called on every execution of a basic block;
+ * calculates current arithmetic percentage and throws event if
+ * result is above predefined threshold
+ */
 int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	flx_bbl* bbl = flx_bbl_search(eip);
 	memcpy(flx_bbl_window.bbls[flx_bbl_window.end_index], bbl, sizeof(*bbl));
@@ -104,7 +124,7 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	flx_bbl_window.end_index %= flx_bbl_window.window_size;
 
 	uint8_t recalculate = 0;
-	while(flx_bbl_window.instructions >= flx_bbl_window.window_size){ //&& (flx_bbl_window.start_index+1)%flx_bbl_window.window_size != flx_bbl_window.end_index){
+	while(flx_bbl_window.instructions >= flx_bbl_window.window_size){
 		flx_bbl_window.instructions       -= flx_bbl_window.bbls[flx_bbl_window.start_index]->icount;
 		flx_bbl_window.arith_instructions -= flx_bbl_window.bbls[flx_bbl_window.start_index]->arithcount;
 		flx_bbl_window.mov_instructions   -= flx_bbl_window.bbls[flx_bbl_window.start_index]->movcount;
@@ -131,8 +151,3 @@ int flx_arithwindow_bblexec(uint32_t eip, uint32_t esp){
 	return 0;
 }
 
-/*int flx_arithwindow_bbltranslate(flx_bbl* bbl){
-	if(flx_arithwindow_cache_search(bbl->addr))
-		flx_arithwindow_cache_del(bbl->addr);
-	return 0;
-}*/

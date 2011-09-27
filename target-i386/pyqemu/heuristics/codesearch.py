@@ -17,7 +17,7 @@ OTHER = 10
 
 class PatternManager:
 	patternlist = {
-		(SHX,SHX,XOR,SHX,XOR,XOR):"testpattern",
+		#(SHX,SHX,XOR,SHX,XOR,XOR):"testpattern",
 		(SHX,AND,SHX,XOR,XOR,AND,SHX,XOR):"cygcrypto aes",
 	}
 

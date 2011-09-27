@@ -9,6 +9,17 @@
 #include "flx_instrument.h"
 #include "flx_breakpoint.h"
 
+/*
+ * Breakpoints are important for hooking and the initial
+ * entrypoint execution detection. This module manages
+ * breakpoints in cascaded AVL-trees.
+ *
+ * The upper tree includes the running processes while each
+ * tree node again holds a tree managing the breakpoint addresses
+ *
+ * cr3 is used as the process identifier.
+ */
+
 avl_tree_t *bps;
 
 static void flx_breakpoint_free(flx_breakpoint* bp){

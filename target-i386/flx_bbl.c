@@ -7,10 +7,24 @@
 
 #include "flx_bbl.h"
 
+/*
+ * Module used to managed translated basic blocks beyond the qemu translation cache.
+ * Basic block can be annotated with static information to fasten several heuristical
+ * calculations.
+ */
+
+/*
+ * Basic blocks are stored in a cached AVL-Tree. The following functions
+ * represent the caching API
+ */
 static inline uint8_t     flx_bbl_cache_index(uint32_t address);
 static inline flx_bbl*    flx_bbl_cache_hit(uint32_t address);
 static inline void        flx_bbl_cache_update(flx_bbl* bbl);
 static inline avl_tree_t* flx_bbl_addrtotree(uint32_t addr);
+
+/*
+ * AVL compare/free callbacks
+ */
 static int                avl_bbl_cmp(const flx_bbl* a, const flx_bbl* b);
 static void               avl_bbl_free(void* item);
 
@@ -119,6 +133,9 @@ void flx_bbl_iterator_destroy(bbl_iterator* iter){
 	free(iter);
 }
 
+/*
+ * Used to iterate the basic block tree (e.g. for pattern matching)
+ */
 flx_bbl*
 flx_bbl_iterate(bbl_iterator* iter){
 	while(iter->treenum < NUM_BBL_TREES){

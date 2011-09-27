@@ -24,6 +24,12 @@ import dll
 import syscalls
 from fhandle import *
 
+
+# Draft for function hooking / argument parsing
+# Can be seen as a prototype that is not currently
+# used by the crypto detection system but has a nice
+# API that can be used in future use cases
+
 class FunctionHandler:
 	""" base class for function handlers """
 	def __init__(self, process):
