@@ -6,6 +6,13 @@
 #include "flx_instrument.h"
 #include "flx_memtrace.h"
 
+/*
+ * Qemu internal load/store functionality is hooked
+ * to generate memory access events.
+ * This module distributes these events via the
+ * register_handler API.
+ */
+
 memtrace_handler flx_memtrace_handlers[MAX_MEMTRACE_HANDLERS];
 
 void flx_memtrace_init(void){

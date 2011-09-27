@@ -11,6 +11,11 @@
 
 #include "flx_tbrestoring.h"
 
+/*
+ * NOT USED
+ * Implemented by flx_bbl now.
+ */
+
 avl_tree_t *tbs;
 int cachecache = 0;
 

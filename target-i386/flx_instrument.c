@@ -24,6 +24,13 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
+/*
+ * Qemu Python C-API implementation.
+ * Functions in this file are used for:
+ * 1. Access and modify C written module from the python layer
+ * 2. Distribute low/high level events into the python layer
+ */
+
 #include <Python.h>
 
 #include <stdarg.h>

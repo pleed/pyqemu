@@ -8,6 +8,13 @@
 
 #include "flx_graph.h"
 
+/*
+ * NOT USED
+ * Taintgraph implementation as specified in the
+ * graph heuristic. Now calculated in the a-posteriori
+ * analysis.
+ */
+
 static void
 flx_vertex_destroy(vertex* v){
 	if(v->edges)

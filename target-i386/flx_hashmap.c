@@ -8,6 +8,10 @@
 #include "hashmap.h"
 #include "flx_hashmap.h"
 
+/*
+ * Wrapper for the android hashmap implementation
+ */
+
 static hmap*
 flx_hashmap_alloc(void){
 	return malloc(sizeof(hmap));

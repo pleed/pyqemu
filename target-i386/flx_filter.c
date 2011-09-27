@@ -7,6 +7,13 @@
 #include "flx_instrument.h"
 #include "flx_filter.h"
 
+/*
+ * To make analysis faster, instrumentation can
+ * be reduced to a subset of the process code space.
+ * This module stores pages to decide
+ * which BBLs should be instrumented in the binary translation.
+ */
+
 uint8_t flx_filter_map[MAX_NUM_PAGES];
 
 void flx_filter_init(void){

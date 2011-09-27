@@ -8,6 +8,12 @@
 #include "flx_entropy.h"
 #include "flx_bbltranslate.h"
 
+/*
+ * Not used
+ * Constructed to calculate entropy information
+ * which is now done in the a-posteriori analysis
+ */
+
 entropy_handler flx_entropy_handler = NULL;
 entropy_config* flx_entropy_config = NULL;
 

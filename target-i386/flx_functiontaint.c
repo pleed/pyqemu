@@ -11,6 +11,13 @@
 #include "flx_calltrace.h"
 #include "flx_context.h"
 
+/*
+ * NOT USED
+ * Implemented to measure influence of memory blocks.
+ * Has been moved to the a-posteriory analysis because
+ * of performance issues.
+ */
+
 #define FLX_CYCLE_READ 0
 #define FLX_CYCLE_WRITE 1
 

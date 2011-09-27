@@ -10,6 +10,12 @@
 #include "flx_bbl.h"
 #include "flx_disas.h"
 
+/*
+ * Small wrapper around Qemu disassembly functionality
+ * in order to disassemble a single basic block into
+ * a buffer.
+ */
+
 static uint32_t
 flx_disas_bbl_size(uint32_t addr){
 	flx_bbl* bbl = flx_bbl_search(addr);

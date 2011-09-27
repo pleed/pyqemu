@@ -7,6 +7,12 @@
 #include "flx_calltrace.h"
 #include "flx_functiontrace.h"
 
+/*
+ * This module provides high level event generation
+ * for the python interface to build shadow callstacks
+ * in the python layer.
+ */
+
 functiontrace_handler flx_functiontrace_handler = NULL;
 
 void flx_functiontrace_init(functiontrace_handler handler){

@@ -1,7 +1,11 @@
-#ifndef FLX_CONTEXT
-#define FLX_CONTEXT
+#ifndef FLX_PROCESS
+#define FLX_PROCESS
 
 #include <avl.h>
+
+/*
+ * NOT USED
+ */
 
 #include "flx_instrument.h"
 

@@ -9,6 +9,13 @@
 #include "flx_instrument.h"
 #include "flx_optrace.h"
 
+/*
+ * NOT USED
+ * Was implemented to distribute events on the execution
+ * of specific instruction classes. This is done by
+ * annoating basic blocks now which is much faster.
+ */
+
 optrace_handler flx_optrace_handler = 0;
 
 void flx_optrace_init(optrace_handler handler){

@@ -3,6 +3,13 @@
 
 #include "flx_instrument.h"
 
+/*
+ * Makros written to make hooking of the binary translation
+ * more comfortable (see translate.c). The current flx_state 
+ * stores the instrumentation configuration which defines 
+ * which classes of events should be hooked.
+ */
+
 #define FLX_ON_USERSPACE      0x00000001
 #define FLX_ON_MEMTRACE       0x00000004
 #define FLX_ON_FILTERED       0x00000008
@@ -14,7 +21,7 @@
 #define FLX_ON_CABALLERO      0x00000200
 #define FLX_ON_BBLTRACE       0x00000400
 
-/* use this hook to catch events happening *anywhere* in the process */
+/* use this hook to catch events happening *anywhere* in the process (e.g. syscall, call, ret ...)*/
 #define flx_global_hook(conditions, context, hook, ...) do{ \
 											FLX_TEST_CONDITIONS( FLX_ON_USERSPACE | conditions );\
 											do{\
@@ -23,7 +30,7 @@
 											}while(0);\
 										  }while(0)
 
-/* use this hook to catch events happening *only* in the main process image */
+/* use this hook to catch events happening *only* in the filtered process images (e.g. start of bbl execution) */
 #define flx_hook(conditions, context, hook, ...) do{ \
 											FLX_TEST_CONDITIONS( FLX_ON_GLOBAL_ACTIVE | FLX_ON_USERSPACE | conditions );\
 											do{\

@@ -16,6 +16,14 @@
 
 #include "flx_dump.h"
 
+/*
+ * Several events have to be stored permanently for
+ * a-posteriori analysis. This module attaches to
+ * these event generating modules via register_handler
+ * API and stores them in a small serialization format
+ * for earch thread.
+ */
+
 char* flx_dump_path = NULL;
 
 void

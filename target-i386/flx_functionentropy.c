@@ -11,6 +11,13 @@
 #include "flx_memtrack.h"
 #include "flx_context.h"
 
+/*
+ * NOT USED
+ * Constructed for entropy measurements
+ * which have been moved to the a-posteriori
+ * analys for performance reasons.
+ */
+
 typedef struct function_stack function_stack;
 struct function_stack {
 	memtracker* before;

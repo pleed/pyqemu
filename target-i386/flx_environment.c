@@ -13,6 +13,16 @@
 
 #include "flx_environment.h"
 
+/*
+ * In some cases, process information has to be
+ * pulled out of the VM independent of the current
+ * process running at the time. This module
+ * stores the cpu state of each process.
+ *
+ * Used to make memory dumping possible
+ * at any time
+ */
+
 hmap* env_map = NULL;
 
 static int

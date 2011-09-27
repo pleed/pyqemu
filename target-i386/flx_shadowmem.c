@@ -8,6 +8,15 @@
 
 #include "flx_shadowmem.h"
 
+/*
+ * When doing pattern matching, PyQemu relies on
+ * the advantages of dynamic analysis to reduce
+ * the search space and thus also the false positive
+ * rate. Therefore we need a shadow memory which stores
+ * only memory regions that were acessed before.
+ * This module implements the shadow memory and supports
+ * iteration over subsequent pages.
+ */
 
 static int
 shadowmem_page_cmp(const shadow_page* p1, const shadow_page* p2){
@@ -136,80 +145,3 @@ flx_shadowmem_iterate(shadowmem_iterator* iter){
 	return block;
 }
 
-/*
-static uint8_t
-flx_shadowmem_get_next_blockstart(shadowmem_iterator* iter){
-	while(iter->current){
-		shadow_page* page = iter->current->item;
-		while(iter->addr < FLX_PAGE_SIZE && !shadowmem_inuse(page, iter->addr)){
-			++iter->addr;
-		}
-		if(iter->addr < FLX_PAGE_SIZE)
-			break;
-		else{
-			iter->addr = 0;
-			iter->current = iter->current->next;
-		}
-	}
-	return iter->current != NULL;
-}
-
-static uint8_t
-flx_shadowmem_get_next_blockbyte(shadowmem_iterator* iter, uint8_t *byte, uint32_t *eip){
-	uint8_t found = 0;
-	printf("searching page: 0x%x\n",((shadow_page*)(iter->current->item))->addr);
-	printf("current page offset: 0x%x\n",iter->addr);
-	while(iter->current){
-		shadow_page* page = iter->current->item;
-		if(iter->addr >= FLX_PAGE_SIZE){
-			iter->current = iter->current->next;
-			iter->addr = 0;
-			continue;
-		}
-		else{
-			if(shadowmem_inuse(page, iter->addr)){
-				*byte = page->mem[iter->addr];
-				*eip  = page->eip[iter->addr];
-				found = 1;
-				++iter->addr;
-			}
-			break;
-		}
-	}
-	return found;
-}
-
-mem_block*
-flx_shadowmem_iterate(shadowmem_iterator* iter, uint32_t** arg_eips){
-	if(!flx_shadowmem_get_next_blockstart(iter))
-		return NULL;
-
-	uint32_t byte_counter = 0;
-	uint8_t* buf = malloc(128);
-	uint32_t* eips = malloc(128*sizeof(uint32_t));
-	uint8_t value;
-	uint32_t cur_eip;
-	while(flx_shadowmem_get_next_blockbyte(iter, &value, &cur_eip)){
-		buf[byte_counter] = value;
-		eips[byte_counter] = cur_eip;
-
-		byte_counter++;
-		if((byte_counter % 128) == 0){
-			buf = realloc(buf, byte_counter+128);
-			eips = realloc(eips, (byte_counter+128)*sizeof(uint32_t));
-		}
-	}
-	if(!byte_counter){
-		free(buf);
-		free(eips);
-		return NULL;
-	}
-	*arg_eips = eips;
-	mem_block* new_block = malloc(sizeof(*new_block));
-	new_block->mem = buf;
-	new_block->len = byte_counter;
-	return new_block;
-}
-
-
-*/

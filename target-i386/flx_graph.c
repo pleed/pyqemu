@@ -7,6 +7,12 @@
 
 #include "flx_graph.h"
 
+/*
+ * NOT USED
+ * Small graph library for the taint functionality
+ * that has been moved into the a-posteriori analysis
+ */
+
 static void
 flx_vertex_destroy(vertex* v){
 	if(v->edges)

@@ -7,6 +7,14 @@
 
 #include "flx_context.h"
 
+/*
+ * Heuristic modules need to have process context information
+ * in order to deal with more than one instrumented process at
+ * a time in future design changes.
+ * This module manages a process tree and defines an API to access
+ * the current process associated data structures
+ */
+
 flx_context* current_context;
 avl_tree_t *context_tree;
 

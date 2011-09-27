@@ -8,6 +8,11 @@
 #include "flx_instrument.h"
 #include "flx_syscall.h"
 
+/*
+ * This module distributes syscall events via
+ * the register_handler API
+ */
+
 #define NUM_SYSCALLS 0x117
 
 syscall_handler flx_syscall_handler = NULL;
