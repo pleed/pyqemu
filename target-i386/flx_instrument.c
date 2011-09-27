@@ -114,6 +114,9 @@ static PyObject *PyFlx_ISJMP;
 CPUState *current_environment = NULL;
 uint32_t element_counter = 0;
 
+/**
+ * Add address range into the instrumentation filter
+ */
 static PyObject* PyFlxC_filter_add(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_filter_enable");  
@@ -133,6 +136,9 @@ static PyObject* PyFlxC_filter_add(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Delete an address range from the instrumentation filter
+ */
 static PyObject* PyFlxC_filter_del(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_filter_del");  
@@ -151,6 +157,9 @@ static PyObject* PyFlxC_filter_del(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Enable persistent event dumping
+ */
 static PyObject* PyFlxC_dump_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_dump_enable");  
@@ -167,6 +176,9 @@ static PyObject* PyFlxC_dump_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable persistent event dumping
+ */
 static PyObject* PyFlxC_dump_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_dump_disable");  
@@ -180,6 +192,9 @@ static PyObject* PyFlxC_dump_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable instrumentation filtering
+ */
 static PyObject* PyFlxC_filter_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_filter_enable");  
@@ -193,6 +208,9 @@ static PyObject* PyFlxC_filter_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable instrumentation filtering
+ */
 static PyObject* PyFlxC_filter_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_filter_disable");  
@@ -206,6 +224,9 @@ static PyObject* PyFlxC_filter_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable basic block tracing
+ */
 static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bbltrace_disable");  
@@ -220,6 +241,9 @@ static PyObject* PyFlxC_bbltrace_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable the memory pattern search module 
+ */
 static PyObject* PyFlxC_constsearch_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_enable");  
@@ -234,6 +258,9 @@ static PyObject* PyFlxC_constsearch_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable the code pattern search module 
+ */
 static PyObject* PyFlxC_codesearch_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_codesearch_enable");  
@@ -248,6 +275,9 @@ static PyObject* PyFlxC_codesearch_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable the memory pattern search module 
+ */
 static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_disable");  
@@ -262,6 +292,9 @@ static PyObject* PyFlxC_constsearch_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable the code pattern search module 
+ */
 static PyObject* PyFlxC_codesearch_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_codesearch_disable");  
@@ -276,6 +309,9 @@ static PyObject* PyFlxC_codesearch_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Initiate the memory pattern search
+ */
 static PyObject* PyFlxC_constsearch_search(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_disable");  
@@ -290,6 +326,9 @@ static PyObject* PyFlxC_constsearch_search(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Enable function call/ret tracing
+ */
 static PyObject* PyFlxC_functiontrace_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functiontrace_enable");  
@@ -304,6 +343,9 @@ static PyObject* PyFlxC_functiontrace_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable function call/ret tracing
+ */
 static PyObject* PyFlxC_functiontrace_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functiontrace_disable");  
@@ -318,6 +360,9 @@ static PyObject* PyFlxC_functiontrace_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable syscall tracing
+ */
 static PyObject* PyFlxC_syscall_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_syscall_disable");  
@@ -331,6 +376,9 @@ static PyObject* PyFlxC_syscall_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable syscall tracing
+ */
 static PyObject* PyFlxC_syscall_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_syscall_enable");  
@@ -344,6 +392,9 @@ static PyObject* PyFlxC_syscall_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable arithwindow heuristic
+ */
 static PyObject* PyFlxC_arithwindow_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_arithwindow_enable");  
@@ -362,6 +413,9 @@ static PyObject* PyFlxC_arithwindow_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable arithwindow heuristic
+ */
 static PyObject* PyFlxC_arithwindow_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_arithwindow_disable");  
@@ -376,6 +430,9 @@ static PyObject* PyFlxC_arithwindow_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable taint heuristic
+ */
 static PyObject* PyFlxC_functiontaint_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functiontaint_enable");  
@@ -394,6 +451,9 @@ static PyObject* PyFlxC_functiontaint_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable taint heuristic
+ */
 static PyObject* PyFlxC_functiontaint_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functiontaint_disable");  
@@ -412,6 +472,9 @@ static PyObject* PyFlxC_functiontaint_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable entropy heuristic
+ */
 static PyObject* PyFlxC_functionentropy_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functionentropy_enable");  
@@ -430,6 +493,9 @@ static PyObject* PyFlxC_functionentropy_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable entropy heuristic
+ */
 static PyObject* PyFlxC_functionentropy_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_functionentropy_disable");  
@@ -448,6 +514,9 @@ static PyObject* PyFlxC_functionentropy_disable(PyObject *self, PyObject *args) 
   return Py_None;
 }
 
+/**
+ * Add a syscall type to be hooked
+ */
 static PyObject* PyFlxC_syscall_hook(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_syscall_hook");  
@@ -466,6 +535,9 @@ static PyObject* PyFlxC_syscall_hook(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Add a pattern to be used with the next code search iteration
+ */
 static PyObject* PyFlxC_codesearch_pattern(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_codesearch_pattern");  
@@ -485,6 +557,9 @@ static PyObject* PyFlxC_codesearch_pattern(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Add a pattern to be used with the next memory search iteration
+ */
 static PyObject* PyFlxC_constsearch_pattern(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_constsearch_pattern");  
@@ -504,6 +579,9 @@ static PyObject* PyFlxC_constsearch_pattern(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable the caballero heuristic
+ */
 static PyObject* PyFlxC_caballero_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_caballero_enable");  
@@ -522,6 +600,9 @@ static PyObject* PyFlxC_caballero_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable the caballero heuristic
+ */
 static PyObject* PyFlxC_caballero_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_caballero_disable");  
@@ -536,6 +617,9 @@ static PyObject* PyFlxC_caballero_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Returns the start EIP of the current function
+ */
 static PyObject* PyFlxC_function_lookup(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_function_lookup");  
@@ -550,6 +634,9 @@ static PyObject* PyFlxC_function_lookup(PyObject *self, PyObject *args) {
   return retval;
 }
 
+/**
+ * Get the last n blocks of the basic block window
+ */
 static PyObject* PyFlxC_bblwindow_get(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bblwindow_get");  
@@ -577,6 +664,9 @@ static PyObject* PyFlxC_bblwindow_get(PyObject *self, PyObject *args) {
    }
 }
 
+/**
+ * Enable the bblwindow heuristic
+ */
 static PyObject* PyFlxC_bblwindow_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bblwindow_enable");  
@@ -594,6 +684,9 @@ static PyObject* PyFlxC_bblwindow_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable the bblwindow heuristic
+ */
 static PyObject* PyFlxC_bblwindow_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bblwindow_disable");  
@@ -607,6 +700,9 @@ static PyObject* PyFlxC_bblwindow_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable the basic block tracing module
+ */
 static PyObject* PyFlxC_bbltrace_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_bbltrace_enable");  
@@ -620,6 +716,9 @@ static PyObject* PyFlxC_bbltrace_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Disable memory tracing
+ */
 static PyObject* PyFlxC_memtrace_disable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_memtrace_disable");  
@@ -634,6 +733,9 @@ static PyObject* PyFlxC_memtrace_disable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable memory tracing
+ */
 static PyObject* PyFlxC_memtrace_enable(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_memtrace_enable");  
@@ -647,6 +749,9 @@ static PyObject* PyFlxC_memtrace_enable(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Delete a breakpoint
+ */
 static PyObject* PyFlxC_breakpoint_delete(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_breakpoint_delete");  
@@ -664,6 +769,9 @@ static PyObject* PyFlxC_breakpoint_delete(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Insert a breakpoint
+ */
 static PyObject* PyFlxC_breakpoint_insert(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_breakpoint_insert");  
@@ -682,6 +790,9 @@ static PyObject* PyFlxC_breakpoint_insert(PyObject *self, PyObject *args) {
 }
 
 
+/**
+ * Read current CPU registers
+ */
 static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "registers");  
@@ -731,6 +842,9 @@ static PyObject* PyFlxC_registers(PyObject *self, PyObject *args) {
   return retval;
 }
 
+/**
+ * Read current CPU registers
+ */
 static PyObject* PyFlxC_retranslate(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "retranslate");  
@@ -745,6 +859,9 @@ static PyObject* PyFlxC_retranslate(PyObject *self, PyObject *args) {
   return retval;
 }
 
+/**
+ * Disassemble a basic block
+ */
 static PyObject* PyFlxC_disas_bbl(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "disas_bbl");  
@@ -772,6 +889,9 @@ static PyObject* PyFlxC_disas_bbl(PyObject *self, PyObject *args) {
 
 }
 
+/**
+ * Get current EIP
+ */
 static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "eip");  
@@ -788,6 +908,9 @@ static PyObject* PyFlxC_eip(PyObject *self, PyObject *args) {
   return retval;
 }
 
+/**
+ * Check if a given address is in the instrumentation filter
+ */
 static PyObject* PyFlxC_filter_filtered(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "filter_filtered");  
@@ -808,6 +931,9 @@ static PyObject* PyFlxC_filter_filtered(PyObject *self, PyObject *args) {
    return retval;
 }
 
+/**
+ * Read a general purpose register
+ */
 static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "genreg");  
@@ -838,7 +964,9 @@ static PyObject* PyFlxC_genreg(PyObject *self, PyObject *args) {
    return retval;
 }
 
-
+/**
+ * Read a control register
+ */
 static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "creg");  
@@ -865,6 +993,9 @@ static PyObject* PyFlxC_creg(PyObject *self, PyObject *args) {
    return retval;
 }
 
+/**
+ * Read memory from process
+ */
 static PyObject* PyFlxC_vmem_read_process(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_vmem_read_process");  
@@ -913,6 +1044,9 @@ static PyObject* PyFlxC_vmem_read_process(PyObject *self, PyObject *args) {
    return retval;
 }
 
+/**
+ * Read memory from current process
+ */
 static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_vmem_read");  
@@ -959,6 +1093,9 @@ static PyObject* PyFlxC_vmem_read(PyObject *self, PyObject *args) {
    return retval;
 }
 
+/**
+ * Set the new process context for the C modules
+ */
 static PyObject* PyFlxC_set_context(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_active");  
@@ -981,6 +1118,9 @@ static PyObject* PyFlxC_set_context(PyObject *self, PyObject *args) {
   return Py_None;
 }
 
+/**
+ * Enable/Disable instrumentation
+ */
 static PyObject* PyFlxC_set_instrumentation_active(PyObject *self, PyObject *args) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_active");  
@@ -1154,6 +1294,9 @@ static PyMethodDef PyFlxC_methods[] = {
 #define PyMODINIT_FUNC void
 #endif
 
+/**
+ * Main initialization function
+ */
 PyMODINIT_FUNC initpyflxinstrument(void);
 PyMODINIT_FUNC
 initpyflxinstrument(void)
@@ -1209,6 +1352,9 @@ initpyflxinstrument(void)
 }
 
 
+/**
+ * Initialize instrumentation state
+ */
 static void
 flxinstrument_state_init(void){
    memset(&flx_state, 0, sizeof(flx_state));
@@ -1284,6 +1430,9 @@ flxinstrument_unregister_callbacks(void){
      printf("done!\n");
 }*/
 
+/**
+ * Initialization
+ */
 void flxinstrument_init(void) { 
   PyObject* enable_python;
 
@@ -1349,9 +1498,8 @@ void flxinstrument_init(void) {
 }
 
 
+
 /* ---------------------------- Instrument stuff ----------------- */
-
-
 int flxinstrument_update_cr3(uint32_t old_cr3, uint32_t new_cr3) {
 #ifdef DEBUG
   fprintf(stderr, "flxinstrument_update_cr3");  

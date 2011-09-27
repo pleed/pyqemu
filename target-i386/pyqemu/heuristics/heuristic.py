@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 class PyQemuHeuristic:
+	""" Base class for heuristic logging """
 	def __init__(self, process, options):
 		self.process = process
 		self.options = options

@@ -3,7 +3,9 @@
 from heuristic import PyQemuHeuristic
 
 class FunctionTraceHeuristic(PyQemuHeuristic):
+	""" Logging class for the function heuristic """
 	PREFIX = "Functiontrace"
+
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.functiontrace_enable())
 		self.attach("functiontrace",    self.onFunctionTraceEvent)

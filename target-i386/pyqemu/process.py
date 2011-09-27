@@ -92,6 +92,12 @@ class TracedProcess(processinfo.Process):
 	""" Represents an instrumented process, used to do hooking/instrumentation/setup """
 
 	def __init__(self, options, os, logger, imagefilename, hardware):
+		""" Define a process as instrumented
+
+			instantiate members
+			read image files from host file system
+			specify entry point as breakpoint
+		"""
 		self.os = os
 		self.hardware = hardware
 		self.cr3 = hardware.cpu.cr3

@@ -16,6 +16,7 @@ ADD = 9
 OTHER = 10
 
 class PatternManager:
+	""" Instruction class pattern management """
 	patternlist = {
 		#(SHX,SHX,XOR,SHX,XOR,XOR):"testpattern",
 		(SHX,AND,SHX,XOR,XOR,AND,SHX,XOR):"cygcrypto aes",
@@ -36,6 +37,7 @@ class PatternManager:
 			self.heuristic.process.hardware.instrumentation.codesearch_pattern(s)
 
 class CodeSearchHeuristic(PyQemuHeuristic):
+	""" Code search heuristic logging """
 	PREFIX = "CodePattern"
 	def setupCallbacks(self):
 		self.patterns = PatternManager(self)

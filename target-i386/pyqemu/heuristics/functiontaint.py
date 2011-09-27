@@ -3,7 +3,9 @@
 from heuristic import PyQemuHeuristic
 
 class FunctionTaintHeuristic(PyQemuHeuristic):
+	""" Logging class for the taint heuristic """
 	PREFIX = "Function Taint Trace"
+
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.functiontaint_enable(self.options["threshold"]))
 		self.attach("functiontaint",    self.onFunctionTaintEvent)

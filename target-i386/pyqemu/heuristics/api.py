@@ -273,6 +273,7 @@ crypt_api_calls = [
 ]
 
 class ApiHeuristic(PyQemuHeuristic):
+	""" API Call hooking class for the ms crypto function """
 	PREFIX = "ApiCall"
 
 	def setupCallbacks(self):

@@ -3,6 +3,7 @@
 from heuristic import PyQemuHeuristic
 
 class BBLExecHeuristic(PyQemuHeuristic):
+	""" Basic Block execution Logging """
 	PREFIX = "BBLExec"
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.bbltrace_enable())

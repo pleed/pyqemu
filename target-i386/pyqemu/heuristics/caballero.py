@@ -3,6 +3,7 @@
 from heuristic import PyQemuHeuristic
 
 class CaballeroHeuristic(PyQemuHeuristic):
+	""" Logging class for the caballero heuristic """
 	PREFIX = "Caballero"
 	def setupCallbacks(self):
 		self.process.onInstrumentationInit(lambda: self.process.hardware.instrumentation.caballero_enable(self.options["min_icount"], self.options["threshold"]))
