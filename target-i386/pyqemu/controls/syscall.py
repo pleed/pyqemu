@@ -291,6 +291,7 @@ syscall_table = {
 }
 
 class SyscallControl(ProcessControl):
+	""" Syscall hooking class """
 	PREFIX = "syscall"
 	hook_syscalls = [
 			"NtTerminateProcess",

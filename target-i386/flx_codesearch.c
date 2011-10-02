@@ -55,7 +55,6 @@ flx_insnchain_dealloc(insn_chain* chain){
 
 static int
 flx_insnchain_delete(flx_context* context){
-	return 0; //FIXME
 	insn_chain* chain = (insn_chain*)context->insnchain;
 	insn_chain* next;
 	while(chain){
@@ -152,16 +151,10 @@ int flx_codesearch_bbl(uint32_t eip, uint32_t esp){
 	uint32_t index = chain->len + bbl->listcount - 1;
 	uint32_t assert_counter = 0;
 	uint8_t debug = 0;
-	if(eip == 0x1004b8c0)
-		debug = 1;
-	if(debug)
-		printf("BBL: 0x%x\n",eip);
 	while(insns){
 		assert(index < chain->size);
 		assert_counter++;
 		chain->data[index] = insns->insn_type;
-		if(debug)
-			printf("INSN: %d\n",insns->insn_type);
 		chain->eips[index] = eip;
 		insns = insns->next;
 		assert(index > 0 || ! insns);

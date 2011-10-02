@@ -25,4 +25,6 @@ sudo make install
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm negativetest
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm hashprograms
 #/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm dsasign
-/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm nmap
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm nmap
+#/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm wget
+/usr/local/bin/qemu -hda /home/matenaar/images/fresh_sp2.img -m 2048 -net user -net nic,model=pcnet -loadvm sekcheck

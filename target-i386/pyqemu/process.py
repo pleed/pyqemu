@@ -32,9 +32,9 @@ class BreakpointManager(dict):
 			PyFlxInstrument.breakpoint_insert(addr)
 		self[addr].add(handler)
 
-	def delBreakpoint(self, handler):
-		for addr,hash in self.items:
-			if not self.isdisjoint([handler]):
+	def delBreakpoint(self, addr, handler):
+		for addr,hash in self.items():
+			if not self[addr].isdisjoint([handler]):
 				self[addr] = self[addr]-set([handler])
 			if len(self[addr]) == 0:
 				PyFlxInstrument.breakpoint_delete(addr)
@@ -161,6 +161,19 @@ class TracedProcess(processinfo.Process):
 		#self.log("Call(0x%x)"%addr)
 		self.logger.info("Instrumentation initialized!!!")
 
+	def updateLibrary(self, libname):
+		self.update_images()
+		for image in self.images.values():
+			if image.BaseDllName.lower() == libname.lower():
+				if image.BaseDllName.lower() in map(lambda x: x.lower(), self.options["instrument"]):
+					self.hardware.instrumentation.filter_add(image.DllBase, image.DllBase+image.SizeOfImage)
+					self.logger.info("Instrumenting %s at 0x%x-0x%x"%(image.FullDllName,image.DllBase,image.DllBase+image.SizeOfImage))
+					self.dllhandler.loadPE(image.BaseDllName.lower(), image.DllBase)
+					self.hardware.instrumentation.filter_enable()
+					self.hardware.instrumentation.retranslate()
+				return True
+		return False
+
 	def setupEventHandlers(self):
 		self.eventHandlers = {
 			"call":EventHandler(self),
@@ -187,7 +200,7 @@ class TracedProcess(processinfo.Process):
 	def addBreakpoint(self, addr, callback):
 		self.breakpoints.addBreakpoint(addr, callback)
 
-	def delBreakpoint(self, addr):
+	def delBreakpoint(self, addr, callback):
 		self.breakpoints.delBreakpoint(addr, callback)
 
 	def installHookByName(self, callback, function, dll = None):
