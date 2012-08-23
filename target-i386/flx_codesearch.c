@@ -150,7 +150,7 @@ int flx_codesearch_bbl(uint32_t eip, uint32_t esp){
 
 	uint32_t index = chain->len + bbl->listcount - 1;
 	uint32_t assert_counter = 0;
-	uint8_t debug = 0;
+	//uint8_t debug = 0;
 	while(insns){
 		assert(index < chain->size);
 		assert_counter++;

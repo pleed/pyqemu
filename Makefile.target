@@ -13,7 +13,7 @@ endif
 
 TARGET_PATH=$(SRC_PATH)/target-$(TARGET_BASE_ARCH)
 $(call set-vpath, $(SRC_PATH):$(TARGET_PATH):$(SRC_PATH)/hw)
-QEMU_CFLAGS+= -I.. -I$(TARGET_PATH) -DNEED_CPU_H -I/usr/include/python2.6 -L/usr/local/lib
+QEMU_CFLAGS+= -I.. -I$(TARGET_PATH) -DNEED_CPU_H -I/usr/include/python2.7 -L/usr/local/lib
 
 include $(SRC_PATH)/Makefile.objs
 
@@ -32,9 +32,9 @@ endif
 PROGS=$(QEMU_PROG) 
 PYQEMU_SRCPATH=../target-i386
 PYQEMU_PROGS= $(PYQEMU_SRCPATH)/PyQEMU.py $(PYQEMU_SRCPATH)/pyqemu
-PYQEMU_PYTHON_PATH=/usr/lib/python2.6/
+PYQEMU_PYTHON_PATH=/usr/lib/python2.7/
 
-LIBS+=-lm -lpython2.6 -lavl -lshmatch
+LIBS+=-lm -lpython2.7 -lavl -lshmatch
 
 kvm.o kvm-all.o vhost.o vhost_net.o: QEMU_CFLAGS+=$(KVM_CFLAGS)
 

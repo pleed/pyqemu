@@ -31,7 +31,7 @@
  * 2. Distribute low/high level events into the python layer
  */
 
-#include <Python.h>
+#include <python2.7/Python.h>
 
 #include <stdarg.h>
 #include <stdlib.h>

@@ -11939,6 +11939,7 @@ class ConstSearchHeuristic(PyQemuHeuristic):
 		self.process.onInstrumentationInit(self.patterns)
 		self.process.onInstrumentationInit(lambda: self.registerApiHooks(self.process))
 		self.attach("constsearch", self.onPatternFound)
+		self.attach("syscall", self.onSyscallEvent)
 
 	def onPatternFound(self, process, event):
 		printable_pattern = "".join(map(lambda x: "\\x%02x"%ord(x), event.pattern))
@@ -11950,5 +11951,9 @@ class ConstSearchHeuristic(PyQemuHeuristic):
 
 	def onApiCallEvent(self, process, dll, function, addr):
 		process.hardware.instrumentation.constsearch_search()
+
+	def onSyscallEvent(self, process, event):
+		if event.number in [0x0100,0x0101,0x0102]:
+			process.hardware.instrumentation.constsearch_search()
 
 heuristic = ConstSearchHeuristic

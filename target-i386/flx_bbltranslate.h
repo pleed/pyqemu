@@ -24,7 +24,7 @@ void flx_bbltranslate_bbl_new(uint32_t);
 void flx_bbltranslate_bbl_end(void);
 void flx_bbltranslate_insn(enum insn_type insn);
 void flx_bbltranslate_bbl_size(uint32_t);
-inline uint32_t flx_bbltranslate_bbl_addr(void);
+uint32_t flx_bbltranslate_bbl_addr(void);
 
 void flx_bbltranslate_register_handler(bbltranslate_handler);
 void flx_bbltranslate_unregister_handler(bbltranslate_handler);

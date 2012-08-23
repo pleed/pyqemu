@@ -1108,22 +1108,22 @@ fi
 ##########################################
 # python header check
 cat > $TMPC << EOF
-#include <python2.6/Python.h>
+#include <python2.7/Python.h>
 #if PY_MAJOR_VERSION != 2
 #error "wrong python major version!"
 #endif
-#if PY_MINOR_VERSION != 6
+#if PY_MINOR_VERSION != 7
 #error "wrong python minor version!"
 #endif
 
 int main(void) { return 0; }
 EOF
-if compile_prog "" "-lpython2.6" ; then
+if compile_prog "" "-lpython2.7" ; then
     :
 else
     echo
     echo "Error: python check failed"
-    echo "Make sure to have the python 2.6 libs and headers installed."
+    echo "Make sure to have the python 2.7 libs and headers installed."
     echo
     exit 1
 fi
