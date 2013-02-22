@@ -1,3 +1,12 @@
 Read the documentation in qemu-doc.html.
 
 Fabrice Bellard.
+
+PyQemu:
+	look into target-i386/FLX_README
+
+	PyQemu was a Project between Felix Matenaar, Felix Leder,
+	Andre Wichmann and Elmar Gerhards-Padilla.
+
+	The Paper can be found under: 
+		http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6461007&isnumber=6460999
